@@ -1,0 +1,40 @@
+$font-sizes: (
+    8: 8px,
+    10: 10px,
+    12: 12px,
+    14: 14px,
+    16: 16px,
+    18: 18px,
+    20: 20px,
+    24: 24px,
+    28: 28px,
+    32: 32px,
+    34: 34px,
+    40: 40px,
+    44: 44px,
+    48: 48px,
+);
+
+$font-weights: (
+    eb: "Montserrat-ExtraBold",
+    b: "Montserrat-Bold",
+    sb: "Montserrat-SemiBold",
+    m: "Montserrat-Medium",
+    r: "Montserrat-Regular",
+    t: "Montserrat-Thin",
+);
+
+$font-families: (
+    montserrat: "Montserrat",
+);
+
+@each $family, $family-value in $font-families {
+    @each $weight-key, $weight-value in $font-weights {
+        @each $size-key, $size-value in $font-sizes {
+            .#{$family}-#{$weight-key}-#{$size-key} {
+                font-family: #{$weight-value};
+                font-size: #{$size-value};
+            }
+        }
+    }
+}
