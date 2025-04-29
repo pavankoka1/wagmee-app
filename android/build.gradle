@@ -1,0 +1,44 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
+        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
+        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
+        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.25'
+
+        ndkVersion = "26.1.10909125"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath('com.android.tools.build:gradle')
+        classpath('com.facebook.react:react-native-gradle-plugin')
+        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    repositories {
+        // .. your existing repositories
+      
+      	// Starting from version 2.3.0 all versions of the sdk are now hosted on a public repository
+        maven {
+            url "https://artifactory.smallcase.com/artifactory/SCGateway"
+        }
+  
+  		// Only for versions < 2.3.0
+        maven {
+          url "https://artifactory.smallcase.com/artifactory/gradle-dev-local"
+          credentials {
+            username "react_native_user"
+            password "reactNativeUser123"
+        }
+      }
+    }
+}
