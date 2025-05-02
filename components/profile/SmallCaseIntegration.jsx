@@ -7,7 +7,7 @@ import network from "@/network";
 import API_PATHS from "../../network/apis";
 import { HEADERS_KEYS } from "../../network/constants";
 
-const SmallcaseIntegration = ({ onClose }) => {
+const SmallcaseIntegration = ({ onSuccess, onClose }) => {
     const [isInitialized, setIsInitialized] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -26,6 +26,7 @@ const SmallcaseIntegration = ({ onClose }) => {
             console.error("Error configuring SDK:", err);
             setError("Failed to configure SDK");
             setLoading(false);
+            onClose();
         }
     };
 
@@ -39,6 +40,7 @@ const SmallcaseIntegration = ({ onClose }) => {
         } catch (err) {
             console.error("Error initializing gateway session:", err.userInfo);
             setError("Failed to initialize gateway session");
+            onClose();
         } finally {
             setLoading(false);
         }
@@ -56,8 +58,10 @@ const SmallcaseIntegration = ({ onClose }) => {
                 HEADERS_KEYS.SMALLCASE_AUTH_TOKEN,
                 smallcaseAuthToken
             );
+            onSuccess();
         } catch (err) {
             console.log("Transaction error:", err.userInfo);
+            onClose();
         }
     }, []);
 
