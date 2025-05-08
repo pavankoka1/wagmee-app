@@ -59,12 +59,12 @@ const ForYouScreen = () => {
     // const renderItem = useCallback(({ item }) => {
     //     return <FeedPost item={item} />;
     // }, []);
-    const renderItem = useCallback(
-        ({ item }) => {
-            return <FeedPost item={feeds[item]} />;
-        },
-        [feeds]
-    );
+    // const renderItem = useCallback(
+    //     ({ item }) => {
+    //         return <FeedPost item={feeds[item]} />;
+    //     },
+    //     [feeds]
+    // );
 
     if (!forYouPostIds.length && !isFetchingForYou) {
         return (
@@ -98,7 +98,7 @@ const ForYouScreen = () => {
                         ? [...forYouPostIds, ...Array(4).fill(null)]
                         : forYouPostIds
                 }
-                renderItem={renderItem}
+                renderItem={({ item }) => <FeedPost id={item} />}
                 // keyExtractor={(item) =>
                 //     item?.feedId
                 //         ? "for-you-" + item.feedId

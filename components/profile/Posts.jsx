@@ -8,7 +8,7 @@ import TabButton from "@/components/Tabs/TabButton";
 import useFeedStore from "@/hooks/useFeedStore";
 
 const Posts = ({ handleTabChange }) => {
-    const { isFetchingPosts, resetPosts, feeds, postIds, fetchPosts } =
+    const { isFetchingPosts, resetFeeds, feeds, postIds, fetchPosts } =
         useFeedStore();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -40,7 +40,7 @@ const Posts = ({ handleTabChange }) => {
 
     const onRefresh = async () => {
         setRefreshing(true);
-        await resetPosts();
+        await resetFeeds();
         await fetchPosts();
         setRefreshing(false);
     };
@@ -81,7 +81,7 @@ const Posts = ({ handleTabChange }) => {
             data={
                 isFetchingPosts ? [...postIds, ...Array(4).fill(null)] : postIds
             }
-            renderItem={renderItem}
+            renderItem={({ item }) => <FeedPost id={item} />}
             keyExtractor={(item) =>
                 item ? "post-" + item : "loader-" + Math.random() * 10000
             }

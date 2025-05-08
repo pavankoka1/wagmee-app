@@ -52,6 +52,14 @@ const Portfolio = ({ handleTabChange }) => {
         <View className="flex-1 bg-[#161616]">
             <Header />
             <Card />
+            <View className="flex flex-row border-b-[2px] border-[#1F2023]">
+                <TabButton
+                    title="Portfolio"
+                    className="border-b-[3px] border-primary-main pb-5"
+                    isActive={true}
+                />
+                <TabButton title="Posts" onPress={handleTabChange} />
+            </View>
             {isPortfolioConnected && (
                 <StocksList
                     onClose={() => {

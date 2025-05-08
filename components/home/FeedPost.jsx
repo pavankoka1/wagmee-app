@@ -25,7 +25,9 @@ import { Portal } from "react-native-paper";
 import useActivityStore from "@/hooks/useActivityStore";
 import useFeedStore from "@/hooks/useFeedStore";
 
-const FeedPost = React.memo(({ item }) => {
+const FeedPost = React.memo(({ id }) => {
+    const { feeds } = useFeedStore();
+    const item = feeds[id];
     if (!item) return <PostsLoader />;
 
     const { followers, details } = useUserStore();

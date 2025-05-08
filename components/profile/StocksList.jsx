@@ -46,12 +46,12 @@ function StocksList({ onClose }) {
 
     return (
         <SafeAreaView className="flex-1 bg-[#161616]">
-            <View className="border-b-[2px] border-[#1F2023] py-4 px-4 tracking-wider flex-row items-center justify-between bg-[#161616] z-10">
+            {/* <View className="border-b-[2px] border-[#1F2023] py-4 px-4 tracking-wider flex-row items-center justify-between bg-[#161616] z-10">
                 <Text className="text-white text-xl">Stocks List</Text>
                 <TouchableOpacity onPress={onClose}>
                     <CloseIcon size={10} />
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
             <FlatList
                 data={holdings}

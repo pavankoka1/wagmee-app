@@ -11,14 +11,6 @@ import * as SecureStore from "expo-secure-store";
 const ZeroScreen = ({ handleTabChange, handleConnectPortfolio }) => {
     return (
         <View className="flex-1 bg-[#161616]">
-            <View className="flex flex-row border-b-[2px] border-[#1F2023]">
-                <TabButton
-                    title="Portfolio"
-                    className="border-b-[3px] border-primary-main pb-5"
-                    isActive={true}
-                />
-                <TabButton title="Posts" onPress={handleTabChange} />
-            </View>
             <View className="flex-1 flex flex-col items-center justify-center px-4">
                 <Text className="font-manrope-bold text-16 text-white text-center mb-2">
                     Connect Your Portfolio
