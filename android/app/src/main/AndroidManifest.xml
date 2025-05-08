@@ -35,30 +35,21 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.smallcase.gateway.screens.transaction.activity.TransactionProcessActivity"
-          android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data
-                android:host="wagmee"
-                android:scheme="scgateway"
-            />
-        </intent-filter>
+    <activity android:name="com.smallcase.gateway.screens.transaction.activity.TransactionProcessActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:host="wagmee" android:scheme="scgateway"/>
+      </intent-filter>
     </activity>
-
-    <activity android:name="com.smallcase.gateway.screens.common.RedirectActivity"
-              android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data
-                android:host="wagmee"
-                android:scheme="scgatewayredirect"
-            />
-        </intent-filter>
+    <activity android:name="com.smallcase.gateway.screens.common.RedirectActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:host="wagmee" android:scheme="scgatewayredirect"/>
+      </intent-filter>
     </activity>
   </application>
 </manifest>

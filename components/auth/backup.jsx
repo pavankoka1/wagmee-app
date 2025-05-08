@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { Alert, Platform, Text, TouchableOpacity } from "react-native";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import * as React from "react";
-import * as WebBrowser from "expo-web-browser";
+// import * as WebBrowser from "expo-web-browser";
 import { Linking } from "react-native";
 import LoginScreen from "@/components/auth/Login";
 import * as Application from "expo-application";
@@ -25,7 +25,7 @@ const useProxy = Platform.select({ web: false, default: true });
 // const redirectUri = "tradetribe://redirect";
 const redirectUri = "https://webhook-test.com/9df4de80788506c23da90fe790d8d55b";
 
-WebBrowser.maybeCompleteAuthSession();
+// WebBrowser.maybeCompleteAuthSession();
 
 const generateCodeVerifier = async () => {
     const randomBytes = await generateRandomBytes(32);

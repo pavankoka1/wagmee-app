@@ -7,7 +7,7 @@ import { Alert, Platform, Text, TouchableOpacity } from "react-native";
 import AsyncStorage, {
     useAsyncStorage,
 } from "@react-native-async-storage/async-storage";
-import * as WebBrowser from "expo-web-browser";
+// import * as WebBrowser from "expo-web-browser";
 import { Linking } from "react-native";
 import LoginScreen from "@/components/auth/Login";
 import { generateRandomBytes } from "expo-random";
@@ -25,7 +25,7 @@ const useProxy = Platform.select({ web: false, default: true });
 const redirectUri = "tradetribe://redirect";
 // const redirectUri = "https://webhook-test.com/f9acb33eea3aba14847c7a95eb99572c";
 
-WebBrowser.maybeCompleteAuthSession();
+// WebBrowser.maybeCompleteAuthSession();
 
 const generateCodeVerifier = async () => {
     const randomBytes = await generateRandomBytes(64);
