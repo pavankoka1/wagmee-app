@@ -1,47 +1,57 @@
-import { View, Text, FlatList, SafeAreaView } from "react-native";
-import React, { useEffect } from "react";
+import { View, Text, FlatList, SafeAreaView, ToastAndroid } from "react-native";
+import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import generateQueryParams from "@/utils/generateQueryParams";
 import { HEADERS_KEYS } from "@/network/constants";
-import RippleLoader from "../Loader";
 import clsx from "clsx";
 import StockItem from "./StockItem";
-import CloseIcon from "@/icons/CloseIcon";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 
 function StocksList({ onClose }) {
-    const [data, setData] = React.useState(null);
-    const [isLoading, setIsLoading] = React.useState(true);
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [displayMode, setDisplayMode] = useState("current"); // "current" or "profitLoss"
 
     async function fetchHoldings() {
         setIsLoading(true);
-        const gatewayAuthToken = await SecureStore.getItemAsync(
-            HEADERS_KEYS.SMALLCASE_AUTH_TOKEN
-        );
-        const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
-        const holdingsPath = generateQueryParams(
-            replacePlaceholders(API_PATHS.getHoldings, userId),
-            {
-                gatewayAuthToken,
-            }
-        );
+        try {
+            const gatewayAuthToken = await SecureStore.getItemAsync(
+                HEADERS_KEYS.SMALLCASE_AUTH_TOKEN
+            );
+            const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
+            const holdingsPath = generateQueryParams(
+                replacePlaceholders(API_PATHS.getHoldings, userId),
+                {
+                    gatewayAuthToken,
+                }
+            );
 
-        network
-            .get(holdingsPath)
-            .then((res) => {
-                setData(res.data);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                onClose();
-            });
+            const res = await network.get(holdingsPath);
+            setData(res.data);
+            setIsLoading(false);
+        } catch (err) {
+            ToastAndroid.showWithGravityAndOffset(
+                "Unable to fetch holdings,\n Please login again!",
+                ToastAndroid.LONG,
+                ToastAndroid.TOP,
+                25,
+                50
+            );
+            onClose();
+        }
     }
 
     useEffect(() => {
         fetchHoldings();
     }, []);
+
+    const toggleDisplayMode = () => {
+        setDisplayMode((prev) =>
+            prev === "current" ? "profitLoss" : "current"
+        );
+    };
 
     const renderHeader = () => {
         if (isLoading) {
@@ -108,8 +118,8 @@ function StocksList({ onClose }) {
                             className={clsx(
                                 "text-base font-semibold",
                                 data?.totalChange >= 0
-                                    ? "text-green-400"
-                                    : "text-red-400"
+                                    ? "text-[#22c55e]"
+                                    : "text-[#ef4444]"
                             )}
                         >
                             {data?.totalChange >= 0 ? "+" : ""}₹
@@ -123,8 +133,8 @@ function StocksList({ onClose }) {
                                 className={clsx(
                                     "text-xs",
                                     data?.totalChange >= 0
-                                        ? "text-green-400"
-                                        : "text-red-400"
+                                        ? "text-[#22c55e]"
+                                        : "text-[#ef4444]"
                                 )}
                             >
                                 ({data?.totalChangePercentage >= 0 ? "+" : ""}
@@ -176,7 +186,13 @@ function StocksList({ onClose }) {
                 onRefresh={() => {
                     fetchHoldings();
                 }}
-                renderItem={({ item }) => <StockItem item={item} />}
+                renderItem={({ item }) => (
+                    <StockItem
+                        item={item}
+                        displayMode={displayMode}
+                        toggleDisplayMode={toggleDisplayMode}
+                    />
+                )}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 20 }}
             />

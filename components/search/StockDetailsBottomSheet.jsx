@@ -1,59 +1,3 @@
-// import { View, Text } from "react-native";
-// import { ActivityIndicator } from "react-native-paper";
-// import React, { useEffect, useRef, useState } from "react";
-// import BottomSheet from "@/components/BottomSheet";
-// import { WebView } from "react-native-webview";
-// import getTradingViewScript from "@/utils/getTradingViewScript";
-
-// const StockDetailsBottomSheet = ({ isOpen, onClose, symbol }) => {
-//     const [loading, setLoading] = useState(true);
-//     const timerId = useRef(null);
-
-//     useEffect(() => {
-//         if (isOpen) {
-//             setLoading(true);
-
-//             timerId.current = setTimeout(() => {
-//                 setLoading(false);
-//                 clearTimeout(timerId.current);
-//                 timerId.current = null;
-//             }, 1000);
-
-//             return () => clearTimeout(timerId.current);
-//         }
-//     }, [isOpen]);
-
-//     return (
-//         <BottomSheet
-//             closeOnOverlayClick={false}
-//             isOpen={isOpen}
-//             onClose={onClose}
-//             className="flex-1 relative"
-//         >
-//             <View className="flex-1 pt-10">
-//                 {loading && (
-//                     <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-//                         <ActivityIndicator size={32} />
-//                     </View>
-//                 )}
-//                 <WebView
-//                     originWhitelist={["*"]}
-//                     source={{ html: getTradingViewScript(symbol) }}
-//                     javaScriptEnabled={true}
-//                     scalesPageToFit={false}
-//                     style={{
-//                         opacity: loading ? 0 : 1,
-//                         transition: "opacity 1s",
-//                     }}
-//                     onLoadEnd={() => !timerId.current && setLoading(false)}
-//                 />
-//             </View>
-//         </BottomSheet>
-//     );
-// };
-
-// export default StockDetailsBottomSheet;
-
 import { View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import React, { useState } from "react";
@@ -89,7 +33,7 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol }) => {
                         height: "100%",
                         opacity: loading ? 0 : 1,
                         transition: "opacity 1s",
-                    }} // Conditional style
+                    }}
                     onLoadEnd={() => {
                         setLoading(false);
                     }}
