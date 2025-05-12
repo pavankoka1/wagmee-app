@@ -24,8 +24,11 @@ import CommentsBottomSheet from "./CommentsBottomSheet";
 import { Portal } from "react-native-paper";
 import useActivityStore from "@/hooks/useActivityStore";
 import useFeedStore from "@/hooks/useFeedStore";
+import * as SecureStore from "expo-secure-store";
+import { HEADERS_KEYS } from "@/network/constants";
 
 const FeedPost = React.memo(({ id }) => {
+    const userId = SecureStore.getItem(HEADERS_KEYS.USER_ID);
     const { feeds } = useFeedStore();
     const item = feeds[id];
     if (!item) return <PostsLoader />;
@@ -78,26 +81,35 @@ const FeedPost = React.memo(({ id }) => {
                     source={{ uri: authorDetails.profilePictureUrl }}
                     className="rounded-full mr-2"
                 />
-                <View className="flex flex-col gap-1 mr-auto">
+                <View className="flex-1 flex-col gap-1">
                     <View className="flex flex-row items-center">
-                        <Text className="font-manrope-bold text-14 text-white leading-none h-[14px]">
+                        <Text className="font-manrope-bold text-14 text-white h-[25px]">
                             {authorDetails.name}
                         </Text>
-                        <VerifiedIcon />
-                        <View className="mx-2 h-1 w-1 rounded-full bg-[#b1b1b1]" />
-                        {!followers.includes(authorDetails.id) ? (
-                            <Text className="text-primary-main font-manrope-bold text-14 leading-none h-[14px]">
-                                Follow
-                            </Text>
+                        <VerifiedIcon className="ml-1" />
+                        {!followers.includes(authorDetails.id) &&
+                        !(authorDetails.id == userId) ? (
+                            <>
+                                <View className="mx-2 h-3 w-3 flex items-center justify-center">
+                                    <View className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
+                                </View>
+                                <Text className="text-primary-main font-manrope-bold text-14">
+                                    Follow
+                                </Text>
+                            </>
                         ) : null}
                     </View>
                     <View className="flex flex-row items-center">
                         <Text className="font-manrope text-10 text-[#26F037]">
                             Portfolio - ₹8.6L
                         </Text>
-                        <View className="mx-2 h-1 w-1 mt-1 rounded-full bg-[#b1b1b1]" />
+                        <View className="mx-2 h-3 w-3 flex items-center justify-center">
+                            <View className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
+                        </View>
                         <Text className="text-[#b1b1b1] font-manrope-medium text-10">
-                            {moment(postDetails.createdAt).format("h:mm a")}
+                            {moment(postDetails.createdAt).format(
+                                "ddd, DD MMM, h:mm A"
+                            )}
                         </Text>
                     </View>
                 </View>
@@ -174,7 +186,7 @@ const FeedPost = React.memo(({ id }) => {
                 </View>
             ) : null}
             <View className="flex flex-row items-center mt-3 gap-4">
-                {updatingLikeId === postDetails.id && !!updatingLikeId ? (
+                {postDetails.isLoading ? (
                     <ActivityIndicator size="small" color="#b4ef02" />
                 ) : (
                     <View className="flex flex-row items-center">

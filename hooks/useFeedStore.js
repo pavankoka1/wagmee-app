@@ -1,242 +1,310 @@
 import { create } from "zustand";
-import axios from "axios";
+import { subscribeWithSelector } from "zustand/middleware";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
-import replacePlaceholders from "@/utils/replacePlaceholders";
 import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
 import generateQueryParams from "@/utils/generateQueryParams";
 import { produce } from "immer";
+import replacePlaceholders from "@/utils/replacePlaceholders";
 
-const useFeedStore = create((set, get) => ({
-    isFetchingPosts: false,
-    hasMorePosts: true,
-    updatingLikeId: null,
-    trendingFeeds: [],
-    forYouFeeds: [],
-    trendingOffset: 0,
-    postOffset: 0,
-    forYouOffset: 0,
-    loadingTrending: false,
-    loadingForYou: false,
-    error: null,
-    feeds: {},
-    seenPostIds: new Set(),
-    forYouPostIds: [],
-    postIds: [],
-    isFetchingTrending: false,
-    isFetchingForYou: false,
-    hasMoreTrending: true,
-    hasMoreForYou: true,
+const useFeedStore = create(
+    subscribeWithSelector((set, get) => ({
+        isFetchingPosts: false,
+        hasMorePosts: true,
+        trendingFeeds: [],
+        forYouFeeds: [],
+        trendingOffset: 0,
+        postOffset: 0,
+        forYouOffset: 0,
+        loadingTrending: false,
+        loadingForYou: false,
+        error: null,
+        feeds: {},
+        seenPostIds: new Set(),
+        forYouPostIds: [],
+        postIds: [],
+        trendingPostIds: [],
+        isFetchingTrending: false,
+        isFetchingForYou: false,
+        hasMoreTrending: true,
+        hasMoreForYou: true,
+        refreshing: false,
 
-    removeLike: async (userId, postId) => {
-        set({ updatingLikeId: postId });
-        try {
-            await network.delete(
-                replacePlaceholders(API_PATHS.removeLike, userId, postId)
-            );
+        setRefreshing: (value) => set({ refreshing: value }),
+
+        removeLike: async (userId, postId) => {
+            console.log(`removeLike called for postId: ${postId}`);
             set(
                 produce((state) => {
-                    if (state.feeds[postId]) {
-                        if (state.feeds[postId].postDetails) {
-                            state.feeds[postId].postDetails.isLiked = false;
-                            state.feeds[postId].postDetails.likesCount -= 1;
-                        } else {
-                            state.feeds[postId].isLiked = false;
-                            state.feeds[postId].likesCount -= 1;
-                        }
+                    if (state.feeds[postId].postDetails) {
+                        state.feeds[postId].postDetails.isLoading = true;
+                    } else {
+                        state.feeds[postId].isLoading = true;
                     }
                 })
             );
-        } finally {
-            set({ updatingLikeId: null });
-        }
-    },
+            try {
+                await network.delete(
+                    replacePlaceholders(API_PATHS.removeLike, userId, postId)
+                );
+                set(
+                    produce((state) => {
+                        if (state.feeds[postId]) {
+                            if (state.feeds[postId].postDetails) {
+                                state.feeds[postId].postDetails.isLiked = false;
+                                state.feeds[postId].postDetails.likesCount -= 1;
+                                state.feeds[
+                                    postId
+                                ].postDetails.isLoading = false;
+                            } else {
+                                state.feeds[postId].isLiked = false;
+                                state.feeds[postId].likesCount -= 1;
+                                state.feeds[postId].isLoading = false;
+                            }
+                        }
+                    })
+                );
+            } catch (error) {
+                set(
+                    produce((state) => {
+                        if (state.feeds[postId].postDetails) {
+                            state.feeds[postId].postDetails.isLoading = false;
+                        } else {
+                            state.feeds[postId].isLoading = false;
+                        }
+                    })
+                );
+            }
+        },
 
-    addLike: async (userId, postId) => {
-        set({ updatingLikeId: postId });
-        try {
-            await network.post(API_PATHS.addLike, {
-                userId,
-                postId,
+        addLike: async (userId, postId) => {
+            console.log(`addLike called for postId: ${postId}`);
+            set(
+                produce((state) => {
+                    if (state.feeds[postId].postDetails) {
+                        state.feeds[postId].postDetails.isLoading = true;
+                    } else {
+                        state.feeds[postId].isLoading = true;
+                    }
+                })
+            );
+            try {
+                await network.post(API_PATHS.addLike, {
+                    userId,
+                    postId,
+                });
+                set(
+                    produce((state) => {
+                        if (state.feeds[postId]) {
+                            if (state.feeds[postId].postDetails) {
+                                state.feeds[postId].postDetails.isLiked = true;
+                                state.feeds[postId].postDetails.likesCount += 1;
+                            } else {
+                                state.feeds[postId].isLiked = true;
+                                state.feeds[postId].likesCount += 1;
+                            }
+                        }
+                        if (state.feeds[postId].postDetails) {
+                            state.feeds[postId].postDetails.isLoading = false;
+                        } else {
+                            state.feeds[postId].isLoading = false;
+                        }
+                    })
+                );
+            } catch (error) {
+                set(
+                    produce((state) => {
+                        if (state.feeds[postId].postDetails) {
+                            state.feeds[postId].postDetails.isLoading = false;
+                        } else {
+                            state.feeds[postId].isLoading = false;
+                        }
+                    })
+                );
+            }
+        },
+
+        fetchTrendingFeeds: async (limit) => {
+            if (get().isFetchingTrending || !get().hasMoreTrending) {
+                return;
+            }
+
+            set({
+                loadingTrending: true,
+                isFetchingTrending: true,
+                error: null,
             });
-            set(
-                produce((state) => {
-                    if (state.feeds[postId]) {
-                        if (state.feeds[postId].postDetails) {
-                            state.feeds[postId].postDetails.isLiked = true;
-                            state.feeds[postId].postDetails.likesCount += 1;
+            try {
+                const userId = await SecureStore.getItemAsync(
+                    HEADERS_KEYS.USER_ID
+                );
+                const response = await network.get(
+                    generateQueryParams(API_PATHS.getTrendingPosts, {
+                        userId,
+                        offset: get().trendingOffset,
+                        limit,
+                    })
+                );
+
+                const newPosts = response.filter(
+                    (item) => !get().trendingPostIds.includes(item.id)
+                );
+
+                set(
+                    produce((state) => {
+                        if (newPosts.length > 0) {
+                            newPosts.forEach((item) => {
+                                state.feeds[item.id] = {
+                                    postDetails: item,
+                                    isLoading: false,
+                                    isLiked: false,
+                                    likesCount: item.likesCount,
+                                    commentsCount: item.commentsCount,
+                                };
+                                state.trendingPostIds.push(item.id);
+                            });
+                            state.trendingOffset += limit;
                         } else {
-                            state.feeds[postId].isLiked = true;
-                            state.feeds[postId].likesCount += 1;
+                            state.hasMoreTrending = false;
                         }
-                    }
-                })
-            );
-        } finally {
-            set({ updatingLikeId: null });
-        }
-    },
+                    })
+                );
+            } catch (err) {
+                set({ error: err });
+            } finally {
+                set({ loadingTrending: false, isFetchingTrending: false });
+            }
+        },
 
-    fetchTrendingFeeds: async (limit) => {
-        if (get().isFetchingTrending || !get().hasMoreTrending) {
-            return;
-        }
+        fetchForYouFeeds: async (limit) => {
+            if (get().isFetchingForYou || !get().hasMoreForYou) {
+                return;
+            }
 
-        set({ loadingTrending: true, isFetchingTrending: true });
-        try {
-            const response = await axios.get(
-                `https://api.example.com/trending`,
-                {
-                    params: { limit, page: get().trendingOffset },
-                }
-            );
+            set({ loadingForYou: true, isFetchingForYou: true, error: null });
+            try {
+                const userId = await SecureStore.getItemAsync(
+                    HEADERS_KEYS.USER_ID
+                );
+                const response = await network.get(
+                    generateQueryParams(
+                        replacePlaceholders(API_PATHS.getFeed, userId),
+                        {
+                            limit,
+                            offset: get().forYouOffset,
+                        }
+                    )
+                );
 
-            const newPosts = response.data.filter(
-                (item) => !get().seenPostIds.has(item.postDetails.id)
-            );
+                const newPosts = response.filter(
+                    (item) => !get().forYouPostIds.includes(item.postDetails.id)
+                );
 
+                set(
+                    produce((state) => {
+                        if (newPosts.length > 0) {
+                            newPosts.forEach((item) => {
+                                state.feeds[item.postDetails.id] = {
+                                    ...item,
+                                    isLoading: false,
+                                };
+                                state.forYouPostIds.push(item.postDetails.id);
+                            });
+                            state.forYouOffset += limit;
+                        } else {
+                            state.hasMoreForYou = false;
+                        }
+                    })
+                );
+            } catch (err) {
+                set({ isFetchingForYou: false, error: err });
+            } finally {
+                set({ loadingForYou: false, isFetchingForYou: false });
+            }
+        },
+
+        fetchPosts: async (limit = 10) => {
+            if (get().isFetchingPosts || !get().hasMorePosts) {
+                return;
+            }
+
+            console.log("fetchPosts called");
+            set({ isFetchingPosts: true, error: null });
+            try {
+                const userId = await SecureStore.getItemAsync(
+                    HEADERS_KEYS.USER_ID
+                );
+                const response = await network.get(
+                    generateQueryParams(
+                        replacePlaceholders(API_PATHS.getPosts, userId),
+                        {
+                            limit,
+                            offset: get().postOffset,
+                        }
+                    )
+                );
+
+                const newPosts = response.filter(
+                    (item) => !get().postIds.includes(item.id)
+                );
+
+                set(
+                    produce((state) => {
+                        if (newPosts.length > 0) {
+                            newPosts.forEach((item) => {
+                                state.feeds[item.id] = {
+                                    ...item,
+                                    isLoading: false,
+                                };
+                                state.postIds.push(item.id);
+                            });
+                            state.postOffset += 1;
+                        } else {
+                            state.hasMorePosts = false;
+                        }
+                    })
+                );
+            } catch (err) {
+                set({ error: err });
+            } finally {
+                set({ isFetchingPosts: false });
+            }
+        },
+
+        resetPosts: () => {
+            console.log("resetPosts called");
             set(
                 produce((state) => {
-                    if (newPosts.length > 0) {
-                        state.trendingFeeds.push(...newPosts);
-                        state.trendingOffset += 1;
-                        newPosts.forEach((item) => {
-                            state.seenPostIds.add(item.postDetails.id);
-                        });
-                    } else {
-                        state.hasMoreTrending = false;
-                    }
+                    state.postIds = [];
+                    state.postOffset = 0;
+                    state.hasMorePosts = true;
                 })
             );
-        } catch (err) {
-            set({ error: err });
-        } finally {
-            set({ loadingTrending: false, isFetchingTrending: false });
-        }
-    },
+        },
 
-    fetchForYouFeeds: async (limit) => {
-        if (get().isFetchingForYou || !get().hasMoreForYou) {
-            return;
-        }
-
-        set({ loadingForYou: true, isFetchingForYou: true, error: null });
-        try {
-            const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
-            const response = await network.get(
-                generateQueryParams(
-                    replacePlaceholders(API_PATHS.getFeed, userId),
-                    {
-                        limit,
-                        offset: get().forYouOffset,
-                    }
-                )
-            );
-
-            const newPosts = response.filter(
-                (item) => !get().forYouPostIds.includes(item.postDetails.id)
-            );
-
+        resetFeeds: () => {
+            console.log("resetFeeds called");
             set(
                 produce((state) => {
-                    if (newPosts.length > 0) {
-                        newPosts.forEach((item) => {
-                            state.feeds[item.postDetails.id] = item;
-                            state.forYouPostIds.push(item.postDetails.id);
-                        });
-                        state.forYouOffset += limit;
-                    } else {
-                        state.hasMoreForYou = false;
-                    }
+                    state.postIds = [];
+                    state.feeds = {};
+                    state.postOffset = 0;
+                    state.hasMorePosts = true;
+                    state.trendingFeeds = [];
+                    state.forYouFeeds = [];
+                    state.trendingOffset = 0;
+                    state.forYouOffset = 0;
+                    state.seenPostIds = new Set();
+                    state.forYouPostIds = [];
+                    state.trendingPostIds = [];
+                    state.hasMoreTrending = true;
+                    state.hasMoreForYou = true;
+                    state.error = null;
                 })
             );
-        } catch (err) {
-            set({ isFetchingForYou: false, error: err });
-        } finally {
-            set({ loadingForYou: false, isFetchingForYou: false });
-        }
-    },
-
-    fetchPosts: async (limit = 10) => {
-        if (get().isFetchingPosts || !get().hasMorePosts) {
-            return;
-        }
-
-        set({ isFetchingPosts: true, error: null });
-        try {
-            const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
-            const response = await network.get(
-                generateQueryParams(
-                    replacePlaceholders(API_PATHS.getPosts, userId),
-                    {
-                        limit,
-                        offset: get().postOffset,
-                    }
-                )
-            );
-
-            const newPosts = response.filter(
-                (item) => !get().postIds.includes(item.id)
-            );
-
-            set(
-                produce((state) => {
-                    if (newPosts.length > 0) {
-                        newPosts.forEach((item) => {
-                            state.feeds[item.id] = item;
-                            state.postIds.push(item.id);
-                        });
-                        state.postOffset += 1;
-                    } else {
-                        state.hasMorePosts = false;
-                    }
-                })
-            );
-        } catch (err) {
-            set({ error: err });
-            ToastAndroid.showWithGravityAndOffset(
-                err.message,
-                ToastAndroid.LONG,
-                ToastAndroid.TOP,
-                25,
-                50
-            );
-        } finally {
-            set({ isFetchingPosts: false });
-        }
-    },
-
-    resetPosts: () => {
-        set(
-            produce((state) => {
-                state.postIds = [];
-                state.postOffset = 0;
-                state.hasMorePosts = true;
-            })
-        );
-    },
-
-    resetFeeds: () => {
-        set(
-            produce((state) => {
-                state.postIds = [];
-                state.feeds = {};
-                state.postOffset = 0;
-                state.hasMorePosts = true;
-                state.updatingLikeId = null;
-                state.trendingFeeds = [];
-                state.forYouFeeds = [];
-                state.trendingOffset = 0;
-                state.forYouOffset = 0;
-                state.seenPostIds = new Set();
-                state.forYouPostIds = [];
-                state.hasMoreTrending = true;
-                state.hasMoreForYou = true;
-                state.error = null;
-            })
-        );
-    },
-}));
+        },
+    }))
+);
 
 export default useFeedStore;

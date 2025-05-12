@@ -1,42 +1,91 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useFeedStore from "./useFeedStore";
 
 const useFeeds = () => {
     const {
-        updatingLikeId,
-        isFetchingForYou,
+        isFetchingPosts,
+        hasMorePosts,
+        trendingFeeds,
         forYouFeeds,
-        fetchForYouFeeds,
-        loading,
+        trendingOffset,
+        postOffset,
+        forYouOffset,
+        loadingTrending,
+        loadingForYou,
         error,
-        resetFeeds,
-        forYouPostIds,
         feeds,
+        seenPostIds,
+        forYouPostIds,
+        postIds,
+        trendingPostIds,
+        isFetchingTrending,
+        isFetchingForYou,
+        hasMoreTrending,
+        hasMoreForYou,
+        fetchTrendingFeeds,
+        fetchForYouFeeds,
+        fetchPosts,
+        resetPosts,
+        resetFeeds,
+        addLike,
+        removeLike,
+        refreshing,
+        setRefreshing,
     } = useFeedStore();
 
-    const [refreshing, setRefreshing] = useState(false);
-
-    const loadMoreForYou = async (limit) => {
-        await fetchForYouFeeds(limit);
+    const loadMoreTrending = async (limit) => {
+        if (!isFetchingTrending && hasMoreTrending) {
+            await fetchTrendingFeeds(limit);
+        }
     };
 
-    // Initial fetch for 'For You' feeds
+    const loadMoreForYou = async (limit) => {
+        if (!isFetchingForYou && hasMoreForYou) {
+            await fetchForYouFeeds(limit);
+        }
+    };
+
+    const loadMorePosts = async (limit) => {
+        if (!isFetchingPosts && hasMorePosts) {
+            await fetchPosts(limit);
+        }
+    };
+
     useEffect(() => {
-        loadMoreForYou(10); // Fetch initial feeds
+        fetchTrendingFeeds(10);
+        fetchForYouFeeds(10);
+        fetchPosts(10);
     }, []);
 
     return {
-        updatingLikeId,
-        isFetchingForYou,
+        isFetchingPosts,
+        hasMorePosts,
+        trendingFeeds,
         forYouFeeds,
-        loadMoreForYou,
-        loading,
+        trendingOffset,
+        postOffset,
+        forYouOffset,
+        loadingTrending,
+        loadingForYou,
         error,
+        feeds,
+        seenPostIds,
+        forYouPostIds,
+        postIds,
+        trendingPostIds,
+        isFetchingTrending,
+        isFetchingForYou,
+        hasMoreTrending,
+        hasMoreForYou,
+        loadMoreTrending,
+        loadMoreForYou,
+        loadMorePosts,
+        resetPosts,
+        resetFeeds,
+        addLike,
+        removeLike,
         refreshing,
         setRefreshing,
-        resetFeeds,
-        forYouPostIds,
-        feeds,
     };
 };
 

@@ -56,16 +56,6 @@ const ForYouScreen = () => {
         setRefreshing(false);
     };
 
-    // const renderItem = useCallback(({ item }) => {
-    //     return <FeedPost item={item} />;
-    // }, []);
-    // const renderItem = useCallback(
-    //     ({ item }) => {
-    //         return <FeedPost item={feeds[item]} />;
-    //     },
-    //     [feeds]
-    // );
-
     if (!forYouPostIds.length && !isFetchingForYou) {
         return (
             <View className="flex-1 flex-col justify-center items-center bg-[#161616]">
@@ -88,22 +78,12 @@ const ForYouScreen = () => {
     return (
         <View className="flex-1 bg-[#161616]">
             <FlatList
-                // data={
-                //     isFetchingForYou
-                //         ? [...forYouFeeds, ...Array(4).fill(null)]
-                //         : forYouFeeds
-                // }
                 data={
                     isFetchingForYou
                         ? [...forYouPostIds, ...Array(4).fill(null)]
                         : forYouPostIds
                 }
                 renderItem={({ item }) => <FeedPost id={item} />}
-                // keyExtractor={(item) =>
-                //     item?.feedId
-                //         ? "for-you-" + item.feedId
-                //         : "loader-" + Math.random() * 10000
-                // }
                 keyExtractor={(item) =>
                     item ? "for-you-" + item : "loader-" + Math.random() * 10000
                 }

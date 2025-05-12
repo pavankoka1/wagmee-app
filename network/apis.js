@@ -17,7 +17,8 @@ const API_PATHS = {
     addLike: "/api/v1/likes",
     removeLike: "/api/v1/likes/{0}/{1}",
     getSmallcaseTransactionId: "/api/v1/small-case/transaction_id",
-    getHoldings: "/api/v1/small-case/user/holdings",
+    getHoldings: "/api/v1/small-case/user/{0}/holdings",
+    getTrendingPosts: "/api/v1/posts/trending",
 };
 
 export default API_PATHS;
