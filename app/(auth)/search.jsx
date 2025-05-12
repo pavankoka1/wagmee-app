@@ -44,7 +44,7 @@ const Search = () => {
     };
 
     return (
-        <View className="flex-1 py-0 px-4">
+        <View className="flex-1 py-0 px-4 w-screen bg-[#161616]">
             <View className="flex flex-row items-center my-3 px-4 pl-0">
                 <Button
                     onPress={() => {

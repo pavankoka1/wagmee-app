@@ -9,6 +9,7 @@ import { HEADERS_KEYS } from "@/network/constants";
 
 const useUserStore = create((set, get) => ({
     openSettingsBottomSheet: false,
+    activeProfileUserId: null,
     hasMorePosts: true,
     isFetchingPosts: false,
     error: null,
@@ -20,6 +21,8 @@ const useUserStore = create((set, get) => ({
     details: {},
     setSettingsBottomSheet: (toggle) =>
         set({ openSettingsBottomSheet: toggle }),
+    setProfileBottomSheet: (userId = null) =>
+        set({ activeProfileUserId: userId }),
     setUserDetails: (details) => set({ details }),
     setFollowers: (followers) => {
         const followersUserIds = followers.map(
@@ -70,7 +73,6 @@ const useUserStore = create((set, get) => ({
                         ...state.postIds,
                         ...newPosts.map((post) => post.id),
                     ],
-                    // postOffset: state.postOffset + limit,
                     postOffset: state.postOffset + 1,
                 }));
             } else {
@@ -95,7 +97,6 @@ const useUserStore = create((set, get) => ({
             postIds: [],
             postOffset: 0,
             hasMorePosts: true,
-            postOffset: 0,
         });
     },
 }));

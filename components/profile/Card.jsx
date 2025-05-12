@@ -1,33 +1,104 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import useUserStore from "@/hooks/useUserStore";
 import { Button } from "react-native-paper";
+import network from "@/network";
+import API_PATHS from "@/network/apis";
+import replacePlaceholders from "@/utils/replacePlaceholders";
 
-const Card = () => {
-    const { details, followers, following, setSettingsBottomSheet } =
+const Card = ({ userId }) => {
+    const { details: currentUserDetails, setSettingsBottomSheet } =
         useUserStore();
+    const [userDetails, setUserDetails] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const url = details?.userAvatarUrl
-        ? details?.userAvatarUrl
-        : details?.profilePictureUrl;
+    useEffect(() => {
+        if (userId) {
+            // Fetch user details for another user
+            setIsLoading(true);
+            network
+                .get(replacePlaceholders(API_PATHS.getUserById, userId))
+                .then((res) => {
+                    setUserDetails(res);
+                    setIsLoading(false);
+                })
+                .catch((err) => {
+                    setError("Failed to fetch user details");
+                    setIsLoading(false);
+                });
+        } else {
+            // Use current user details from store
+            setUserDetails(currentUserDetails);
+        }
+    }, [userId, currentUserDetails]);
 
+    // Determine which details to render
+    const renderDetails = userDetails || {};
+
+    const url = renderDetails?.userAvatarUrl
+        ? renderDetails?.userAvatarUrl
+        : renderDetails?.profilePictureUrl;
+
+    // Shimmer effect for loading state
+    if (isLoading) {
+        return (
+            <View className="py-2 px-4 gap-4 w-screen bg-[#161616]">
+                {/* Avatar and username row */}
+                <View className="flex flex-row gap-6 items-center">
+                    <View className="w-20 h-20 rounded-full bg-gray-700 animate-pulse" />
+                    <View className="flex flex-col gap-2 flex-1">
+                        <View className="h-6 w-3/4 bg-gray-700 animate-pulse rounded" />
+                        {/* Stats */}
+                        <View className="flex flex-row gap-16">
+                            <View className="flex flex-col gap-1 items-center">
+                                <View className="h-5 w-10 bg-gray-700 animate-pulse rounded" />
+                                <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
+                            </View>
+                            <View className="flex flex-col gap-1 items-center">
+                                <View className="h-5 w-10 bg-gray-700 animate-pulse rounded" />
+                                <View className="h-4 w-16 bg-gray-700 animate-pulse rounded" />
+                            </View>
+                            <View className="flex flex-col gap-1 items-center">
+                                <View className="h-5 w-10 bg-gray-700 animate-pulse rounded" />
+                                <View className="h-4 w-14 bg-gray-700 animate-pulse rounded" />
+                            </View>
+                        </View>
+                    </View>
+                </View>
+                {/* Bio */}
+                <View className="h-5 w-full bg-gray-700 animate-pulse rounded mb-1" />
+            </View>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <View className="py-2 px-4 w-screen bg-[#161616] flex items-center justify-center">
+                <Text className="font-manrope text-white text-14">{error}</Text>
+            </View>
+        );
+    }
+
+    // Render user details
     return (
-        <View className="py-2 px-4 gap-4">
+        <View className="py-2 px-4 gap-4 w-screen bg-[#161616]">
             <View className="flex flex-row gap-6 items-center">
                 <Image
-                    source={{ uri: url }}
+                    source={{ uri: url || "https://via.placeholder.com/80" }}
                     width={80}
                     height={80}
                     className="rounded-full"
                 />
                 <View className="flex flex-col gap-2 h-fit flex-1">
                     <Text className="font-manrope-bold text-18 text-white leading-[24px]">
-                        {details?.userName}
+                        {renderDetails?.userName || "Unknown User"}
                     </Text>
                     <View className="flex flex-row gap-16">
                         <View className="flex flex-col gap-1 items-center h-fit w-fit">
                             <Text className="font-manrope-bold text-primary-main">
-                                {details.postCount}
+                                {renderDetails?.postCount || 0}
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Posts
@@ -35,7 +106,7 @@ const Card = () => {
                         </View>
                         <View className="flex flex-col gap-1 items-center h-fit w-fit">
                             <Text className="font-manrope-bold text-primary-main">
-                                {details.followingCount}
+                                {renderDetails?.followingCount || 0}
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Following
@@ -43,7 +114,7 @@ const Card = () => {
                         </View>
                         <View className="flex flex-col gap-1 items-center h-fit w-fit">
                             <Text className="font-manrope-bold text-primary-main">
-                                {details.followersCount}
+                                {renderDetails?.followersCount || 0}
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Followers
@@ -52,19 +123,21 @@ const Card = () => {
                     </View>
                 </View>
             </View>
-            {details?.userBio && (
+            {renderDetails?.userBio && (
                 <Text className="font-manrope text-white text-14 tracking-wide mb-1">
-                    {details.userBio}
+                    {renderDetails.userBio}
                 </Text>
             )}
-            <TouchableOpacity
-                className="w-full bg-[#1f1f1f] py-3 flex justify-center items-center rounded-xl"
-                onPress={() => setSettingsBottomSheet(true)}
-            >
-                <Text className="font-manrope-bold text-14 leading-[18px] text-white">
-                    Edit Profile
-                </Text>
-            </TouchableOpacity>
+            {!userId && (
+                <TouchableOpacity
+                    className="w-full bg-[#1f1f1f] py-3 flex justify-center items-center rounded-xl"
+                    onPress={() => setSettingsBottomSheet(true)}
+                >
+                    <Text className="font-manrope-bold text-14 leading-[18px] text-white">
+                        {userId ? "View Profile" : "Edit Profile"}
+                    </Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

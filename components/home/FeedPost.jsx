@@ -33,7 +33,8 @@ const FeedPost = React.memo(({ id }) => {
     const item = feeds[id];
     if (!item) return <PostsLoader />;
 
-    const { followers, details } = useUserStore();
+    const { followers, details, setProfileBottomSheet, activeProfileUserId } =
+        useUserStore();
     const { removeLike, updatingLikeId, addLike } = useFeedStore();
 
     const carouselRef = useRef(null);
@@ -83,9 +84,17 @@ const FeedPost = React.memo(({ id }) => {
                 />
                 <View className="flex-1 flex-col gap-1">
                     <View className="flex flex-row items-center">
-                        <Text className="font-manrope-bold text-14 text-white h-[25px]">
-                            {authorDetails.name}
-                        </Text>
+                        <TouchableOpacity
+                            onPress={() =>
+                                authorDetails.id != details.id &&
+                                activeProfileUserId != authorDetails.id &&
+                                setProfileBottomSheet(authorDetails.id)
+                            }
+                        >
+                            <Text className="font-manrope-bold text-14 text-white h-[25px]">
+                                {authorDetails.name}
+                            </Text>
+                        </TouchableOpacity>
                         <VerifiedIcon className="ml-1" />
                         {!followers.includes(authorDetails.id) &&
                         !(authorDetails.id == userId) ? (
@@ -137,7 +146,7 @@ const FeedPost = React.memo(({ id }) => {
                             opacity: isLoading ? 0 : 1,
                         }}
                         onProgressChange={progress}
-                        onLayout={handleCarouselLayout} // Set loading to false when the carousel layout is ready
+                        onLayout={handleCarouselLayout}
                         renderItem={({ item, index }) => (
                             <SlideItem
                                 key={index}
@@ -186,21 +195,31 @@ const FeedPost = React.memo(({ id }) => {
                 </View>
             ) : null}
             <View className="flex flex-row items-center mt-3 gap-4">
-                {postDetails.isLoading ? (
-                    <ActivityIndicator size="small" color="#b4ef02" />
-                ) : (
-                    <View className="flex flex-row items-center">
-                        <TouchableOpacity onPress={handleLikePost}>
-                            <ThumbIcon
-                                color={postDetails.isLiked ? "#b4ef02" : "#fff"}
-                                fill={postDetails.isLiked ? true : false}
-                            />
-                        </TouchableOpacity>
-                        <Text className="font-manrope-medium text-12 text-white ml-1">
-                            {postDetails.likesCount}
-                        </Text>
-                    </View>
-                )}
+                <View
+                    style={{
+                        minWidth: 36,
+                        alignItems: "center",
+                        flexDirection: "row",
+                    }}
+                >
+                    {postDetails.isLoading ? (
+                        <ActivityIndicator size="small" color="#b4ef02" />
+                    ) : (
+                        <View className="flex flex-row items-center">
+                            <TouchableOpacity onPress={handleLikePost}>
+                                <ThumbIcon
+                                    color={
+                                        postDetails.isLiked ? "#b4ef02" : "#fff"
+                                    }
+                                    fill={postDetails.isLiked ? true : false}
+                                />
+                            </TouchableOpacity>
+                            <Text className="font-manrope-medium text-12 text-white ml-1">
+                                {postDetails.likesCount}
+                            </Text>
+                        </View>
+                    )}
+                </View>
                 <TouchableOpacity
                     className="flex flex-row items-center mr-auto"
                     onPress={() => setActiveCommentPostId(postDetails.id)}

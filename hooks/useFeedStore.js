@@ -30,6 +30,10 @@ const useFeedStore = create(
         hasMoreTrending: true,
         hasMoreForYou: true,
         refreshing: false,
+        userProfilePostIds: {},
+        userProfileOffsets: {}, // New: Track offset per user
+        hasMoreProfilePosts: {}, // New: Track if more posts exist per user
+        isFetchingUserProfilePosts: false,
 
         setRefreshing: (value) => set({ refreshing: value }),
 
@@ -272,6 +276,66 @@ const useFeedStore = create(
             }
         },
 
+        fetchUserProfilePosts: async (
+            userId,
+            userDetails,
+            limit = 10,
+            offset = 0
+        ) => {
+            if (get().isFetchingUserProfilePosts) {
+                return;
+            }
+
+            set({ isFetchingUserProfilePosts: true, error: null });
+            try {
+                const response = await network.get(
+                    generateQueryParams(
+                        replacePlaceholders(API_PATHS.getPosts, userId),
+                        {
+                            limit,
+                            offset,
+                        }
+                    )
+                );
+
+                const newPosts = response.filter(
+                    (item) =>
+                        !get().userProfilePostIds[userId]?.includes(item.id)
+                );
+
+                set(
+                    produce((state) => {
+                        if (newPosts.length > 0) {
+                            newPosts.forEach((item) => {
+                                if (!state.feeds[item.id]) {
+                                    state.feeds[item.id] = {
+                                        postDetails: {
+                                            ...item,
+                                            isLoading: false,
+                                        },
+                                        postAuthorDetails: userDetails,
+                                    };
+                                }
+                            });
+                            state.userProfilePostIds[userId] = [
+                                ...(state.userProfilePostIds[userId] || []),
+                                ...newPosts.map((item) => item.id),
+                            ];
+                            state.userProfileOffsets[userId] =
+                                (state.userProfileOffsets[userId] || 0) + limit;
+                            state.hasMoreProfilePosts[userId] = true;
+                        } else {
+                            state.hasMoreProfilePosts[userId] = false;
+                        }
+                    })
+                );
+            } catch (err) {
+                set({ error: err });
+            } finally {
+                set({ isFetchingUserProfilePosts: false });
+            }
+        },
+
         resetPosts: () => {
             console.log("resetPosts called");
             set(
@@ -301,6 +365,9 @@ const useFeedStore = create(
                     state.hasMoreTrending = true;
                     state.hasMoreForYou = true;
                     state.error = null;
+                    state.userProfilePostIds = {};
+                    state.userProfileOffsets = {};
+                    state.hasMoreProfilePosts = {};
                 })
             );
         },

@@ -1,48 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, Animated } from "react-native";
-import { Slot, useRouter, usePathname } from "expo-router";
+import { Tabs } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import network from "@/network";
-import * as SecureStore from "expo-secure-store";
-
-// Import your icons
+import { View, TouchableOpacity, Platform } from "react-native";
 import HomeIcon from "@/icons/HomeIcon";
 import SearchIcon from "@/icons/SearchIcon";
 import AddIcon from "@/icons/AddIcon";
 import BellIcon from "@/icons/BellIcon";
 import PersonIcon from "@/icons/PersonIcon";
+import CommentsBottomSheet from "@/components/home/CommentsBottomSheet";
+import useUserStore from "@/hooks/useUserStore";
+import { useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
+import network from "@/network";
 import API_PATHS from "@/network/apis";
-import generateQueryParams from "@/utils/generateQueryParams";
 import { HEADERS_KEYS } from "@/network/constants";
 import replacePlaceholders from "@/utils/replacePlaceholders";
-import useUserStore from "@/hooks/useUserStore";
-import CommentsBottomSheet from "@/components/home/CommentsBottomSheet";
+import UserProfileBottomSheet from "@/components/profile/UserProfileBottomSheet";
 
-const CustomBottomNavigation = () => {
-    const router = useRouter();
-    const pathname = usePathname();
-    const [activeTab, setActiveTab] = useState("home");
-    const [animation] = useState(new Animated.Value(1));
-
-    const { setUserDetails, setFollowing, setFollowers, fetchPosts, details } =
+export default function Layout() {
+    const { setUserDetails, setFollowing, setFollowers, details } =
         useUserStore();
 
     useEffect(() => {
         handleAuthentication();
     }, []);
-
-    useEffect(() => {
-        const routeName = pathname.split("/")[1];
-
-        if (
-            routeName &&
-            ["home", "search", "create", "notifications", "profile"].includes(
-                routeName
-            )
-        ) {
-            setActiveTab(routeName);
-        }
-    }, [pathname]);
 
     async function handleAuthentication() {
         const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
@@ -73,100 +53,141 @@ const CustomBottomNavigation = () => {
             });
     }
 
-    const handleTabPress = (tabName) => {
-        // Start the fade-out animation
-        Animated.timing(animation, {
-            toValue: 0, // Fade out
-            duration: 200,
-            useNativeDriver: true,
-        }).start(() => {
-            // Change the active tab and route after fade-out
-            setActiveTab(tabName);
-            router.replace(`/(auth)/${tabName}`);
-            // Fade in after changing the tab
-            Animated.timing(animation, {
-                toValue: 1, // Fade in
-                duration: 200,
-                useNativeDriver: true,
-            }).start();
-        });
-    };
-
     return (
         <SafeAreaProvider>
             <View className="flex-1 bg-[#161616]">
-                {/* Render the active screen with animation */}
-                <Animated.View
-                    style={{
-                        opacity: animation, // Bind opacity to the animated value
+                <Tabs
+                    screenOptions={{
+                        tabBarStyle: {
+                            backgroundColor: "#161616",
+                            borderTopWidth: 2,
+                            borderTopColor: "#1F2023",
+                            height: 80,
+                            paddingHorizontal: 8, // Matches px-2 (8px)
+                            paddingTop: 8, // 8px top padding
+                            paddingBottom: 8, // 8px bottom padding
+                        },
+                        tabBarActiveTintColor: "#b4ef02",
+                        tabBarInactiveTintColor: "#ffffff",
+                        headerShown: false,
+                        tabBarHideOnKeyboard: true,
+                        lazy: true,
                     }}
-                    className="flex-1"
-                >
-                    <Slot />
-                </Animated.View>
+                    tabBar={({ state, descriptors, navigation }) => (
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                backgroundColor: "#161616",
+                                borderTopWidth: 2,
+                                borderTopColor: "#1F2023",
+                                height: 60,
+                                paddingHorizontal: 8,
+                                paddingTop: 10,
+                                paddingBottom: 8,
+                            }}
+                        >
+                            {state.routes.map((route, index) => {
+                                const { options } = descriptors[route.key];
+                                const isFocused = state.index === index;
 
-                {/* Bottom Navigation */}
-                <View className="flex-row justify-around items-center h-20 bg-[#161616] border-t-2 border-[#1F2023] px-2">
-                    <TouchableOpacity
-                        className="items-center justify-center flex-1 py-2"
-                        onPress={() => handleTabPress("home")}
-                    >
-                        <HomeIcon
-                            color={activeTab === "home" ? "#b4ef02" : "#ffffff"}
-                            size={28}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        className="items-center justify-center flex-1 py-2"
-                        onPress={() => handleTabPress("search")}
-                    >
-                        <SearchIcon
-                            color={
-                                activeTab === "search" ? "#b4ef02" : "#ffffff"
-                            }
-                            size={26}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        className="items-center justify-center flex-1 py-2"
-                        onPress={() => handleTabPress("create")}
-                    >
-                        <AddIcon
-                            color={
-                                activeTab === "create" ? "#b4ef02" : "#ffffff"
-                            }
-                            size={26}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        className="items-center justify-center flex-1 py-2"
-                        onPress={() => handleTabPress("notifications")}
-                    >
-                        <BellIcon
-                            color={
-                                activeTab === "notifications"
-                                    ? "#b4ef02"
-                                    : "#ffffff"
-                            }
-                            size={26}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        className="items-center justify-center flex-1 py-2"
-                        onPress={() => handleTabPress("profile")}
-                    >
-                        <PersonIcon
-                            color={
-                                activeTab === "profile" ? "#b4ef02" : "#ffffff"
-                            }
-                            size={26}
-                        />
-                    </TouchableOpacity>
-                </View>
+                                const onPress = () => {
+                                    const event = navigation.emit({
+                                        type: "tabPress",
+                                        target: route.key,
+                                        canPreventDefault: true,
+                                    });
+
+                                    if (!isFocused && !event.defaultPrevented) {
+                                        navigation.navigate(route.name);
+                                    }
+                                };
+
+                                return (
+                                    <TouchableOpacity
+                                        key={route.key}
+                                        accessibilityRole="button"
+                                        accessibilityState={{
+                                            selected: isFocused,
+                                        }}
+                                        onPress={onPress}
+                                        style={{
+                                            flex: 1,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            // Constrain touchable area to a 40x40 square around the icon
+                                            width: 40,
+                                            height: 40,
+                                        }}
+                                        // Android ripple effect
+                                        {...(Platform.OS === "android" &&
+                                            {
+                                                // rippleColor: "#b4ef02",
+                                                // android_ripple: {
+                                                //     borderless: false,
+                                                //     radius: 20, // Smaller ripple radius
+                                                // },
+                                            })}
+                                    >
+                                        {options.tabBarIcon({
+                                            color: isFocused
+                                                ? "#b4ef02"
+                                                : "#ffffff",
+                                        })}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    )}
+                >
+                    <Tabs.Screen
+                        name="home"
+                        options={{
+                            tabBarIcon: ({ color }) => (
+                                <HomeIcon color={color} size={28} />
+                            ),
+                            tabBarLabel: "",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="search"
+                        options={{
+                            tabBarIcon: ({ color }) => (
+                                <SearchIcon color={color} size={26} />
+                            ),
+                            tabBarLabel: "",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="create"
+                        options={{
+                            tabBarIcon: ({ color }) => (
+                                <AddIcon color={color} size={26} />
+                            ),
+                            tabBarLabel: "",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="notifications"
+                        options={{
+                            tabBarIcon: ({ color }) => (
+                                <BellIcon color={color} size={26} />
+                            ),
+                            tabBarLabel: "",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="profile"
+                        options={{
+                            tabBarIcon: ({ color }) => (
+                                <PersonIcon color={color} size={26} />
+                            ),
+                            tabBarLabel: "",
+                        }}
+                    />
+                </Tabs>
+                <CommentsBottomSheet userId={details.id} />
+                <UserProfileBottomSheet />
             </View>
-            <CommentsBottomSheet userId={details.id} />
         </SafeAreaProvider>
     );
-};
-
-export default CustomBottomNavigation;
+}
