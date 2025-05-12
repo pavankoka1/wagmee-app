@@ -31,8 +31,8 @@ const useFeedStore = create(
         hasMoreForYou: true,
         refreshing: false,
         userProfilePostIds: {},
-        userProfileOffsets: {}, // New: Track offset per user
-        hasMoreProfilePosts: {}, // New: Track if more posts exist per user
+        userProfileOffsets: {},
+        hasMoreProfilePosts: {},
         isFetchingUserProfilePosts: false,
 
         setRefreshing: (value) => set({ refreshing: value }),
@@ -263,7 +263,7 @@ const useFeedStore = create(
                                 };
                                 state.postIds.push(item.id);
                             });
-                            state.postOffset += 1;
+                            state.postOffset += limit;
                         } else {
                             state.hasMorePosts = false;
                         }
@@ -336,6 +336,30 @@ const useFeedStore = create(
             }
         },
 
+        resetForYou: () => {
+            console.log("resetForYou called");
+            set(
+                produce((state) => {
+                    state.forYouPostIds = [];
+                    state.forYouOffset = 0;
+                    state.hasMoreForYou = true;
+                    state.error = null;
+                })
+            );
+        },
+
+        resetTrending: () => {
+            console.log("resetTrending called");
+            set(
+                produce((state) => {
+                    state.trendingPostIds = [];
+                    state.trendingOffset = 0;
+                    state.hasMoreTrending = true;
+                    state.error = null;
+                })
+            );
+        },
+
         resetPosts: () => {
             console.log("resetPosts called");
             set(
@@ -343,31 +367,7 @@ const useFeedStore = create(
                     state.postIds = [];
                     state.postOffset = 0;
                     state.hasMorePosts = true;
-                })
-            );
-        },
-
-        resetFeeds: () => {
-            console.log("resetFeeds called");
-            set(
-                produce((state) => {
-                    state.postIds = [];
-                    state.feeds = {};
-                    state.postOffset = 0;
-                    state.hasMorePosts = true;
-                    state.trendingFeeds = [];
-                    state.forYouFeeds = [];
-                    state.trendingOffset = 0;
-                    state.forYouOffset = 0;
-                    state.seenPostIds = new Set();
-                    state.forYouPostIds = [];
-                    state.trendingPostIds = [];
-                    state.hasMoreTrending = true;
-                    state.hasMoreForYou = true;
                     state.error = null;
-                    state.userProfilePostIds = {};
-                    state.userProfileOffsets = {};
-                    state.hasMoreProfilePosts = {};
                 })
             );
         },

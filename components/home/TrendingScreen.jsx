@@ -1,6 +1,6 @@
 import { View, Text, FlatList, Animated, RefreshControl } from "react-native";
-import React, { useEffect, useRef } from "react";
-import useFeeds from "@/hooks/useFeeds";
+import React, { useEffect, useRef, useCallback } from "react";
+import useFeedStore from "@/hooks/useFeedStore";
 import FeedPost from "./FeedPost";
 import { Button } from "react-native-paper";
 
@@ -11,13 +11,12 @@ const TrendingScreen = () => {
         isFetchingTrending,
         trendingPostIds,
         feeds,
-        loadMoreTrending,
-        loadingTrending,
-        error,
+        fetchTrendingFeeds,
+        resetTrending,
         refreshing,
         setRefreshing,
-        resetFeeds,
-    } = useFeeds();
+    } = useFeedStore();
+
     const spinValue = useRef(new Animated.Value(0)).current;
 
     const rotate = spinValue.interpolate({
@@ -40,12 +39,16 @@ const TrendingScreen = () => {
         }
     }, [refreshing]);
 
-    const onRefresh = async () => {
+    useEffect(() => {
+        fetchTrendingFeeds(ITEMS_PER_PAGE);
+    }, []);
+
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
-        await resetFeeds();
-        await loadMoreTrending(ITEMS_PER_PAGE);
+        resetTrending();
+        await fetchTrendingFeeds(ITEMS_PER_PAGE);
         setRefreshing(false);
-    };
+    }, [resetTrending, fetchTrendingFeeds, setRefreshing]);
 
     if (!trendingPostIds?.length && !isFetchingTrending) {
         return (
@@ -80,7 +83,7 @@ const TrendingScreen = () => {
                         ? "trending-" + item
                         : "loader-" + Math.random() * 10000
                 }
-                onEndReached={() => loadMoreTrending(ITEMS_PER_PAGE)}
+                onEndReached={() => fetchTrendingFeeds(ITEMS_PER_PAGE)}
                 onEndReachedThreshold={0.5}
                 refreshControl={
                     <RefreshControl
@@ -91,9 +94,6 @@ const TrendingScreen = () => {
                 initialNumToRender={3}
                 windowSize={5}
             />
-            {error && (
-                <Text className="text-red-500">Error: {error.message}</Text>
-            )}
         </View>
     );
 };

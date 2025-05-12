@@ -7,7 +7,7 @@ import {
     RefreshControl,
 } from "react-native";
 import React, { useEffect, useRef, useCallback } from "react";
-import useFeeds from "@/hooks/useFeeds";
+import useFeedStore from "@/hooks/useFeedStore";
 import FeedPost from "./FeedPost";
 import { Button } from "react-native-paper";
 import CommentsBottomSheet from "./CommentsBottomSheet";
@@ -17,16 +17,14 @@ const ITEMS_PER_PAGE = 10;
 const ForYouScreen = () => {
     const {
         isFetchingForYou,
-        forYouFeeds,
         forYouPostIds,
         feeds,
-        loadMoreForYou,
-        loading,
-        error,
+        fetchForYouFeeds,
+        resetForYou,
         refreshing,
         setRefreshing,
-        resetFeeds,
-    } = useFeeds();
+    } = useFeedStore();
+
     const spinValue = useRef(new Animated.Value(0)).current;
 
     const rotate = spinValue.interpolate({
@@ -49,12 +47,16 @@ const ForYouScreen = () => {
         }
     }, [refreshing]);
 
-    const onRefresh = async () => {
+    useEffect(() => {
+        fetchForYouFeeds(ITEMS_PER_PAGE);
+    }, []);
+
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
-        await resetFeeds();
-        await loadMoreForYou(ITEMS_PER_PAGE);
+        resetForYou();
+        await fetchForYouFeeds(ITEMS_PER_PAGE);
         setRefreshing(false);
-    };
+    }, [resetForYou, fetchForYouFeeds, setRefreshing]);
 
     if (!forYouPostIds.length && !isFetchingForYou) {
         return (
@@ -87,7 +89,7 @@ const ForYouScreen = () => {
                 keyExtractor={(item) =>
                     item ? "for-you-" + item : "loader-" + Math.random() * 10000
                 }
-                onEndReached={() => loadMoreForYou(ITEMS_PER_PAGE)}
+                onEndReached={() => fetchForYouFeeds(ITEMS_PER_PAGE)}
                 onEndReachedThreshold={0.5}
                 refreshControl={
                     <RefreshControl
@@ -95,12 +97,9 @@ const ForYouScreen = () => {
                         onRefresh={onRefresh}
                     />
                 }
-                initialNumToRender={3} // Render 10 items initially
-                windowSize={5} // Number of items to render outside the viewport
+                initialNumToRender={3}
+                windowSize={5}
             />
-            {error && (
-                <Text className="text-red-500">Error: {error.message}</Text>
-            )}
         </View>
     );
 };

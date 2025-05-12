@@ -1,14 +1,13 @@
 import { View, FlatList, RefreshControl, Animated, Text } from "react-native";
 import React, { useRef, useEffect, useCallback, useState } from "react";
-import useUserStore from "@/hooks/useUserStore";
+import useFeedStore from "@/hooks/useFeedStore";
 import FeedPost from "../home/FeedPost";
 import Header from "./Header";
 import Card from "./Card";
 import TabButton from "@/components/Tabs/TabButton";
-import useFeedStore from "@/hooks/useFeedStore";
 
 const Posts = ({ handleTabChange }) => {
-    const { isFetchingPosts, resetFeeds, feeds, postIds, fetchPosts } =
+    const { isFetchingPosts, postIds, feeds, fetchPosts, resetPosts } =
         useFeedStore();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -38,21 +37,14 @@ const Posts = ({ handleTabChange }) => {
         }
     }, [refreshing]);
 
-    const onRefresh = async () => {
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
-        await resetFeeds();
+        resetPosts();
         await fetchPosts();
         setRefreshing(false);
-    };
+    }, [resetPosts, fetchPosts]);
 
-    const renderItem = useCallback(
-        ({ item }) => {
-            return <FeedPost item={feeds[item]} />;
-        },
-        [feeds]
-    );
-
-    if (!postIds.length && !isFetchingPosts)
+    if (!postIds.length && !isFetchingPosts) {
         return (
             <View className="flex-1 flex-col justify-center items-center bg-[#161616]">
                 <Header />
@@ -75,6 +67,7 @@ const Posts = ({ handleTabChange }) => {
                 </View>
             </View>
         );
+    }
 
     return (
         <FlatList
@@ -108,10 +101,7 @@ const Posts = ({ handleTabChange }) => {
             windowSize={5}
             contentContainerStyle={{ backgroundColor: "#161616" }}
             refreshControl={
-                <RefreshControl
-                    // refreshing={isFetchingPosts}
-                    onRefresh={onRefresh}
-                />
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
         />
     );
