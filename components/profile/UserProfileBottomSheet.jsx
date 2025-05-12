@@ -15,7 +15,7 @@ import useFeedStore from "@/hooks/useFeedStore";
 import Card from "./Card";
 import CloseIcon from "@/icons/CloseIcon";
 import FeedPost from "@/components/home/FeedPost";
-import PostsLoader from "@/components/home/PostsLoader";
+import PostsLoader from "@/components/home/feed/PostsLoader";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import replacePlaceholders from "@/utils/replacePlaceholders";

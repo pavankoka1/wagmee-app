@@ -1,238 +1,81 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import {
-    View,
-    Text,
-    Image,
-    Dimensions,
-    ActivityIndicator,
-    TouchableOpacity,
-} from "react-native";
-import VerifiedIcon from "@/icons/VerifiedIcon";
-import moment from "moment";
-import ThumbIcon from "@/icons/ThumbIcon";
-import MessageIcon from "@/icons/MessageIcon";
-import SendIcon from "@/icons/SendIcon";
-import BookmarkIcon from "@/icons/BookmarkIcon";
-import ThreeDotsIcon from "@/icons/ThreeDotsIcon";
-import Carousel, { Pagination } from "react-native-reanimated-carousel";
-import { useSharedValue } from "react-native-reanimated";
-import PostsLoader from "./PostsLoader";
-import { useAdvancedSettings } from "@/hooks/useSettings";
-import { SlideItem } from "../SlideItem";
-import useUserStore from "@/hooks/useUserStore";
-import CommentsBottomSheet from "./CommentsBottomSheet";
-import { Portal } from "react-native-paper";
-import useActivityStore from "@/hooks/useActivityStore";
-import useFeedStore from "@/hooks/useFeedStore";
+import React, { memo, useState, useCallback } from "react";
+import { View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
+import useFeedStore from "@/hooks/useFeedStore";
+import useUserStore from "@/hooks/useUserStore";
+import useActivityStore from "@/hooks/useActivityStore";
+import {
+    PostHeader,
+    PostContent,
+    PostCarousel,
+    PostInteractions,
+    ImageViewer,
+    PostsLoader,
+} from "./feed";
 
-const FeedPost = React.memo(({ id }) => {
+/**
+ * Renders a single feed post with header, content, carousel, and interactions.
+ * @param {Object} props
+ * @param {string} props.id - Post ID
+ */
+const FeedPost = memo(({ id }) => {
     const userId = SecureStore.getItem(HEADERS_KEYS.USER_ID);
-    const { feeds } = useFeedStore();
+    const { feeds, removeLike, addLike } = useFeedStore();
+    const { followers, details, setProfileBottomSheet, activeProfileUserId } =
+        useUserStore();
+    const { setActiveCommentPostId } = useActivityStore();
+
     const item = feeds[id];
     if (!item) return <PostsLoader />;
 
-    const { followers, details, setProfileBottomSheet, activeProfileUserId } =
-        useUserStore();
-    const { removeLike, updatingLikeId, addLike } = useFeedStore();
-
-    const carouselRef = useRef(null);
-    const progress = useSharedValue(0);
     const postDetails = item.postDetails || item;
     const authorDetails = item.postAuthorDetails || details;
-    const images = postDetails.mediaUrls;
-    const screenWidth = Dimensions.get("window").width;
 
-    const [showComments, setShowComments] = useState(false);
-    const { setActiveCommentPostId } = useActivityStore();
-
-    const [isLoading, setIsLoading] = useState(true);
-
-    const { advancedSettings, onAdvancedSettingsChange } = useAdvancedSettings({
-        defaultSettings: {
-            autoPlay: false,
-            autoPlayInterval: 2000,
-            autoPlayReverse: false,
-            data: images,
-            height: 258,
-            loop: true,
-            pagingEnabled: true,
-            snapEnabled: true,
-            vertical: false,
-            width: screenWidth - 32,
-        },
-    });
-
-    const handleCarouselLayout = () => {
-        setIsLoading(false);
-    };
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const handleLikePost = useCallback(() => {
         const func = postDetails.isLiked ? removeLike : addLike;
         func(details.id, postDetails.id);
     }, [postDetails.isLiked, details.id, postDetails.id, removeLike, addLike]);
 
-    return (
-        <View className="py-6 px-4 border-b-[2px] border-[#1F2023]">
-            <View className="flex flex-row items-center mr-2 mb-4">
-                <Image
-                    width={40}
-                    height={40}
-                    source={{ uri: authorDetails.profilePictureUrl }}
-                    className="rounded-full mr-2"
-                />
-                <View className="flex-1 flex-col gap-1">
-                    <View className="flex flex-row items-center">
-                        <TouchableOpacity
-                            onPress={() =>
-                                authorDetails.id != details.id &&
-                                activeProfileUserId != authorDetails.id &&
-                                setProfileBottomSheet(authorDetails.id)
-                            }
-                        >
-                            <Text className="font-manrope-bold text-14 text-white h-[25px]">
-                                {authorDetails.name}
-                            </Text>
-                        </TouchableOpacity>
-                        <VerifiedIcon className="ml-1" />
-                        {!followers.includes(authorDetails.id) &&
-                        !(authorDetails.id == userId) ? (
-                            <>
-                                <View className="mx-2 h-3 w-3 flex items-center justify-center">
-                                    <View className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
-                                </View>
-                                <Text className="text-primary-main font-manrope-bold text-14">
-                                    Follow
-                                </Text>
-                            </>
-                        ) : null}
-                    </View>
-                    <View className="flex flex-row items-center">
-                        <Text className="font-manrope text-10 text-[#26F037]">
-                            Portfolio - ₹8.6L
-                        </Text>
-                        <View className="mx-2 h-3 w-3 flex items-center justify-center">
-                            <View className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
-                        </View>
-                        <Text className="text-[#b1b1b1] font-manrope-medium text-10">
-                            {moment(postDetails.createdAt).format(
-                                "ddd, DD MMM, h:mm A"
-                            )}
-                        </Text>
-                    </View>
-                </View>
-                <ThreeDotsIcon />
-            </View>
-            {postDetails.content && (
-                <Text className="font-manrope text-white text-14">
-                    {postDetails.content}
-                </Text>
-            )}
+    const handleComment = useCallback(() => {
+        setActiveCommentPostId(postDetails.id);
+    }, [postDetails.id, setActiveCommentPostId]);
 
-            {images?.length ? (
-                <View className="w-full mt-4 relative">
-                    <Carousel
-                        ref={carouselRef}
-                        autoPlayInterval={2000}
-                        data={images}
-                        height={220}
-                        loop={images.length > 1}
-                        pagingEnabled={true}
-                        snapEnabled={true}
-                        width={screenWidth - 32}
-                        style={{
-                            width: screenWidth - 32,
-                            opacity: isLoading ? 0 : 1,
-                        }}
-                        onProgressChange={progress}
-                        onLayout={handleCarouselLayout}
-                        renderItem={({ item, index }) => (
-                            <SlideItem
-                                key={index}
-                                index={index}
-                                rounded={true}
-                                source={item}
-                                progress={parseInt(progress.value.toFixed(0))}
-                                onImageLoad={() => setIsLoading(false)}
-                            />
-                        )}
-                    />
-                    {isLoading && (
-                        <View
-                            className="bg-[#b1b1b1] animate-pulse absolute w-full h-full"
-                            style={{
-                                borderRadius: 15,
-                                height: 220,
-                                width: screenWidth - 32,
-                            }}
-                        ></View>
-                    )}
-                    {images?.length > 1 && (
-                        <Pagination.Basic
-                            progress={progress}
-                            length={images.length}
-                            data={images}
-                            containerStyle={{
-                                position: "relative",
-                                alignSelf: "center",
-                                marginBottom: 10,
-                                marginTop: 16,
-                            }}
-                            dotStyle={{
-                                width: 25,
-                                height: 4,
-                                backgroundColor: "#b1b1b1",
-                                marginHorizontal: 4,
-                            }}
-                            activeDotStyle={{
-                                width: 25,
-                                height: 4,
-                                backgroundColor: "#b4ef02",
-                            }}
-                        />
-                    )}
-                </View>
-            ) : null}
-            <View className="flex flex-row items-center mt-3 gap-4">
-                <View
-                    style={{
-                        minWidth: 36,
-                        alignItems: "center",
-                        flexDirection: "row",
-                    }}
-                >
-                    {postDetails.isLoading ? (
-                        <ActivityIndicator size="small" color="#b4ef02" />
-                    ) : (
-                        <View className="flex flex-row items-center">
-                            <TouchableOpacity onPress={handleLikePost}>
-                                <ThumbIcon
-                                    color={
-                                        postDetails.isLiked ? "#b4ef02" : "#fff"
-                                    }
-                                    fill={postDetails.isLiked ? true : false}
-                                />
-                            </TouchableOpacity>
-                            <Text className="font-manrope-medium text-12 text-white ml-1">
-                                {postDetails.likesCount}
-                            </Text>
-                        </View>
-                    )}
-                </View>
-                <TouchableOpacity
-                    className="flex flex-row items-center mr-auto"
-                    onPress={() => setActiveCommentPostId(postDetails.id)}
-                >
-                    <MessageIcon />
-                    <Text className="font-manrope-medium text-12 text-white ml-1 mr-auto">
-                        {postDetails.commentsCount}
-                    </Text>
-                </TouchableOpacity>
-                <SendIcon />
-                <BookmarkIcon />
+    const handleImageClick = useCallback((imageUrl) => {
+        setSelectedImage(imageUrl);
+    }, []);
+
+    const closeImageViewer = useCallback(() => {
+        setSelectedImage(null);
+    }, []);
+
+    return (
+        <>
+            <View className="py-6 px-4 border-b-[2px] border-[#1F2023]">
+                <PostHeader
+                    authorDetails={authorDetails}
+                    postDetails={postDetails}
+                    userId={userId}
+                    followers={followers}
+                    details={details}
+                    setProfileBottomSheet={setProfileBottomSheet}
+                    activeProfileUserId={activeProfileUserId}
+                />
+                <PostContent content={postDetails.content} />
+                <PostCarousel
+                    mediaUrls={postDetails.mediaUrls}
+                    onImageClick={handleImageClick}
+                />
+                <PostInteractions
+                    postDetails={postDetails}
+                    onLike={handleLikePost}
+                    onComment={handleComment}
+                />
             </View>
-        </View>
+            <ImageViewer imageUrl={selectedImage} onClose={closeImageViewer} />
+        </>
     );
 });
 

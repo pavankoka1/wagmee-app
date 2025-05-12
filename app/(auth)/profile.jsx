@@ -5,7 +5,7 @@ import Card from "@/components/profile/Card";
 import TabWrapper from "@/components/Tabs/TabWrapper";
 import useUserStore from "@/hooks/useUserStore";
 import { ActivityIndicator } from "react-native-paper";
-import PostsLoader from "@/components/home/PostsLoader";
+import PostsLoader from "@/components/home/feed/PostsLoader";
 import SettingsBottomSheet from "@/components/profile/SettingsBottomSheet";
 
 import Portfolio from "@/components/profile/Portfolio";

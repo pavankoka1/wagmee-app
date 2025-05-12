@@ -7,7 +7,7 @@ import {
     Text,
 } from "react-native";
 import Animated from "react-native-reanimated";
-import { Image } from "expo-image"; // Importing from expo-image
+import { Image } from "expo-image";
 
 export const SlideItem = (props) => {
     const {
@@ -38,11 +38,11 @@ export const SlideItem = (props) => {
     const handleImageLoad = () => {
         index === 0 && onImageLoad();
         setImageLoaded(true);
-        setIsLoading(false); // Set loading to false immediately on load
+        setIsLoading(false);
     };
 
     const handleImageError = () => {
-        setIsLoading(false); // Set loading to false on error
+        setIsLoading(false);
     };
 
     if (!imageLoaded && progress !== index)
@@ -52,9 +52,9 @@ export const SlideItem = (props) => {
                 style={{
                     height: 220,
                     width: Dimensions.get("window").width - 32,
-                }} // Use Dimensions.get('window').width
+                }}
             >
-                <View className="w-full h-full bg-[#b1b1b1] animate-pulse rounded-3xl"></View>
+                <View className="w-full h-full bg-gray-700 animate-pulse rounded-3xl"></View>
             </View>
         );
 
@@ -65,22 +65,22 @@ export const SlideItem = (props) => {
             {...animatedViewProps}
             className="relative"
         >
-            {isLoading ? (
+            {!isLoading ? (
                 <View className="absolute top-0 left-0 w-full h-full bg-transparent">
-                    <View className="w-full h-full bg-[#b1b1b1] animate-pulse rounded-3xl"></View>
+                    <View className="w-full h-full bg-gray-700 animate-pulse rounded-3xl"></View>
                 </View>
             ) : null}
             <Animated.Image
                 style={[
                     style,
                     rounded && { borderRadius: 15 },
-                    { opacity: isLoading || !imageLoaded ? 0 : 1 }, // Fade out image while loading
+                    { opacity: isLoading || !imageLoaded ? 0 : 1 },
                 ]}
                 className="w-full h-full"
-                source={{ uri: source }} // Use the same source format
-                contentFit="cover" // Use contentFit instead of resizeMode
-                onLoad={handleImageLoad} // Trigger when image loads
-                onError={handleImageError} // Trigger when image fails to load
+                source={{ uri: source }}
+                contentFit="cover"
+                onLoad={handleImageLoad}
+                onError={handleImageError}
             />
         </Animated.View>
     );

@@ -2019,4 +2019,60 @@ curl: (56) Recv failure: Operation timed out
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    340      0 --:--:-- --:--:-- --:--:--   341
-{"timestamp":"2025-05-12 07:03:18","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}
+{"timestamp":"2025-05-12 07:03:18","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 12:35:27 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    237      0 --:--:-- --:--:-- --:--:--   237
+{"timestamp":"2025-05-12 07:05:28","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 12:40:28 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    164      0 --:--:-- --:--:-- --:--:--   164
+{"timestamp":"2025-05-12 07:10:29","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 12:45:29 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    325      0 --:--:-- --:--:-- --:--:--   325
+{"timestamp":"2025-05-12 07:15:29","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 12:50:29 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    176      0 --:--:-- --:--:-- --:--:--   176
+{"timestamp":"2025-05-12 07:20:30","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:00:37 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:04 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:05 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:06 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:07 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:08 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:09 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:10 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:11 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:12 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:13 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:14 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:15 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:16 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:17 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:18 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:19 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:20 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:20 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:21 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:22 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:23 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:24 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:25 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:26 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:04:27 --:--:--     0100   146    0   146    0     0      0      0 --:--:--  0:04:27 --:--:--    36
+{"timestamp":"2025-05-12 08:34:31","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:10:05 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    293      0 --:--:-- --:--:-- --:--:--   293
+{"timestamp":"2025-05-12 08:40:05","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:15:05 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    175      0 --:--:-- --:--:-- --:--:--   175
+{"timestamp":"2025-05-12 08:45:06","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:20:06 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    342      0 --:--:-- --:--:-- --:--:--   342
+{"timestamp":"2025-05-12 08:50:07","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:25:07 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    172      0 --:--:-- --:--:-- --:--:--   172
+{"timestamp":"2025-05-12 08:55:08","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:30:08 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    316      0 --:--:-- --:--:-- --:--:--   316
+{"timestamp":"2025-05-12 09:00:08","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:35:08 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    370      0 --:--:-- --:--:-- --:--:--   371
+{"timestamp":"2025-05-12 09:05:09","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:40:09 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    167      0 --:--:-- --:--:-- --:--:--   167
+{"timestamp":"2025-05-12 09:10:09","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:45:10 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    342      0 --:--:-- --:--:-- --:--:--   341
+{"timestamp":"2025-05-12 09:15:10","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}2025-05-12 14:50:10 IST
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   146    0   146    0     0    341      0 --:--:-- --:--:-- --:--:--   341
+{"timestamp":"2025-05-12 09:20:10","status":401,"error":"Unauthorized","message":"Invalid or expired access token","path":"/api/v1/search/user/5"}
