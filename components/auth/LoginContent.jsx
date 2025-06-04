@@ -1,9 +1,7 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Linking } from "react-native";
 import React from "react";
 import GoogleIcon from "@/icons/GoogleIcon";
 import FacebookIcon from "@/icons/FacebookIcon";
-import { Linking } from "react-native";
-import { StatusBar } from "react-native";
 
 const LoginContent = ({ onLoginPress, code, codeVerifier }) => {
     const openAuthUrl = () => {

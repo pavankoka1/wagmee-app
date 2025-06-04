@@ -47,27 +47,27 @@ const Card = ({ userId }) => {
                 {/* Avatar and username row */}
                 <View className="flex flex-row gap-6 items-center">
                     <View className="w-20 h-20 rounded-full bg-gray-700 animate-pulse" />
-                    <View className="flex flex-col gap-2 flex-1">
+                    <View className="flex flex-col gap-4 flex-1">
                         <View className="h-6 w-3/4 bg-gray-700 animate-pulse rounded" />
                         {/* Stats */}
                         <View className="flex flex-row gap-16">
-                            <View className="flex flex-col gap-1 items-center">
-                                <View className="h-5 w-10 bg-gray-700 animate-pulse rounded" />
+                            <View className="flex flex-col gap-2 items-center">
+                                <View className="h-5 w-6 bg-gray-700 animate-pulse rounded" />
                                 <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
                             </View>
-                            <View className="flex flex-col gap-1 items-center">
-                                <View className="h-5 w-10 bg-gray-700 animate-pulse rounded" />
-                                <View className="h-4 w-16 bg-gray-700 animate-pulse rounded" />
+                            <View className="flex flex-col gap-2 items-center">
+                                <View className="h-5 w-6 bg-gray-700 animate-pulse rounded" />
+                                <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
                             </View>
-                            <View className="flex flex-col gap-1 items-center">
-                                <View className="h-5 w-10 bg-gray-700 animate-pulse rounded" />
-                                <View className="h-4 w-14 bg-gray-700 animate-pulse rounded" />
+                            <View className="flex flex-col gap-2 items-center">
+                                <View className="h-5 w-6 bg-gray-700 animate-pulse rounded" />
+                                <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
                             </View>
                         </View>
                     </View>
                 </View>
                 {/* Bio */}
-                <View className="h-5 w-full bg-gray-700 animate-pulse rounded mb-1" />
+                <View className="h-10 w-full bg-gray-700 animate-pulse rounded mb-1" />
             </View>
         );
     }

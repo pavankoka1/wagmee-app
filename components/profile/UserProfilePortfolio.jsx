@@ -1,45 +1,37 @@
-import { View, Text, FlatList, SafeAreaView, ToastAndroid } from "react-native";
+import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
-import { HEADERS_KEYS } from "@/network/constants";
+import replacePlaceholders from "@/utils/replacePlaceholders";
 import clsx from "clsx";
 import StockItem from "./StockItem";
-import replacePlaceholders from "@/utils/replacePlaceholders";
 
-function StocksList({ onClose }) {
+const UserProfilePortfolio = ({ userId }) => {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [displayMode, setDisplayMode] = useState("current"); // "current" or "profitLoss"
 
-    async function fetchHoldings() {
-        setIsLoading(true);
-        try {
-            const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
-            const holdingsPath = replacePlaceholders(
-                API_PATHS.getHoldings,
-                userId
-            );
-
-            const res = await network.get(holdingsPath);
-            setData(res.data);
-            setIsLoading(false);
-        } catch (err) {
-            ToastAndroid.showWithGravityAndOffset(
-                "Unable to fetch holdings,\n Please login again!",
-                ToastAndroid.LONG,
-                ToastAndroid.TOP,
-                25,
-                50
-            );
-            onClose();
-        }
-    }
-
     useEffect(() => {
-        fetchHoldings();
-    }, []);
+        const fetchHoldings = async () => {
+            try {
+                setIsLoading(true);
+                const response = await network.get(
+                    replacePlaceholders(API_PATHS.getHoldings, userId)
+                );
+                setData(response.data);
+                setError(null);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (userId) {
+            fetchHoldings();
+        }
+    }, [userId]);
 
     const toggleDisplayMode = () => {
         setDisplayMode((prev) =>
@@ -77,6 +69,14 @@ function StocksList({ onClose }) {
             );
         }
 
+        if (!data) return null;
+
+        // Calculate totals
+        const totalInvested = data.totalInvestedAmount;
+        const totalCurrent = data.totalCurrentAmount;
+        const totalChange = totalCurrent - totalInvested;
+        const totalChangePercentage = (totalChange / totalInvested) * 100;
+
         return (
             <View className="bg-[#1F2023] p-4 mx-4 mt-4 rounded-lg shadow-md">
                 <View className="flex-row justify-between">
@@ -86,7 +86,7 @@ function StocksList({ onClose }) {
                         </Text>
                         <Text className="text-white text-base font-semibold mt-1">
                             ₹
-                            {data?.totalInvestedAmount.toLocaleString("en-IN", {
+                            {totalInvested.toLocaleString("en-IN", {
                                 maximumFractionDigits: 2,
                             })}
                         </Text>
@@ -97,7 +97,7 @@ function StocksList({ onClose }) {
                         </Text>
                         <Text className="text-white text-base font-semibold mt-1">
                             ₹
-                            {data?.totalCurrentAmount.toLocaleString("en-IN", {
+                            {totalCurrent.toLocaleString("en-IN", {
                                 maximumFractionDigits: 2,
                             })}
                         </Text>
@@ -111,28 +111,25 @@ function StocksList({ onClose }) {
                         <Text
                             className={clsx(
                                 "text-base font-semibold",
-                                data?.totalChange >= 0
+                                totalChange >= 0
                                     ? "text-[#22c55e]"
                                     : "text-[#ef4444]"
                             )}
                         >
-                            {data.totalChange >= 0 ? "+" : "-"}₹
-                            {Math.abs(data?.totalChange).toLocaleString(
-                                "en-IN",
-                                {
-                                    maximumFractionDigits: 2,
-                                }
-                            )}{" "}
+                            {totalChange >= 0 ? "+" : "-"}₹
+                            {Math.abs(totalChange).toLocaleString("en-IN", {
+                                maximumFractionDigits: 2,
+                            })}{" "}
                             <Text
                                 className={clsx(
                                     "text-xs",
-                                    data?.totalChange >= 0
+                                    totalChange >= 0
                                         ? "text-[#22c55e]"
                                         : "text-[#ef4444]"
                                 )}
                             >
-                                ({data?.totalChangePercentage >= 0 ? "+" : ""}
-                                {data?.totalChangePercentage.toFixed(2)}%)
+                                ({totalChangePercentage >= 0 ? "+" : ""}
+                                {totalChangePercentage.toFixed(2)}%)
                             </Text>
                         </Text>
                     </View>
@@ -169,29 +166,51 @@ function StocksList({ onClose }) {
         return null;
     };
 
-    return (
-        <SafeAreaView className="flex-1 bg-[#161616]">
-            <FlatList
-                data={isLoading ? [] : data?.securities}
-                keyExtractor={(item) => item.bseTicker.toString()}
-                ListHeaderComponent={renderHeader}
-                ListEmptyComponent={renderListContent()}
-                refreshing={isLoading}
-                onRefresh={() => {
-                    fetchHoldings();
-                }}
-                renderItem={({ item }) => (
-                    <StockItem
-                        item={item}
-                        displayMode={displayMode}
-                        toggleDisplayMode={toggleDisplayMode}
-                    />
-                )}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 20 }}
-            />
-        </SafeAreaView>
-    );
-}
+    if (error) {
+        return (
+            <View className="flex-1 justify-center items-center">
+                <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
+                    Portfolio not connected
+                </Text>
+                <Text className="text-white font-manrope text-14">
+                    This user hasn't connected their portfolio yet.
+                </Text>
+            </View>
+        );
+    }
 
-export default StocksList;
+    if (!data?.securities?.length && !isLoading) {
+        return (
+            <View className="flex-1 justify-center items-center">
+                <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
+                    No holdings yet!
+                </Text>
+                <Text className="text-white font-manrope text-14">
+                    This user hasn't added any holdings to their portfolio.
+                </Text>
+            </View>
+        );
+    }
+
+    const renderStockItem = ({ item }) => (
+        <StockItem
+            item={item}
+            displayMode={displayMode}
+            toggleDisplayMode={toggleDisplayMode}
+        />
+    );
+
+    return (
+        <FlatList
+            data={isLoading ? [] : data.securities}
+            keyExtractor={(item) => item.isin}
+            ListHeaderComponent={renderHeader}
+            ListEmptyComponent={renderListContent()}
+            renderItem={renderStockItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+        />
+    );
+};
+
+export default UserProfilePortfolio;

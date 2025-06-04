@@ -56,6 +56,7 @@ const useUserStore = create((set, get) => ({
                 generateQueryParams(
                     replacePlaceholders(API_PATHS.getPosts, userId),
                     {
+                        viewerUserId: userId,
                         limit,
                         offset: get().postOffset,
                     }

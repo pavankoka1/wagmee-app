@@ -1,83 +1,77 @@
 {
-  "expo": {
-    "name": "Wagmee",
-    "slug": "trade-tribe-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/login/arrow.png",
-    "backgroundColor": "#161616",
-    "scheme": "tradetribe",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "bundleIdentifier": "com.trade.tribe",
-      "buildNumber": "1.0.0",
-      "supportsTablet": true
-    },
-    "androidStatusBar": {
-      "backgroundColor": "#161616",
-      "barStyle": "light-content"
-    },
-    "androidNavigationBar": {
-      "backgroundColor": "#161616"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/login/arrow.png",
-        "backgroundColor": "#161616"
-      },
-      "package": "com.pavankoka1.tradetribe",
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "data": [
-            {
-              "scheme": "tradetribe"
+    "expo": {
+        "name": "Wagmee",
+        "slug": "trade-tribe-app",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/images/login/arrow.png",
+        "backgroundColor": "#161616",
+        "scheme": "tradetribe",
+        "userInterfaceStyle": "automatic",
+        "newArchEnabled": true,
+        "assetBundlePatterns": ["**/*"],
+        "ios": {
+            "bundleIdentifier": "com.trade.tribe",
+            "buildNumber": "1.0.0",
+            "supportsTablet": true
+        },
+        "androidStatusBar": {
+            "backgroundColor": "#161616",
+            "barStyle": "light-content"
+        },
+        "androidNavigationBar": {
+            "backgroundColor": "#161616",
+            "visible": "immersive"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/login/arrow.png",
+                "backgroundColor": "#161616"
+            },
+            "package": "com.pavankoka1.tradetribe",
+            "intentFilters": [
+                {
+                    "action": "VIEW",
+                    "data": [
+                        {
+                            "scheme": "tradetribe"
+                        }
+                    ],
+                    "category": ["BROWSABLE", "DEFAULT"]
+                }
+            ]
+        },
+        "description": "We don't just build apps, we build trust!",
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/login/arrow.png"
+        },
+        "plugins": [
+            "expo-router",
+            [
+                "expo-splash-screen",
+                {
+                    "image": "./assets/images/login/arrow.png",
+                    "imageWidth": 200,
+                    "resizeMode": "contain",
+                    "backgroundColor": "#161616"
+                }
+            ],
+            ["./plugins/withCustomScheme.js"],
+            "expo-web-browser"
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "5a95fe34-17db-42e9-ad8d-1a7b72be05ed"
             }
-          ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        }
-      ]
-    },
-    "description": "We don't just build apps, we build trust!",
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/login/arrow.png"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/login/arrow.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#161616"
-        }
-      ],
-      [
-        "./plugins/withCustomScheme.js"
-      ],
-      "expo-web-browser"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "5a95fe34-17db-42e9-ad8d-1a7b72be05ed"
-      }
-    },
-    "owner": "pavankoka1"
-  }
+        },
+        "owner": "pavankoka1"
+    }
 }

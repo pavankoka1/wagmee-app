@@ -243,6 +243,7 @@ const useFeedStore = create(
                     generateQueryParams(
                         replacePlaceholders(API_PATHS.getPosts, userId),
                         {
+                            viewerUserId: userId,
                             limit,
                             offset: get().postOffset,
                         }
@@ -287,11 +288,15 @@ const useFeedStore = create(
             }
 
             set({ isFetchingUserProfilePosts: true, error: null });
+            const currentUserId = await SecureStore.getItemAsync(
+                HEADERS_KEYS.USER_ID
+            );
             try {
                 const response = await network.get(
                     generateQueryParams(
                         replacePlaceholders(API_PATHS.getPosts, userId),
                         {
+                            viewerUserId: currentUserId,
                             limit,
                             offset,
                         }

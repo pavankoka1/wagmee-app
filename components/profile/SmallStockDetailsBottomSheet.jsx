@@ -25,15 +25,6 @@ const SmallStockDetailsBottomSheet = ({
     const [graphError, setGraphError] = useState(false);
     const [translateY] = useState(new Animated.Value(SCREEN_HEIGHT)); // Start off-screen
 
-    // Log stock props for debugging
-    useEffect(() => {
-        console.log("SmallStockDetailsBottomSheet props:", {
-            isOpen,
-            stock: JSON.stringify(stock),
-            bseTicker: stock?.bseTicker,
-        });
-    }, [isOpen, stock]);
-
     // Animation for sheet
     useEffect(() => {
         if (isOpen) {

@@ -39,15 +39,29 @@ export const StockItem = ({ item, displayMode, toggleDisplayMode }) => {
                     onPress={() => setIsFullModalOpen(true)}
                     className="flex-1"
                 >
+                    <View className="flex-row items-center mb-2">
+                        <Text className="text-[#b1b1b1] text-xs mr-1">
+                            Qty.
+                        </Text>
+                        <Text className="text-white text-xs">
+                            {item.holdings.quantity}
+                        </Text>
+                        <Text className="bg-[#b1b1b1] h-[2px] w-[2px] rounded-full mx-3"></Text>
+                        <Text className="text-[#b1b1b1] text-xs mr-1">
+                            Avg.
+                        </Text>
+                        <Text className="text-white text-xs">
+                            {item.holdings.averagePrice?.toLocaleString(
+                                "en-IN",
+                                { maximumFractionDigits: 2 }
+                            )}
+                        </Text>
+                    </View>
                     <Text className="text-white text-base font-semibold">
                         {item.name}
                     </Text>
                     <Text className="text-[#b1b1b1] text-xs tracking-wide mt-1">
                         {item.bseTicker}
-                    </Text>
-                    <Text className="text-[#b1b1b1] text-xs tracking-wide mt-2">
-                        {item.holdings.quantity}{" "}
-                        {item.holdings.quantity === 1 ? "share" : "shares"}
                     </Text>
                 </TouchableOpacity>
 
@@ -66,7 +80,7 @@ export const StockItem = ({ item, displayMode, toggleDisplayMode }) => {
                                         : "text-[#ef4444]"
                                 )}
                             >
-                                {profitLoss >= 0 ? "+" : "-"}₹
+                                ₹
                                 {Math.abs(currentValue).toLocaleString(
                                     "en-IN",
                                     {
@@ -80,6 +94,28 @@ export const StockItem = ({ item, displayMode, toggleDisplayMode }) => {
                                     maximumFractionDigits: 2,
                                 })}
                             </Text>
+                            <View className="flex-row items-center mt-1">
+                                <Text className="text-[#b1b1b1] text-xs mr-1">
+                                    LTP
+                                </Text>
+                                <Text className="text-white text-xs">
+                                    {item.currentPrice?.toLocaleString(
+                                        "en-IN",
+                                        { maximumFractionDigits: 2 }
+                                    )}
+                                </Text>
+                                <Text
+                                    className={clsx(
+                                        "text-xs ml-1",
+                                        item.dayChangePercentage >= 0
+                                            ? "text-[#22c55e]"
+                                            : "text-[#ef4444]"
+                                    )}
+                                >
+                                    ({item.dayChangePercentage >= 0 ? "+" : ""}
+                                    {item.dayChangePercentage?.toFixed(2)}%)
+                                </Text>
+                            </View>
                         </>
                     ) : (
                         <>
@@ -107,6 +143,28 @@ export const StockItem = ({ item, displayMode, toggleDisplayMode }) => {
                                 {percentageChange >= 0 ? "+" : "-"}
                                 {Math.abs(percentageChange).toFixed(2)}%
                             </Text>
+                            <View className="flex-row items-center mt-1">
+                                <Text className="text-[#b1b1b1] text-xs mr-1">
+                                    LTP
+                                </Text>
+                                <Text className="text-white text-xs">
+                                    {item.currentPrice?.toLocaleString(
+                                        "en-IN",
+                                        { maximumFractionDigits: 2 }
+                                    )}
+                                </Text>
+                                <Text
+                                    className={clsx(
+                                        "text-xs ml-1",
+                                        item.dayChangePercentage >= 0
+                                            ? "text-[#22c55e]"
+                                            : "text-[#ef4444]"
+                                    )}
+                                >
+                                    ({item.dayChangePercentage >= 0 ? "+" : ""}
+                                    {item.dayChangePercentage?.toFixed(2)}%)
+                                </Text>
+                            </View>
                         </>
                     )}
                 </TouchableOpacity>

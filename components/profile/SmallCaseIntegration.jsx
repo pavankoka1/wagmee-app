@@ -6,6 +6,7 @@ import getJwtToken from "@/utils/getJwtToken";
 import network from "@/network";
 import API_PATHS from "../../network/apis";
 import { HEADERS_KEYS } from "../../network/constants";
+import generateQueryParams from "@/utils/generateQueryParams";
 
 const SmallcaseIntegration = ({ onSuccess, onClose }) => {
     const [isInitialized, setIsInitialized] = useState(false);
@@ -54,10 +55,15 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             const smallcaseAuthToken = JSON.parse(
                 txnResponse.data
             ).smallcaseAuthToken;
-            await SecureStore.setItemAsync(
-                HEADERS_KEYS.SMALLCASE_AUTH_TOKEN,
-                smallcaseAuthToken
+
+            const holdingsPath = generateQueryParams(
+                replacePlaceholders(API_PATHS.getHoldings, userId),
+                {
+                    gatewayAuthToken: smallcaseAuthToken,
+                }
             );
+            await network.get(holdingsPath);
+
             onSuccess();
         } catch (err) {
             console.log("Transaction error:", err.userInfo);

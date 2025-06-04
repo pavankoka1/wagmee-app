@@ -44,6 +44,7 @@ const FeedPost = memo(({ id }) => {
     }, [postDetails.id, setActiveCommentPostId]);
 
     const handleImageClick = useCallback((imageUrl) => {
+        console.log("imageUrl", imageUrl);
         setSelectedImage(imageUrl);
     }, []);
 

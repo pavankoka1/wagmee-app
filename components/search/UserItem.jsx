@@ -18,7 +18,13 @@ import network from "@/network";
 import API_PATHS from "@/network/apis";
 
 function UserItem({ item }) {
-    const { following, details, removeFollower, addFollower } = useUserStore();
+    const {
+        following,
+        details,
+        removeFollower,
+        addFollower,
+        setProfileBottomSheet,
+    } = useUserStore();
     const [loading, setLoading] = useState(false);
 
     function handleClick() {
@@ -53,6 +59,10 @@ function UserItem({ item }) {
         }
     }
 
+    const handleNameClick = () => {
+        setProfileBottomSheet(item.id);
+    };
+
     const isFollowing = following.includes(item.id);
 
     return (
@@ -67,12 +77,16 @@ function UserItem({ item }) {
                     className="rounded-full mr-3"
                 />
                 <View className="flex flex-col">
-                    <View className="flex flex-row gap-1 items-center mb-[2px]">
+                    <TouchableOpacity
+                        onPress={handleNameClick}
+                        activeOpacity={0.7}
+                        className="flex flex-row gap-1 items-center mb-[2px]"
+                    >
                         <Text className="font-manrope-bold text-12 text-white">
                             {item.nickname}
                         </Text>
                         <VerifiedIcon />
-                    </View>
+                    </TouchableOpacity>
                     <Text className="text-[#26F037] font-manrope-medium text-10">
                         Portfolio - ₹8.6L
                     </Text>

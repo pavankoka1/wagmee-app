@@ -5,6 +5,7 @@ import {
     StyleSheet,
     View,
     Text,
+    Pressable,
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { Image } from "expo-image";
@@ -17,6 +18,7 @@ export const SlideItem = (props) => {
         testID,
         progress,
         onImageLoad,
+        onImageClick,
         ...animatedViewProps
     } = props;
 
@@ -36,13 +38,17 @@ export const SlideItem = (props) => {
     }, [imageLoaded, progress]);
 
     const handleImageLoad = () => {
-        index === 0 && onImageLoad();
+        index === 0 && onImageLoad?.();
         setImageLoaded(true);
         setIsLoading(false);
     };
 
     const handleImageError = () => {
         setIsLoading(false);
+    };
+
+    const handleImageClick = () => {
+        onImageClick?.(index);
     };
 
     if (!imageLoaded && progress !== index)
@@ -61,7 +67,7 @@ export const SlideItem = (props) => {
     return (
         <Animated.View
             testID={testID}
-            style={{ flex: 1 }}
+            style={[{ flex: 1 }, style]}
             {...animatedViewProps}
             className="relative"
         >
@@ -70,18 +76,28 @@ export const SlideItem = (props) => {
                     <View className="w-full h-full bg-gray-700 animate-pulse rounded-3xl"></View>
                 </View>
             ) : null}
-            <Animated.Image
-                style={[
-                    style,
-                    rounded && { borderRadius: 15 },
-                    { opacity: isLoading || !imageLoaded ? 0 : 1 },
+            <Pressable
+                onPress={handleImageClick}
+                style={({ pressed }) => [
+                    {
+                        opacity: pressed ? 0.9 : 1,
+                        width: "100%",
+                        height: "100%",
+                    },
                 ]}
-                className="w-full h-full"
-                source={{ uri: source }}
-                contentFit="cover"
-                onLoad={handleImageLoad}
-                onError={handleImageError}
-            />
+            >
+                <Animated.Image
+                    style={[
+                        rounded && { borderRadius: 15 },
+                        { opacity: isLoading || !imageLoaded ? 0 : 1 },
+                    ]}
+                    className="w-full h-full"
+                    source={{ uri: source }}
+                    contentFit="cover"
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                />
+            </Pressable>
         </Animated.View>
     );
 };

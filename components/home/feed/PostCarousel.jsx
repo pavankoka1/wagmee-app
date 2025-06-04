@@ -9,8 +9,9 @@ import { SlideItem } from "@/components/SlideItem";
  * Renders the post's image carousel.
  * @param {Object} props
  * @param {string[]} props.mediaUrls - Array of image URLs
+ * @param {Function} props.onImageClick - Callback function when an image is clicked
  */
-const PostCarousel = ({ mediaUrls }) => {
+const PostCarousel = ({ mediaUrls, onImageClick }) => {
     const screenWidth = Dimensions.get("window").width;
     const carouselRef = useRef(null);
     const progress = useSharedValue(0);
@@ -40,7 +41,7 @@ const PostCarousel = ({ mediaUrls }) => {
     }
 
     return (
-        <View className="w-full mt-4 relative">
+        <View className="w-full mt-4 my-2 relative">
             <Carousel
                 ref={carouselRef}
                 autoPlayInterval={2000}
@@ -64,6 +65,7 @@ const PostCarousel = ({ mediaUrls }) => {
                         source={item}
                         progress={parseInt(progress.value.toFixed(0))}
                         onImageLoad={() => setIsLoading(false)}
+                        onImageClick={() => onImageClick?.(item, index)}
                     />
                 )}
             />
@@ -85,7 +87,6 @@ const PostCarousel = ({ mediaUrls }) => {
                     containerStyle={{
                         position: "relative",
                         alignSelf: "center",
-                        marginBottom: 10,
                         marginTop: 16,
                     }}
                     dotStyle={{
