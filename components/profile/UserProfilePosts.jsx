@@ -1,7 +1,6 @@
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
-import FeedPost from "@/components/home/FeedPost";
-import PostsLoader from "@/components/home/feed/PostsLoader";
+import OptimizedList from "../common/OptimizedList";
 
 const UserProfilePosts = ({
     postIds,
@@ -9,15 +8,6 @@ const UserProfilePosts = ({
     handleLoadMore,
     error,
 }) => {
-    // Render FeedPost or PostsLoader
-    const renderItem = ({ item }) =>
-        item ? <FeedPost id={item} /> : <PostsLoader />;
-
-    // Append shimmer placeholders during fetch
-    const data = isFetchingUserProfilePosts
-        ? [...postIds, ...Array(4).fill(null)]
-        : postIds;
-
     if (error) {
         return (
             <View className="flex-1 justify-center items-center">
@@ -42,23 +32,17 @@ const UserProfilePosts = ({
     }
 
     return (
-        <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item, index) =>
-                item ? `post-${item}` : `loader-${index}`
-            }
+        <OptimizedList
+            data={postIds}
+            isLoading={isFetchingUserProfilePosts}
+            onEndReached={handleLoadMore}
+            keyPrefix="profile"
+            className="bg-[#161616]"
             contentContainerStyle={{
                 paddingBottom: 20,
-                backgroundColor: "#161616",
             }}
-            showsVerticalScrollIndicator={false}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
-            initialNumToRender={3}
-            windowSize={5}
         />
     );
 };
 
-export default UserProfilePosts;
+export default React.memo(UserProfilePosts);

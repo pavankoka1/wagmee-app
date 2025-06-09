@@ -1,4 +1,11 @@
-import { View, Text, FlatList, SafeAreaView, ToastAndroid } from "react-native";
+import {
+    View,
+    Text,
+    FlatList,
+    SafeAreaView,
+    ToastAndroid,
+    RefreshControl,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import network from "@/network";
@@ -176,10 +183,15 @@ function StocksList({ onClose }) {
                 keyExtractor={(item) => item.bseTicker.toString()}
                 ListHeaderComponent={renderHeader}
                 ListEmptyComponent={renderListContent()}
-                refreshing={isLoading}
-                onRefresh={() => {
-                    fetchHoldings();
-                }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={fetchHoldings}
+                        tintColor="#b4ef02"
+                        colors={["#b4ef02"]}
+                        progressBackgroundColor="transparent"
+                    />
+                }
                 renderItem={({ item }) => (
                     <StockItem
                         item={item}

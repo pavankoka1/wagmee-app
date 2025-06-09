@@ -10,6 +10,7 @@ import { ActivityIndicator } from "react-native-paper";
 import UserItem from "./UserItem";
 import useStocks from "@/hooks/useStocks";
 import StockItem from "./StockItem";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function StocksList({ query }) {
     const timerRef = useRef();
@@ -25,13 +26,44 @@ function StocksList({ query }) {
 
     if (!stocks.length) {
         return (
-            <View className="flex-1 flex-col justify-center items-center">
-                <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
-                    No Stocks
-                </Text>
-                <Text className="text-white font-manrope text-14">
-                    We couldn’t find any stocks matching your search
-                </Text>
+            <View className="flex-1 flex-col justify-center items-center px-8">
+                {query ? (
+                    <>
+                        <MaterialCommunityIcons
+                            name="chart-line"
+                            size={64}
+                            color="#B1B1B1"
+                        />
+                        <Text className="text-[#B1B1B1] font-manrope-bold text-18 mb-2 mt-4 text-center">
+                            No Stocks Found
+                        </Text>
+                        <Text className="text-white font-manrope text-14 text-center">
+                            We couldn't find any stocks matching "{query}"
+                        </Text>
+                        <Text className="text-[#B1B1B1] font-manrope text-12 text-center mt-2">
+                            Try searching with a different symbol or company
+                            name
+                        </Text>
+                    </>
+                ) : (
+                    <>
+                        <MaterialCommunityIcons
+                            name="chart-timeline-variant"
+                            size={64}
+                            color="#B1B1B1"
+                        />
+                        <Text className="text-[#B1B1B1] font-manrope-bold text-18 mb-2 mt-4 text-center">
+                            Explore Stocks
+                        </Text>
+                        <Text className="text-white font-manrope text-14 text-center">
+                            Search for stocks by company name or symbol
+                        </Text>
+                        <Text className="text-[#B1B1B1] font-manrope text-12 text-center mt-2">
+                            Try searching for companies like "Apple" or symbols
+                            like "AAPL"
+                        </Text>
+                    </>
+                )}
             </View>
         );
     }

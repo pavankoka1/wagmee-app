@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import VerifiedIcon from "@/icons/VerifiedIcon";
 import ThreeDotsIcon from "@/icons/ThreeDotsIcon";
 import moment from "moment";
+import { formatNumber } from "@/utils/formatNumber";
 
 /**
  * Renders the post header with user details, follow button, portfolio, and timestamp.
@@ -46,7 +47,9 @@ const PostHeader = memo(
                                 {authorDetails.name}
                             </Text>
                         </TouchableOpacity>
-                        <VerifiedIcon className="ml-1" />
+                        {authorDetails.isVerifiedUser ? (
+                            <VerifiedIcon className="ml-1" />
+                        ) : null}
                         {!followers.includes(authorDetails.id) &&
                         authorDetails.id !== userId ? (
                             <>
@@ -60,12 +63,19 @@ const PostHeader = memo(
                         ) : null}
                     </View>
                     <View className="flex flex-row items-center">
-                        <Text className="font-manrope text-10 text-[#26F037]">
-                            Portfolio - ₹8.6L
-                        </Text>
-                        <View className="mx-2 h-3 w-3 flex items-center justify-center">
-                            <View className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
-                        </View>
+                        {authorDetails.userPortfolioValue ? (
+                            <View className="flex flex-row items-center">
+                                <Text className="font-manrope text-10 text-[#26F037]">
+                                    Portfolio -{" "}
+                                    {formatNumber(
+                                        authorDetails.userPortfolioValue
+                                    )}
+                                </Text>
+                                <View className="mx-2 h-3 w-3 flex items-center justify-center">
+                                    <View className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
+                                </View>
+                            </View>
+                        ) : null}
                         <Text className="text-[#b1b1b1] font-manrope-medium text-10">
                             {moment(postDetails.createdAt).format(
                                 "ddd, DD MMM, h:mm A"

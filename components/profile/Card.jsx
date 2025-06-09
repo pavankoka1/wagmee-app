@@ -46,28 +46,43 @@ const Card = ({ userId }) => {
             <View className="py-2 px-4 gap-4 w-screen bg-[#161616]">
                 {/* Avatar and username row */}
                 <View className="flex flex-row gap-6 items-center">
-                    <View className="w-20 h-20 rounded-full bg-gray-700 animate-pulse" />
+                    <View
+                        key="avatar-skeleton"
+                        className="w-20 h-20 rounded-full bg-gray-700"
+                        style={{ animation: "none" }}
+                    />
                     <View className="flex flex-col gap-4 flex-1">
-                        <View className="h-6 w-3/4 bg-gray-700 animate-pulse rounded" />
+                        <View
+                            key="username-skeleton"
+                            className="h-6 w-3/4 bg-gray-700 rounded"
+                            style={{ animation: "none" }}
+                        />
                         {/* Stats */}
                         <View className="flex flex-row gap-16">
-                            <View className="flex flex-col gap-2 items-center">
-                                <View className="h-5 w-6 bg-gray-700 animate-pulse rounded" />
-                                <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
-                            </View>
-                            <View className="flex flex-col gap-2 items-center">
-                                <View className="h-5 w-6 bg-gray-700 animate-pulse rounded" />
-                                <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
-                            </View>
-                            <View className="flex flex-col gap-2 items-center">
-                                <View className="h-5 w-6 bg-gray-700 animate-pulse rounded" />
-                                <View className="h-4 w-12 bg-gray-700 animate-pulse rounded" />
-                            </View>
+                            {[1, 2, 3].map((index) => (
+                                <View
+                                    key={`stat-${index}`}
+                                    className="flex flex-col gap-2 items-center"
+                                >
+                                    <View
+                                        className="h-5 w-6 bg-gray-700 rounded"
+                                        style={{ animation: "none" }}
+                                    />
+                                    <View
+                                        className="h-4 w-12 bg-gray-700 rounded"
+                                        style={{ animation: "none" }}
+                                    />
+                                </View>
+                            ))}
                         </View>
                     </View>
                 </View>
                 {/* Bio */}
-                <View className="h-10 w-full bg-gray-700 animate-pulse rounded mb-1" />
+                <View
+                    key="bio-skeleton"
+                    className="h-10 w-full bg-gray-700 rounded mb-1"
+                    style={{ animation: "none" }}
+                />
             </View>
         );
     }
@@ -85,12 +100,17 @@ const Card = ({ userId }) => {
     return (
         <View className="py-2 px-4 gap-4 w-screen bg-[#161616]">
             <View className="flex flex-row gap-6 items-center">
-                <Image
+                {/* <Image
                     source={{ uri: url || "https://via.placeholder.com/80" }}
                     width={80}
                     height={80}
                     className="rounded-full"
-                />
+                /> */}
+                <View className="w-20 h-20 rounded-full bg-[#2A2A2A] flex items-center justify-center">
+                    <Text className="font-manrope-bold text-32 text-white">
+                        {(renderDetails?.name || "U")[0].toUpperCase()}
+                    </Text>
+                </View>
                 <View className="flex flex-col gap-2 h-fit flex-1">
                     <Text className="font-manrope-bold text-18 text-white leading-[24px]">
                         {renderDetails?.userName || "Unknown User"}

@@ -6,8 +6,9 @@ import generateQueryParams from "@/utils/generateQueryParams";
 import VerifiedIcon from "@/icons/VerifiedIcon";
 import clsx from "clsx";
 import useUserStore from "@/hooks/useUserStore";
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
 import UserItem from "./UserItem";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function UserList({ query }) {
     const timerRef = useRef();
@@ -61,13 +62,42 @@ function UserList({ query }) {
 
     if (!users.length) {
         return (
-            <View className="flex-1 flex-col justify-center items-center">
-                <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
-                    No Results
-                </Text>
-                <Text className="text-white font-manrope text-14">
-                    We couldn’t find anyone matching your search
-                </Text>
+            <View className="flex-1 flex-col justify-center items-center px-8">
+                {query ? (
+                    <>
+                        <MaterialCommunityIcons
+                            name="account-search"
+                            size={64}
+                            color="#B1B1B1"
+                        />
+                        <Text className="text-[#B1B1B1] font-manrope-bold text-18 mb-2 mt-4 text-center">
+                            No Results Found
+                        </Text>
+                        <Text className="text-white font-manrope text-14 text-center">
+                            We couldn't find any users matching "{query}"
+                        </Text>
+                        <Text className="text-[#B1B1B1] font-manrope text-12 text-center mt-2">
+                            Try searching with a different name or username
+                        </Text>
+                    </>
+                ) : (
+                    <>
+                        <MaterialCommunityIcons
+                            name="account-group"
+                            size={64}
+                            color="#B1B1B1"
+                        />
+                        <Text className="text-[#B1B1B1] font-manrope-bold text-18 mb-2 mt-4 text-center">
+                            Discover People
+                        </Text>
+                        <Text className="text-white font-manrope text-14 text-center">
+                            Search for friends, influencers, or creators
+                        </Text>
+                        <Text className="text-[#B1B1B1] font-manrope text-12 text-center mt-2">
+                            Try searching by name, username, or interests
+                        </Text>
+                    </>
+                )}
             </View>
         );
     }

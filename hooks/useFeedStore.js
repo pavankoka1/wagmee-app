@@ -93,6 +93,7 @@ const useFeedStore = create(
                     }
                 })
             );
+            console.log("reached till here!");
             try {
                 await network.post(API_PATHS.addLike, {
                     userId,
@@ -152,21 +153,19 @@ const useFeedStore = create(
                 );
 
                 const newPosts = response.filter(
-                    (item) => !get().trendingPostIds.includes(item.id)
+                    (item) =>
+                        !get().trendingPostIds.includes(item.postDetails.id)
                 );
 
                 set(
                     produce((state) => {
                         if (newPosts.length > 0) {
                             newPosts.forEach((item) => {
-                                state.feeds[item.id] = {
-                                    postDetails: item,
+                                state.feeds[item.postDetails.id] = {
                                     isLoading: false,
-                                    isLiked: false,
-                                    likesCount: item.likesCount,
-                                    commentsCount: item.commentsCount,
+                                    ...item,
                                 };
-                                state.trendingPostIds.push(item.id);
+                                state.trendingPostIds.push(item.postDetails.id);
                             });
                             state.trendingOffset += limit;
                         } else {
@@ -233,7 +232,6 @@ const useFeedStore = create(
                 return;
             }
 
-            console.log("fetchPosts called");
             set({ isFetchingPosts: true, error: null });
             try {
                 const userId = await SecureStore.getItemAsync(

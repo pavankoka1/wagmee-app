@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback } from "react";
+import React, { memo, useState, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
@@ -19,65 +19,107 @@ import {
  * @param {Object} props
  * @param {string} props.id - Post ID
  */
-const FeedPost = memo(({ id }) => {
-    const userId = SecureStore.getItem(HEADERS_KEYS.USER_ID);
-    const { feeds, removeLike, addLike } = useFeedStore();
-    const { followers, details, setProfileBottomSheet, activeProfileUserId } =
-        useUserStore();
-    const { setActiveCommentPostId } = useActivityStore();
+const FeedPost = memo(
+    ({ id }) => {
+        const userId = SecureStore.getItem(HEADERS_KEYS.USER_ID);
+        const { feeds, removeLike, addLike } = useFeedStore();
+        const {
+            followers,
+            details,
+            setProfileBottomSheet,
+            activeProfileUserId,
+        } = useUserStore();
+        const { setActiveCommentPostId } = useActivityStore();
 
-    const item = feeds[id];
-    if (!item) return <PostsLoader />;
+        const item = feeds[id];
+        if (!item) return <PostsLoader />;
 
-    const postDetails = item.postDetails || item;
-    const authorDetails = item.postAuthorDetails || details;
+        const postDetails = item.postDetails || item;
+        const authorDetails = item.postAuthorDetails || details;
 
-    const [selectedImage, setSelectedImage] = useState(null);
+        const [selectedImage, setSelectedImage] = useState(null);
 
-    const handleLikePost = useCallback(() => {
-        const func = postDetails.isLiked ? removeLike : addLike;
-        func(details.id, postDetails.id);
-    }, [postDetails.isLiked, details.id, postDetails.id, removeLike, addLike]);
+        // Memoize handlers to prevent unnecessary re-renders
+        const handleLikePost = useCallback(() => {
+            const func = postDetails.isLiked ? removeLike : addLike;
+            func(details.id, postDetails.id);
+        }, [
+            postDetails.isLiked,
+            details.id,
+            postDetails.id,
+            removeLike,
+            addLike,
+        ]);
 
-    const handleComment = useCallback(() => {
-        setActiveCommentPostId(postDetails.id);
-    }, [postDetails.id, setActiveCommentPostId]);
+        const handleComment = useCallback(() => {
+            setActiveCommentPostId(postDetails.id);
+        }, [postDetails.id, setActiveCommentPostId]);
 
-    const handleImageClick = useCallback((imageUrl) => {
-        console.log("imageUrl", imageUrl);
-        setSelectedImage(imageUrl);
-    }, []);
+        const handleImageClick = useCallback((imageUrl) => {
+            setSelectedImage(imageUrl);
+        }, []);
 
-    const closeImageViewer = useCallback(() => {
-        setSelectedImage(null);
-    }, []);
+        const closeImageViewer = useCallback(() => {
+            setSelectedImage(null);
+        }, []);
 
-    return (
-        <>
-            <View className="py-6 px-4 border-b-[2px] border-[#1F2023]">
-                <PostHeader
-                    authorDetails={authorDetails}
-                    postDetails={postDetails}
-                    userId={userId}
-                    followers={followers}
-                    details={details}
-                    setProfileBottomSheet={setProfileBottomSheet}
-                    activeProfileUserId={activeProfileUserId}
-                />
-                <PostContent content={postDetails.content} />
+        // Memoize the post content to prevent unnecessary re-renders
+        const postContent = useMemo(
+            () => <PostContent content={postDetails.content} />,
+            [postDetails.content]
+        );
+
+        // Memoize the post carousel to prevent unnecessary re-renders
+        const postCarousel = useMemo(
+            () => (
                 <PostCarousel
                     mediaUrls={postDetails.mediaUrls}
                     onImageClick={handleImageClick}
                 />
+            ),
+            [postDetails.mediaUrls, handleImageClick]
+        );
+
+        // Memoize the post interactions to prevent unnecessary re-renders
+        const postInteractions = useMemo(
+            () => (
                 <PostInteractions
                     postDetails={postDetails}
                     onLike={handleLikePost}
                     onComment={handleComment}
                 />
-            </View>
-            <ImageViewer imageUrl={selectedImage} onClose={closeImageViewer} />
-        </>
-    );
-});
+            ),
+            [postDetails, handleLikePost, handleComment]
+        );
+
+        return (
+            <>
+                <View className="py-6 px-4 border-b-[2px] border-[#1F2023]">
+                    <PostHeader
+                        authorDetails={authorDetails}
+                        postDetails={postDetails}
+                        userId={userId}
+                        followers={followers}
+                        details={details}
+                        setProfileBottomSheet={setProfileBottomSheet}
+                        activeProfileUserId={activeProfileUserId}
+                    />
+                    {postContent}
+                    {postCarousel}
+                    {postInteractions}
+                </View>
+                <ImageViewer
+                    imageUrl={selectedImage}
+                    onClose={closeImageViewer}
+                />
+            </>
+        );
+    },
+    (prevProps, nextProps) => {
+        return prevProps.id === nextProps.id;
+    }
+);
+
+FeedPost.displayName = "FeedPost";
 
 export default FeedPost;

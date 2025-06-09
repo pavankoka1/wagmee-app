@@ -85,7 +85,7 @@ function UserItem({ item }) {
                         <Text className="font-manrope-bold text-12 text-white">
                             {item.nickname}
                         </Text>
-                        <VerifiedIcon />
+                        {item.isVerifiedUser && <VerifiedIcon />}
                     </TouchableOpacity>
                     <Text className="text-[#26F037] font-manrope-medium text-10">
                         Portfolio - ₹8.6L

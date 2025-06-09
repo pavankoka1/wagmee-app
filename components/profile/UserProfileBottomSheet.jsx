@@ -1,10 +1,4 @@
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    SafeAreaView,
-    ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Portal } from "react-native-paper";
 import useUserStore from "@/hooks/useUserStore";
@@ -38,7 +32,16 @@ const UserProfileBottomSheet = () => {
     // State for user details
     const [userDetails, setUserDetails] = useState(null);
     const [isFetchingUser, setIsFetchingUser] = useState(false);
-    const [activeTab, setActiveTab] = useState("posts");
+    const [activeTab, setActiveTab] = useState("portfolio");
+
+    // Reset all states when bottom sheet is closed
+    useEffect(() => {
+        if (!isOpen) {
+            setUserDetails(null);
+            setIsFetchingUser(false);
+            setActiveTab("portfolio");
+        }
+    }, [isOpen]);
 
     // Fetch user details
     useEffect(() => {
@@ -61,8 +64,6 @@ const UserProfileBottomSheet = () => {
                         setIsFetchingUser(false);
                     });
             }
-        } else {
-            setUserDetails(null);
         }
     }, [activeProfileUserId, isOpen, currentUserId, details]);
 
@@ -127,59 +128,50 @@ const UserProfileBottomSheet = () => {
                     <Card userId={activeProfileUserId} />
 
                     {/* Custom Tabs */}
-                    {isFetchingUser ? (
-                        <View className="flex-1 mt-4 items-center justify-center">
-                            <ActivityIndicator size="large" color="#b4ef02" />
-                            <Text className="font-manrope text-white mt-4">
-                                Loading profile...
-                            </Text>
-                        </View>
-                    ) : (
-                        <View className="flex-1 mt-4">
-                            {/* Tab Headers */}
-                            <View className="flex-row px-4 mb-4">
-                                <TouchableOpacity
-                                    className={`flex-1 py-4 ${
-                                        activeTab === "posts"
-                                            ? "border-b-2 border-[#b4ef02]"
-                                            : ""
-                                    }`}
-                                    onPress={() => setActiveTab("posts")}
-                                >
-                                    <Text
-                                        className={`font-manrope-bold tracking-wide text-center ${
-                                            activeTab === "posts"
-                                                ? "text-[#b4ef02]"
-                                                : "text-white"
-                                        }`}
-                                    >
-                                        Posts
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    className={`flex-1 py-4 ${
+                    <View className="flex-1 mt-4">
+                        {/* Tab Headers */}
+                        <View className="flex-row px-4 mb-4">
+                            <TouchableOpacity
+                                className={`flex-1 py-4 ${
+                                    activeTab === "portfolio"
+                                        ? "border-b-2 border-[#b4ef02]"
+                                        : ""
+                                }`}
+                                onPress={() => setActiveTab("portfolio")}
+                            >
+                                <Text
+                                    className={`font-manrope-bold tracking-wide text-center ${
                                         activeTab === "portfolio"
-                                            ? "border-b-2 border-[#b4ef02]"
-                                            : ""
+                                            ? "text-[#b4ef02]"
+                                            : "text-white"
                                     }`}
-                                    onPress={() => setActiveTab("portfolio")}
                                 >
-                                    <Text
-                                        className={`font-manrope-bold tracking-wide text-center ${
-                                            activeTab === "portfolio"
-                                                ? "text-[#b4ef02]"
-                                                : "text-white"
-                                        }`}
-                                    >
-                                        Portfolio
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* Tab Content */}
-                            <View className="flex-1">{renderContent()}</View>
+                                    Portfolio
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                className={`flex-1 py-4 ${
+                                    activeTab === "posts"
+                                        ? "border-b-2 border-[#b4ef02]"
+                                        : ""
+                                }`}
+                                onPress={() => setActiveTab("posts")}
+                            >
+                                <Text
+                                    className={`font-manrope-bold tracking-wide text-center ${
+                                        activeTab === "posts"
+                                            ? "text-[#b4ef02]"
+                                            : "text-white"
+                                    }`}
+                                >
+                                    Posts
+                                </Text>
+                            </TouchableOpacity>
                         </View>
-                    )}
+
+                        {/* Tab Content */}
+                        <View className="flex-1">{renderContent()}</View>
+                    </View>
                 </View>
             </SafeAreaView>
         </Portal>

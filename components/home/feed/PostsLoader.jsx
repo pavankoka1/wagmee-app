@@ -51,4 +51,4 @@ function PostsLoader() {
     );
 }
 
-export default PostsLoader;
+export default React.memo(PostsLoader);

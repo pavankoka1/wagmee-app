@@ -1,14 +1,14 @@
-import { View, FlatList, RefreshControl, Animated, Text } from "react-native";
+import { View, Animated, Text } from "react-native";
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import useFeedStore from "@/hooks/useFeedStore";
-import FeedPost from "../home/FeedPost";
 import Header from "./Header";
 import Card from "./Card";
 import TabButton from "@/components/Tabs/TabButton";
+import OptimizedList from "../common/OptimizedList";
+import { Button } from "react-native-paper";
 
 const Posts = ({ handleTabChange }) => {
-    const { isFetchingPosts, postIds, feeds, fetchPosts, resetPosts } =
-        useFeedStore();
+    const { isFetchingPosts, postIds, fetchPosts, resetPosts } = useFeedStore();
     const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
@@ -16,11 +16,6 @@ const Posts = ({ handleTabChange }) => {
     }, []);
 
     const spinValue = useRef(new Animated.Value(0)).current;
-
-    const rotate = spinValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0deg", "360deg"],
-    });
 
     const startSpin = () => {
         spinValue.setValue(0);
@@ -44,9 +39,13 @@ const Posts = ({ handleTabChange }) => {
         setRefreshing(false);
     }, [resetPosts, fetchPosts]);
 
-    if (!postIds.length && !isFetchingPosts) {
-        return (
-            <View className="flex-1 flex-col justify-center items-center bg-[#161616]">
+    const handleLoadMore = useCallback(() => {
+        return fetchPosts();
+    }, [fetchPosts]);
+
+    const ListHeader = useCallback(
+        () => (
+            <View className="border-b-[2px] border-[#1F2023]">
                 <Header />
                 <Card />
                 <View className="flex flex-row">
@@ -57,54 +56,57 @@ const Posts = ({ handleTabChange }) => {
                         isActive={true}
                     />
                 </View>
+            </View>
+        ),
+        [handleTabChange]
+    );
+
+    const EmptyState = useCallback(
+        () => (
+            <View className="flex-1 flex-col justify-center items-center bg-[#161616]">
+                <ListHeader />
                 <View className="flex-1 flex-col justify-center items-center bg-[#161616]">
                     <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
                         You haven't posted anything yet!
                     </Text>
-                    <Text className="text-white font-manrope text-14">
+                    <Text className="text-white font-manrope text-14 mb-5">
                         Please try to pull down if you've posted just now!
                     </Text>
+                    <Button
+                        mode="contained"
+                        onPress={onRefresh}
+                        className="bg-primary-main text-12 !text-[#161616]"
+                        style={{
+                            paddingVertical: 4,
+                            paddingHorizontal: 16,
+                            borderRadius: 16,
+                        }}
+                        labelStyle={{ color: "#161616" }}
+                    >
+                        Refresh Feed
+                    </Button>
                 </View>
             </View>
-        );
+        ),
+        [ListHeader, onRefresh]
+    );
+
+    if (!postIds.length && !isFetchingPosts) {
+        return <EmptyState />;
     }
 
     return (
-        <FlatList
-            data={
-                isFetchingPosts ? [...postIds, ...Array(4).fill(null)] : postIds
-            }
-            renderItem={({ item }) => <FeedPost id={item} />}
-            keyExtractor={(item) =>
-                item ? "post-" + item : "loader-" + Math.random() * 10000
-            }
-            ListHeaderComponent={
-                <View className="border-b-[2px] border-[#1F2023]">
-                    <Header />
-                    <Card />
-                    <View className="flex flex-row">
-                        <TabButton
-                            title="Portfolio"
-                            onPress={handleTabChange}
-                        />
-                        <TabButton
-                            title="Posts"
-                            className="border-b-[3px] border-primary-main pb-5"
-                            isActive={true}
-                        />
-                    </View>
-                </View>
-            }
-            onEndReached={() => fetchPosts()}
-            onEndReachedThreshold={0.5}
-            initialNumToRender={3}
-            windowSize={5}
-            contentContainerStyle={{ backgroundColor: "#161616" }}
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
+        <OptimizedList
+            data={postIds}
+            isLoading={isFetchingPosts}
+            onEndReached={handleLoadMore}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            ListHeaderComponent={<ListHeader />}
+            keyPrefix="posts"
+            className="bg-[#161616]"
         />
     );
 };
 
-export default Posts;
+export default React.memo(Posts);

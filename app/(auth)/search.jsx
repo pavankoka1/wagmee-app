@@ -32,6 +32,11 @@ const Search = () => {
         { key: "stocks", title: "Stocks" },
     ]);
 
+    const handleTabChange = (newIndex) => {
+        setIndex(newIndex);
+        setQuery(""); // Clear search when switching tabs
+    };
+
     const renderScene = ({ route }) => {
         switch (route.key) {
             case "people":
@@ -72,7 +77,7 @@ const Search = () => {
                 <TabView
                     navigationState={{ index, routes }}
                     renderScene={renderScene}
-                    onIndexChange={setIndex}
+                    onIndexChange={handleTabChange}
                     initialLayout={{ width }}
                     renderTabBar={(props) => (
                         <TabBar

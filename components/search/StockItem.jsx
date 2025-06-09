@@ -39,11 +39,11 @@ function StockItem({ stock }) {
         <View>
             <TouchableOpacity onPress={() => setOpenStockDetailsSheet(true)}>
                 <View className="border-b border-[#1F2023] py-2 flex flex-row items-center">
-                    <LetterIcon
-                        fullName={stock.instrument_name} // Pass the full stock name
-                        backgroundColor={randomColor.backgroundColor}
-                        textColor={randomColor.textColor}
-                    />
+                    <View className="w-10 h-10 rounded-full bg-[#2A2A2A] flex items-center justify-center">
+                        <Text className="font-manrope-bold text-16 text-white">
+                            {stock.instrument_name[0].toUpperCase()}
+                        </Text>
+                    </View>
                     <View className="flex flex-col ml-3">
                         <View className="flex flex-row gap-1 items-center mb-[2px]">
                             <Text className="font-manrope-bold text-12 text-white">
