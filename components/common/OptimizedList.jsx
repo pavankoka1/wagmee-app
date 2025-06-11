@@ -60,9 +60,14 @@ const OptimizedList = ({
     const handleEndReached = useCallback(() => {
         if (!isLoading && !isFetchingMore.current && onEndReached) {
             isFetchingMore.current = true;
-            onEndReached().finally(() => {
+            const result = onEndReached();
+            if (result && typeof result.finally === "function") {
+                result.finally(() => {
+                    isFetchingMore.current = false;
+                });
+            } else {
                 isFetchingMore.current = false;
-            });
+            }
         }
     }, [isLoading, onEndReached]);
 

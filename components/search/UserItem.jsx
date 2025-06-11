@@ -1,15 +1,6 @@
-import {
-    View,
-    Text,
-    TouchableNativeFeedback,
-    Image,
-    KeyboardAvoidingView,
-    TouchableOpacity,
-    Keyboard,
-    Platform,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, Keyboard } from "react-native";
 import React, { useState } from "react";
-import { ActivityIndicator, Button } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import VerifiedIcon from "@/icons/VerifiedIcon";
 import clsx from "clsx";
 import replacePlaceholders from "@/utils/replacePlaceholders";
@@ -28,6 +19,7 @@ function UserItem({ item }) {
     const [loading, setLoading] = useState(false);
 
     function handleClick() {
+        Keyboard.dismiss();
         setLoading(true);
         if (following.includes(item.id)) {
             network
@@ -60,62 +52,74 @@ function UserItem({ item }) {
     }
 
     const handleNameClick = () => {
+        Keyboard.dismiss();
         setProfileBottomSheet(item.id);
     };
 
     const isFollowing = following.includes(item.id);
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <View className="border-b border-[#1F2023] py-2 flex flex-row items-center">
-                <Image
-                    source={{ uri: item.profilePictureUrl }}
-                    width={40}
-                    height={40}
-                    className="rounded-full mr-3"
-                />
-                <View className="flex flex-col">
-                    <TouchableOpacity
-                        onPress={handleNameClick}
-                        activeOpacity={0.7}
-                        className="flex flex-row gap-1 items-center mb-[2px]"
-                    >
-                        <Text className="font-manrope-bold text-12 text-white">
-                            {item.nickname}
-                        </Text>
-                        {item.isVerifiedUser && <VerifiedIcon />}
-                    </TouchableOpacity>
-                    <Text className="text-[#26F037] font-manrope-medium text-10">
-                        Portfolio - ₹8.6L
-                    </Text>
-                </View>
-                {loading ? (
-                    <ActivityIndicator size={16} className="ml-auto mr-6" />
-                ) : (
-                    <TouchableOpacity
-                        onPress={handleClick}
-                        activeOpacity={0.7}
-                        className="ml-auto"
-                    >
-                        <Text
-                            className={clsx(
-                                "ml-auto font-manrope-bold text-10 py-2 px-4 rounded-xl",
-                                {
-                                    "bg-primary-main text-[#292929]":
-                                        !isFollowing,
-                                    "text-primary-main border border-primary-main":
-                                        isFollowing,
-                                }
-                            )}
-                        >
-                            {isFollowing ? "Following" : "Follow"}
-                        </Text>
-                    </TouchableOpacity>
-                )}
+        <View className="border-b border-[#1F2023] py-4 flex flex-row items-center">
+            {/* <Image
+                source={{ uri: item.profilePictureUrl }}
+                width={40}
+                height={40}
+                className="rounded-full mr-3"
+            /> */}
+            <View className="w-10 h-10 rounded-full bg-[#2A2A2A] flex items-center justify-center mr-3">
+                <Text className="font-manrope-bold text-16 text-white">
+                    {(item.nickname || "U")[0].toUpperCase()}
+                </Text>
             </View>
-        </KeyboardAvoidingView>
+            <View className="flex flex-col">
+                <TouchableOpacity
+                    onPress={handleNameClick}
+                    activeOpacity={0.7}
+                    className="flex flex-row items-center mb-[2px]"
+                >
+                    <Text className="font-manrope-bold text-14 text-white">
+                        {item.nickname}
+                    </Text>
+                    {item.isVerifiedUser && (
+                        <View className="mt-1 ml-[2px]">
+                            <VerifiedIcon />
+                        </View>
+                    )}
+                </TouchableOpacity>
+                {/* <Text className="text-[#26F037] font-manrope-medium text-10">
+                    Portfolio - ₹8.6L
+                </Text> */}
+            </View>
+            <TouchableOpacity
+                onPress={handleClick}
+                activeOpacity={0.7}
+                className="ml-auto"
+                disabled={loading}
+            >
+                <Text
+                    className={clsx(
+                        "ml-auto font-manrope-bold text-12 py-3 px-5 rounded-xl w-28 text-center flex-row items-center justify-center",
+                        {
+                            "bg-primary-main text-[#292929]": !isFollowing,
+                            "text-[#ef4444] border border-[#ef4444] font-manrope-medium":
+                                isFollowing,
+                            "opacity-70": loading,
+                        }
+                    )}
+                >
+                    {loading ? (
+                        <ActivityIndicator
+                            size={16}
+                            color={isFollowing ? "#ef4444" : "#292929"}
+                        />
+                    ) : isFollowing ? (
+                        "Unfollow"
+                    ) : (
+                        "Follow"
+                    )}
+                </Text>
+            </TouchableOpacity>
+        </View>
     );
 }
 

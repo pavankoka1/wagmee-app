@@ -62,13 +62,13 @@ axiosInstance.interceptors.response.use(
                     );
                     break;
                 case 500:
-                    ToastAndroid.showWithGravityAndOffset(
-                        "Server Error: Something went wrong on the server.",
-                        ToastAndroid.LONG,
-                        ToastAndroid.TOP,
-                        25,
-                        50
-                    );
+                    // ToastAndroid.showWithGravityAndOffset(
+                    //     "Server Error: Something went wrong on the server.",
+                    //     ToastAndroid.LONG,
+                    //     ToastAndroid.TOP,
+                    //     25,
+                    //     50
+                    // );
                     break;
                 default:
                     ToastAndroid.showWithGravityAndOffset(

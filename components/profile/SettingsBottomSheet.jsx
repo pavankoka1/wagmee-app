@@ -23,6 +23,8 @@ import replacePlaceholders from "@/utils/replacePlaceholders";
 import clsx from "clsx";
 import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
+import * as WebBrowser from "expo-web-browser";
+import generateQueryParams from "@/utils/generateQueryParams";
 
 function SettingsBottomSheet({ isOpen, onClose }) {
     const router = useRouter();
@@ -87,7 +89,7 @@ function SettingsBottomSheet({ isOpen, onClose }) {
 
     const handleSignOut = async () => {
         try {
-            // Clear all stored tokens
+            // Clear all stored tokens first
             await SecureStore.deleteItemAsync(HEADERS_KEYS.TOKEN);
             await SecureStore.deleteItemAsync(HEADERS_KEYS.REFRESH_TOKEN);
             await SecureStore.deleteItemAsync(HEADERS_KEYS.USER_ID);
@@ -95,21 +97,23 @@ function SettingsBottomSheet({ isOpen, onClose }) {
                 HEADERS_KEYS.SMALLCASE_AUTH_TOKEN
             );
 
-            // Clear Auth0 session by opening logout URL
-            // const logoutUrl =
-            //     "https://dev-ejfqnjn20ph3kzag.us.auth0.com/v2/logout?client_id=sQhMHMtJ2ja30w3nMiKA4yTyN2m8CkbR&returnTo=tradetribe://redirect";
-            // await Linking.openURL(logoutUrl);
-
-            // Navigate to login screen
-            router.replace("/");
-        } catch (error) {
-            ToastAndroid.showWithGravityAndOffset(
-                "Error signing out",
-                ToastAndroid.LONG,
-                ToastAndroid.TOP,
-                25,
-                50
+            // Construct the logout URL with proper parameters
+            const logoutUrl = generateQueryParams(
+                "https://dev-ejfqnjn20ph3kzag.us.auth0.com/v2/logout",
+                {
+                    client_id: process.env.EXPO_PUBLIC_CLERK_AUTH0_CLIENT_ID,
+                    returnTo: "tradetribe://redirect",
+                }
             );
+
+            // Open the browser for logout
+            await WebBrowser.openBrowserAsync(logoutUrl);
+
+            await onClose();
+        } catch (error) {
+            console.error("Sign out error:", error);
+            // Even if there's an error, try to reload the app
+            await Updates.reloadAsync();
         }
     };
 
@@ -325,9 +329,9 @@ function SettingsBottomSheet({ isOpen, onClose }) {
 
                             <TouchableOpacity
                                 onPress={handleDeleteAccount}
-                                className="w-full bg-[#ef4444] h-12 rounded-2xl flex justify-center items-center"
+                                className="w-full border-[0.5px] border-[#ef4444] h-12 rounded-2xl flex justify-center items-center"
                             >
-                                <Text className="font-manrope-bold text-14 text-white leading-[20px]">
+                                <Text className="font-manrope-medium text-14 text-[#ef4444] leading-[20px]">
                                     Delete Account
                                 </Text>
                             </TouchableOpacity>

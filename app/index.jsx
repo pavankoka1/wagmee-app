@@ -1,14 +1,12 @@
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as AuthSession from "expo-auth-session";
-import { TokenResponse } from "expo-auth-session";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
-import { Alert, Platform, Text, TouchableOpacity } from "react-native";
+import { Alert, Platform, Text, TouchableOpacity, Linking } from "react-native";
 import AsyncStorage, {
     useAsyncStorage,
 } from "@react-native-async-storage/async-storage";
 // import * as WebBrowser from "expo-web-browser";
-import { Linking } from "react-native";
 import LoginScreen from "@/components/auth/Login";
 import { generateRandomBytes } from "expo-random";
 import * as Crypto from "expo-crypto"; // Import expo-crypto
@@ -54,13 +52,25 @@ export default function App() {
             responseType: "code",
             clientId: auth0ClientId,
             scopes: ["openid", "profile", "email"],
-            // codeChallenge: codeVerifier
-            //     ? generateCodeChallenge(codeVerifier)
-            //     : undefined,
-            // codeChallenge: generateCodeChallenge(),
-            // codeChallengeMethod: "S256",
+            prompt: "select_account", // Force account selection
+            extraParams: {
+                connection: "google-oauth2",
+                access_type: "offline",
+                login_hint: "", // Ensure no specific account is pre-selected
+                state: `${Date.now()}-${Math.random()
+                    .toString(36)
+                    .substring(7)}`,
+                include_granted_scopes: "true",
+            },
         },
-        { authorizationEndpoint }
+        {
+            authorizationEndpoint,
+            headers: {
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                Pragma: "no-cache",
+                Expires: "0",
+            },
+        }
     );
 
     useEffect(() => {
