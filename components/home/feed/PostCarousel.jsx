@@ -1,84 +1,84 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { View, Dimensions } from "react-native";
 import Carousel, { Pagination } from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
-import { useAdvancedSettings } from "@/hooks/useSettings";
 import { SlideItem } from "@/components/SlideItem";
 
+const PAGE_WIDTH = Dimensions.get("window").width - 32;
+const GAP = 4; // Gap between images
+
 /**
- * Renders the post's image carousel.
+ * Renders the post's image carousel with Instagram-like smoothness.
  * @param {Object} props
  * @param {string[]} props.mediaUrls - Array of image URLs
  * @param {Function} props.onImageClick - Callback function when an image is clicked
  */
-const PostCarousel = ({ mediaUrls, onImageClick }) => {
-    const screenWidth = Dimensions.get("window").width;
+const PostCarousel = React.memo(({ mediaUrls, onImageClick }) => {
     const carouselRef = useRef(null);
     const progress = useSharedValue(0);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const { advancedSettings } = useAdvancedSettings({
-        defaultSettings: {
-            autoPlay: false,
-            autoPlayInterval: 2000,
-            autoPlayReverse: false,
-            data: mediaUrls,
-            height: 258,
-            loop: true,
-            pagingEnabled: true,
-            snapEnabled: true,
-            vertical: false,
-            width: screenWidth - 32,
-        },
-    });
-
-    const handleCarouselLayout = () => {
-        setIsLoading(false);
-    };
+    const renderItem = React.useCallback(
+        ({ item, index }) => (
+            <View
+                style={{
+                    width: PAGE_WIDTH,
+                    height: 220,
+                    paddingHorizontal: GAP / 2,
+                }}
+            >
+                <SlideItem
+                    key={`${item}-${index}`}
+                    index={index}
+                    source={item}
+                    progress={progress}
+                    onImageClick={() => onImageClick?.(item, index)}
+                />
+            </View>
+        ),
+        [onImageClick]
+    );
 
     if (!mediaUrls?.length) {
         return null;
     }
 
     return (
-        <View className="w-full mt-4 my-2 relative">
+        <View className="w-full mt-4 my-2">
             <Carousel
                 ref={carouselRef}
-                autoPlayInterval={2000}
                 data={mediaUrls}
+                width={PAGE_WIDTH}
                 height={220}
-                loop={mediaUrls.length > 1}
+                loop={false}
                 pagingEnabled={true}
                 snapEnabled={true}
-                width={screenWidth - 32}
+                mode="parallax"
+                modeConfig={{
+                    parallaxScrollingScale: 0.85,
+                    parallaxScrollingOffset: 40,
+                    parallaxAdjacentItemScale: 0.85,
+                }}
                 style={{
-                    width: screenWidth - 32,
-                    opacity: isLoading ? 0 : 1,
+                    width: PAGE_WIDTH,
                 }}
                 onProgressChange={progress}
-                onLayout={handleCarouselLayout}
-                renderItem={({ item, index }) => (
-                    <SlideItem
-                        key={index}
-                        index={index}
-                        rounded={true}
-                        source={item}
-                        progress={parseInt(progress.value.toFixed(0))}
-                        onImageLoad={() => setIsLoading(false)}
-                        onImageClick={() => onImageClick?.(item, index)}
-                    />
-                )}
+                renderItem={renderItem}
+                defaultIndex={0}
+                enabled={true}
+                overscrollEnabled={false}
+                simultaneousHandlers={[]}
+                panGestureHandlerProps={{
+                    activeOffsetX: [-1, 1],
+                    minDist: 1,
+                    maxPointers: 1,
+                    minPointers: 1,
+                    failOffsetY: [-5, 5],
+                }}
+                windowSize={3}
+                snapToInterval={PAGE_WIDTH}
+                snapToAlignment="center"
+                scrollAnimationDuration={300}
             />
-            {isLoading && (
-                <View
-                    className="bg-gray-700 animate-pulse absolute w-full h-full"
-                    style={{
-                        borderRadius: 15,
-                        height: 220,
-                        width: screenWidth - 32,
-                    }}
-                />
-            )}
             {mediaUrls.length > 1 && (
                 <Pagination.Basic
                     progress={progress}
@@ -87,23 +87,25 @@ const PostCarousel = ({ mediaUrls, onImageClick }) => {
                     containerStyle={{
                         position: "relative",
                         alignSelf: "center",
-                        marginTop: 16,
+                        marginTop: 8,
                     }}
                     dotStyle={{
-                        width: 25,
-                        height: 4,
+                        width: 20,
+                        height: 3,
                         backgroundColor: "#b1b1b1",
-                        marginHorizontal: 4,
+                        marginHorizontal: 3,
                     }}
                     activeDotStyle={{
-                        width: 25,
-                        height: 4,
+                        width: 20,
+                        height: 3,
                         backgroundColor: "#b4ef02",
                     }}
                 />
             )}
         </View>
     );
-};
+});
+
+PostCarousel.displayName = "PostCarousel";
 
 export default PostCarousel;

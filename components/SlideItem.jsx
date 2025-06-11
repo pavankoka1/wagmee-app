@@ -1,105 +1,91 @@
-import React, { useMemo, useEffect, useState, useRef } from "react";
-import {
-    ActivityIndicator,
-    Dimensions,
-    StyleSheet,
-    View,
-    Text,
-    Pressable,
-} from "react-native";
-import Animated from "react-native-reanimated";
+import React from "react";
+import { View, Dimensions, Pressable } from "react-native";
 import { Image } from "expo-image";
+import Animated, {
+    useAnimatedStyle,
+    interpolate,
+    Extrapolate,
+} from "react-native-reanimated";
 
-export const SlideItem = (props) => {
-    const {
-        style,
-        index = 0,
-        rounded = true,
-        testID,
-        progress,
-        onImageLoad,
-        onImageClick,
-        ...animatedViewProps
-    } = props;
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-    const source = useMemo(() => props.source, [index, props.source]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [imageLoaded, setImageLoaded] = useState(false);
-    const timerRef = useRef(null);
+export const SlideItem = React.memo(
+    ({ source, index, progress, onImageClick }) => {
+        const handlePress = React.useCallback(() => {
+            onImageClick?.(index);
+        }, [onImageClick, index]);
 
-    useEffect(() => {
-        timerRef.current = setTimeout(() => {
-            imageLoaded && setIsLoading(false);
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-        }, 0);
+        // Animated styles for parallax effect
+        const animatedStyle = useAnimatedStyle(() => {
+            const inputRange = [index - 1, index, index + 1];
 
-        return () => clearTimeout(timerRef.current);
-    }, [imageLoaded, progress]);
+            // Scale interpolation
+            const scale = interpolate(
+                progress.value,
+                inputRange,
+                [0.85, 1, 0.85],
+                Extrapolate.CLAMP
+            );
 
-    const handleImageLoad = () => {
-        index === 0 && onImageLoad?.();
-        setImageLoaded(true);
-        setIsLoading(false);
-    };
+            // Parallax effect
+            const translateX = interpolate(
+                progress.value,
+                inputRange,
+                [-40, 0, 40],
+                Extrapolate.CLAMP
+            );
 
-    const handleImageError = () => {
-        setIsLoading(false);
-    };
+            return {
+                transform: [{ scale }, { translateX }],
+            };
+        }, [progress, index]);
 
-    const handleImageClick = () => {
-        onImageClick?.(index);
-    };
+        if (!source) {
+            return (
+                <View
+                    style={{
+                        height: 220,
+                        width: Dimensions.get("window").width - 32,
+                        backgroundColor: "#000000",
+                        borderRadius: 15,
+                    }}
+                />
+            );
+        }
 
-    if (!imageLoaded && progress !== index)
         return (
-            <View
-                className="bg-transparent"
-                style={{
-                    height: 220,
-                    width: Dimensions.get("window").width - 32,
-                }}
-            >
-                <View className="w-full h-full bg-gray-700 animate-pulse rounded-3xl"></View>
-            </View>
-        );
-
-    return (
-        <Animated.View
-            testID={testID}
-            style={[{ flex: 1 }, style]}
-            {...animatedViewProps}
-            className="relative"
-        >
-            {!isLoading ? (
-                <View className="absolute top-0 left-0 w-full h-full bg-transparent">
-                    <View className="w-full h-full bg-gray-700 animate-pulse rounded-3xl"></View>
-                </View>
-            ) : null}
-            <Pressable
-                onPress={handleImageClick}
-                style={({ pressed }) => [
+            <AnimatedPressable
+                onPress={handlePress}
+                style={[
                     {
-                        opacity: pressed ? 0.9 : 1,
-                        width: "100%",
-                        height: "100%",
+                        width: Dimensions.get("window").width - 32,
+                        height: 220,
+                        backgroundColor: "#000000",
+                        borderRadius: 15,
+                        overflow: "hidden",
                     },
+                    animatedStyle,
                 ]}
             >
-                <Animated.Image
-                    style={[
-                        rounded && { borderRadius: 15 },
-                        { opacity: isLoading || !imageLoaded ? 0 : 1 },
-                    ]}
-                    className="w-full h-full"
-                    source={{ uri: source }}
+                <Image
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 15,
+                    }}
+                    source={{
+                        uri: source,
+                        cachePolicy: "memory-disk",
+                    }}
                     contentFit="cover"
-                    onLoad={handleImageLoad}
-                    onError={handleImageError}
+                    transition={200}
+                    recyclingKey={`${source}-${index}`}
                 />
-            </Pressable>
-        </Animated.View>
-    );
-};
+            </AnimatedPressable>
+        );
+    }
+);
+
+SlideItem.displayName = "SlideItem";
 
 export default SlideItem;
