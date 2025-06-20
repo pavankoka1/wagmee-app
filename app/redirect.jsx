@@ -57,14 +57,17 @@ export default function Redirect() {
             refreshToken
         );
         await SecureStore.setItemAsync(HEADERS_KEYS.USER_ID, userId);
-        router.replace("/(auth)/home");
+        if (res.showOnboardingFlow) {
+            router.replace("/onboarding");
+        } else {
+            router.replace("/(auth)/home");
+        }
     }
 
     async function handleAuthentication() {
         const token = await SecureStore.getItemAsync(HEADERS_KEYS.TOKEN);
 
         if (code) {
-            console.log("code", code);
             network
                 .post(API_PATHS.getJwtToken, {
                     authorizationCode: code,

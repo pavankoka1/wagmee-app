@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { View, Dimensions } from "react-native";
 import { TabBar, TabView, SceneMap } from "react-native-tab-view";
-import CommentsBottomSheet from "@/components/home/CommentsBottomSheet";
-import SettingsBottomSheet from "@/components/profile/SettingsBottomSheet";
 import TrendingScreen from "@/components/home/TrendingScreen";
 import ForYouScreen from "@/components/home/ForYouScreen";
 

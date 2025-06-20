@@ -100,17 +100,17 @@ const Card = ({ userId }) => {
     return (
         <View className="py-2 px-4 gap-4 w-screen bg-[#161616]">
             <View className="flex flex-row gap-6 items-center">
-                {/* <Image
-                    source={{ uri: url || "https://via.placeholder.com/80" }}
+                <Image
+                    source={{ uri: url || currentUserDetails.userAvatarUrl }}
                     width={80}
                     height={80}
                     className="rounded-full"
-                /> */}
-                <View className="w-20 h-20 rounded-full bg-[#2A2A2A] flex items-center justify-center">
+                />
+                {/* <View className="w-20 h-20 rounded-full bg-[#2A2A2A] flex items-center justify-center">
                     <Text className="font-manrope-bold text-32 text-white">
                         {(renderDetails?.name || "U")[0].toUpperCase()}
                     </Text>
-                </View>
+                </View> */}
                 <View className="flex flex-col gap-2 h-fit flex-1">
                     <Text className="font-manrope-bold text-18 text-white leading-[24px]">
                         {renderDetails?.userName || "Unknown User"}

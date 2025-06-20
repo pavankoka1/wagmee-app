@@ -38,14 +38,13 @@ const Search = () => {
     };
 
     const renderScene = ({ route }) => {
-        switch (route.key) {
-            case "people":
-                return <UserList query={query} />;
-            case "stocks":
-                return <StocksList query={query} />;
-            default:
-                return null;
+        if (route.key === "people" && index === 0) {
+            return <UserList query={query} />;
         }
+        if (route.key === "stocks" && index === 1) {
+            return <StocksList query={query} />;
+        }
+        return null;
     };
 
     return (

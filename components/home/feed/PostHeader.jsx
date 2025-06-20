@@ -31,7 +31,7 @@ const PostHeader = memo(
                 <Image
                     width={40}
                     height={40}
-                    source={{ uri: authorDetails.profilePictureUrl }}
+                    source={{ uri: authorDetails.userAvatarUrl }}
                     className="rounded-full mr-2"
                 />
                 <View className="flex-1 flex-col gap-1">

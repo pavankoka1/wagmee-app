@@ -7,6 +7,7 @@ import replacePlaceholders from "@/utils/replacePlaceholders";
 import useUserStore from "@/hooks/useUserStore";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
+import { formatNumber } from "@/utils/formatNumber";
 
 function UserItem({ item }) {
     const {
@@ -60,17 +61,21 @@ function UserItem({ item }) {
 
     return (
         <View className="border-b border-[#1F2023] py-4 flex flex-row items-center">
-            {/* <Image
-                source={{ uri: item.profilePictureUrl }}
-                width={40}
-                height={40}
-                className="rounded-full mr-3"
-            /> */}
-            <View className="w-10 h-10 rounded-full bg-[#2A2A2A] flex items-center justify-center mr-3">
-                <Text className="font-manrope-bold text-16 text-white">
-                    {(item.nickname || "U")[0].toUpperCase()}
-                </Text>
-            </View>
+            {item.userAvatarUrl ? (
+                <Image
+                    source={{ uri: item.userAvatarUrl }}
+                    width={40}
+                    height={40}
+                    className="rounded-full mr-3"
+                />
+            ) : (
+                <View className="w-10 h-10 rounded-full bg-[#2A2A2A] flex items-center justify-center mr-3">
+                    <Text className="font-manrope-bold text-16 text-white">
+                        {(item.nickname || "U")[0].toUpperCase()}
+                    </Text>
+                </View>
+            )}
+
             <View className="flex flex-col">
                 <TouchableOpacity
                     onPress={handleNameClick}
@@ -86,9 +91,9 @@ function UserItem({ item }) {
                         </View>
                     )}
                 </TouchableOpacity>
-                {/* <Text className="text-[#26F037] font-manrope-medium text-10">
-                    Portfolio - ₹8.6L
-                </Text> */}
+                <Text className="text-[#26F037] font-manrope-medium text-10">
+                    Portfolio - {formatNumber(item.userPortfolioValue)}
+                </Text>
             </View>
             <TouchableOpacity
                 onPress={handleClick}
@@ -101,7 +106,7 @@ function UserItem({ item }) {
                         "ml-auto font-manrope-bold text-12 py-3 px-5 rounded-xl w-28 text-center flex-row items-center justify-center",
                         {
                             "bg-primary-main text-[#292929]": !isFollowing,
-                            "text-[#ef4444] border border-[#ef4444] font-manrope-medium":
+                            "text-[#B1B1B1] border border-[#444] font-manrope-medium":
                                 isFollowing,
                             "opacity-70": loading,
                         }
@@ -110,7 +115,7 @@ function UserItem({ item }) {
                     {loading ? (
                         <ActivityIndicator
                             size={16}
-                            color={isFollowing ? "#ef4444" : "#292929"}
+                            color={isFollowing ? "#B1B1B1" : "#292929"}
                         />
                     ) : isFollowing ? (
                         "Unfollow"

@@ -48,7 +48,7 @@ const MultiSelectSearch = ({
                     width={40}
                     height={40}
                     className="rounded-full"
-                    source={{ uri: item.profilePictureUrl }}
+                    source={{ uri: item.userAvatarUrl }}
                 />
                 <Text
                     className={clsx([

@@ -33,13 +33,13 @@ function StocksList({ onClose }) {
             setData(res.data);
             setIsLoading(false);
         } catch (err) {
-            ToastAndroid.showWithGravityAndOffset(
-                "Unable to fetch holdings,\n Please login again!",
-                ToastAndroid.LONG,
-                ToastAndroid.TOP,
-                25,
-                50
-            );
+            // ToastAndroid.showWithGravityAndOffset(
+            //     "Unable to fetch holdings,\n Please login again!",
+            //     ToastAndroid.LONG,
+            //     ToastAndroid.TOP,
+            //     25,
+            //     50
+            // );
             onClose();
         }
     }

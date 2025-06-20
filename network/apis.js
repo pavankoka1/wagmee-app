@@ -12,6 +12,7 @@ const API_PATHS = {
     unfollow: "/api/v1/followers/{0}/{1}",
     follow: "/api/v1/followers",
     updateUserDetails: "/api/v1/user/{0}",
+    deleteUser: "/api/v1/user/{0}",
     getCommentsByPostId: "/api/v1/comments/post/{0}",
     addComment: "/api/v1/comments",
     addLike: "/api/v1/likes",

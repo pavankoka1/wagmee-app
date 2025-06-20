@@ -1,61 +1,86 @@
-import { View, Text, FlatList } from "react-native";
-import React, { useEffect, useState, useRef } from "react";
-import network from "@/network";
-import API_PATHS from "@/network/apis";
-import generateQueryParams from "@/utils/generateQueryParams";
-import VerifiedIcon from "@/icons/VerifiedIcon";
-import clsx from "clsx";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import useUserStore from "@/hooks/useUserStore";
-import { ActivityIndicator, IconButton } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import UserItem from "./UserItem";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import useUserSearchStore from "@/hooks/useUserSearchStore";
 
 function UserList({ query }) {
-    const timerRef = useRef();
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(false);
     const { following, details } = useUserStore();
+    const { userMap, loadingMap, errorMap, fetchUsers } = useUserSearchStore();
+    const debounceRef = useRef();
+    const lastNonEmptyRef = useRef({ users: [], query: "" });
+    const [debouncing, setDebouncing] = useState(false);
 
     useEffect(() => {
-        // Clear the previous timer if it exists
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-        }
-
-        // Set a new timer
-        if (query) {
-            setLoading(true);
-            timerRef.current = setTimeout(() => {
-                network
-                    .get(
-                        generateQueryParams(API_PATHS.getUsersByParams, {
-                            query,
-                        })
-                    )
-                    .then((res) => {
-                        console.log(res);
-                        setUsers(res);
-                        setLoading(false);
-                    })
-                    .catch(() => {
-                        setLoading(false);
-                    });
-            }, 300); // Adjust the debounce delay as needed (300ms in this case)
-        } else {
-            setUsers([]);
-            setLoading(false);
-        }
-
-        // Cleanup function to clear the timer on component unmount or when query changes
+        setDebouncing(true);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            setDebouncing(false);
+            fetchUsers(query || "");
+        }, 300);
         return () => {
-            clearTimeout(timerRef.current);
+            if (debounceRef.current) clearTimeout(debounceRef.current);
         };
-    }, [query]);
+    }, [query, fetchUsers]);
 
+    const users = userMap[query || ""] || [];
+    const loading = loadingMap[query || ""];
+    const error = errorMap[query || ""];
+
+    // Track last non-empty users and query
+    useEffect(() => {
+        if (users.length > 0) {
+            lastNonEmptyRef.current = { users, query };
+        }
+    }, [users, query]);
+
+    // 1. While typing (debouncing): show previous results
+    if (debouncing) {
+        return (
+            <View className="flex-1 py-6">
+                <FlatList
+                    data={lastNonEmptyRef.current.users.filter(
+                        (user) => user.id !== details.id
+                    )}
+                    renderItem={({ item }) => (
+                        <UserItem
+                            item={item}
+                            following={following}
+                            details={details}
+                        />
+                    )}
+                    keyExtractor={(item) => "user-list-key-" + item.id}
+                />
+            </View>
+        );
+    }
+
+    // 2. After debounce, while fetching: show only loader
     if (loading) {
         return (
             <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size={24} />
+            </View>
+        );
+    }
+
+    // 3. After fetch: show results or zero state
+    if (error) {
+        return (
+            <View className="flex-1 justify-center items-center px-8">
+                <MaterialCommunityIcons
+                    name="alert-circle-outline"
+                    size={64}
+                    color="#B1B1B1"
+                />
+                <Text className="text-[#B1B1B1] font-manrope-bold text-18 mb-2 mt-4 text-center">
+                    Error
+                </Text>
+                <Text className="text-white font-manrope text-14 text-center">
+                    {error}
+                </Text>
             </View>
         );
     }
