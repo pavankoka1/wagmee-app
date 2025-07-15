@@ -12,10 +12,12 @@ import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
 import UserProfilePortfolio from "./UserProfilePortfolio";
 import UserProfilePosts from "./UserProfilePosts";
+import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 
 const UserProfileBottomSheet = () => {
     const { activeProfileUserId, setProfileBottomSheet, details } =
         useUserStore();
+    const { isFollowSheetOpen } = useBottomSheetStore();
     const {
         userProfilePostIds,
         userProfileOffsets,
@@ -26,7 +28,7 @@ const UserProfileBottomSheet = () => {
     } = useFeedStore();
     const currentUserId = SecureStore.getItem(HEADERS_KEYS.USER_ID);
 
-    const isOpen = !!activeProfileUserId;
+    const isOpen = !!activeProfileUserId && !isFollowSheetOpen;
     const postIds = userProfilePostIds[activeProfileUserId] || [];
 
     // State for user details

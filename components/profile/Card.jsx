@@ -5,10 +5,16 @@ import { Button } from "react-native-paper";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import replacePlaceholders from "@/utils/replacePlaceholders";
+import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 
 const Card = ({ userId }) => {
-    const { details: currentUserDetails, setSettingsBottomSheet } =
-        useUserStore();
+    const {
+        details: currentUserDetails,
+        setSettingsBottomSheet,
+        following,
+        followers,
+    } = useUserStore();
+    const { openFollowSheet } = useBottomSheetStore();
     const [userDetails, setUserDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -33,12 +39,22 @@ const Card = ({ userId }) => {
         }
     }, [userId, currentUserDetails]);
 
+    const handleFollowersPress = () => {
+        const id = userId || currentUserDetails.id;
+        openFollowSheet("Followers", id);
+    };
+
+    const handleFollowingPress = () => {
+        const id = userId || currentUserDetails.id;
+        openFollowSheet("Following", id);
+    };
+
     // Determine which details to render
     const renderDetails = userDetails || {};
 
-    const url = renderDetails?.userAvatarUrl
-        ? renderDetails?.userAvatarUrl
-        : renderDetails?.profilePictureUrl;
+    const url = renderDetails?.userAvatarUrl;
+
+    console.log(renderDetails);
 
     // Shimmer effect for loading state
     if (isLoading) {
@@ -100,12 +116,20 @@ const Card = ({ userId }) => {
     return (
         <View className="py-2 px-4 gap-4 w-screen bg-[#161616]">
             <View className="flex flex-row gap-6 items-center">
-                <Image
-                    source={{ uri: url || currentUserDetails.userAvatarUrl }}
-                    width={80}
-                    height={80}
-                    className="rounded-full"
-                />
+                {url ? (
+                    <Image
+                        source={{ uri: url }}
+                        width={80}
+                        height={80}
+                        className="rounded-full mr-3"
+                    />
+                ) : (
+                    <View className="w-20 h-20 rounded-full bg-[#2A2A2A] flex items-center justify-center mr-3">
+                        <Text className="font-manrope-bold text-16 text-white">
+                            {(renderDetails.nickname || "U")[0].toUpperCase()}
+                        </Text>
+                    </View>
+                )}
                 {/* <View className="w-20 h-20 rounded-full bg-[#2A2A2A] flex items-center justify-center">
                     <Text className="font-manrope-bold text-32 text-white">
                         {(renderDetails?.name || "U")[0].toUpperCase()}
@@ -124,22 +148,28 @@ const Card = ({ userId }) => {
                                 Posts
                             </Text>
                         </View>
-                        <View className="flex flex-col gap-1 items-center h-fit w-fit">
+                        <TouchableOpacity
+                            className="flex flex-col gap-1 items-center h-fit w-fit"
+                            onPress={handleFollowingPress}
+                        >
                             <Text className="font-manrope-bold text-primary-main">
-                                {renderDetails?.followingCount || 0}
+                                {following.length}
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Following
                             </Text>
-                        </View>
-                        <View className="flex flex-col gap-1 items-center h-fit w-fit">
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            className="flex flex-col gap-1 items-center h-fit w-fit"
+                            onPress={handleFollowersPress}
+                        >
                             <Text className="font-manrope-bold text-primary-main">
-                                {renderDetails?.followersCount || 0}
+                                {followers.length}
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Followers
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>

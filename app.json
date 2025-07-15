@@ -4,7 +4,7 @@
         "slug": "trade-tribe-app",
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "./assets/images/login/arrow.png",
+        "icon": "./assets/images/login/logo.png",
         "backgroundColor": "#161616",
         "scheme": "tradetribe",
         "userInterfaceStyle": "automatic",
@@ -25,7 +25,7 @@
         },
         "android": {
             "adaptiveIcon": {
-                "foregroundImage": "./assets/images/login/arrow.png",
+                "foregroundImage": "./assets/images/login/logo.png",
                 "backgroundColor": "#161616"
             },
             "package": "com.pavankoka1.tradetribe",
@@ -45,7 +45,7 @@
         "web": {
             "bundler": "metro",
             "output": "static",
-            "favicon": "./assets/images/login/arrow.png"
+            "favicon": "./assets/images/login/logo.png"
         },
         "plugins": [
             "expo-router",

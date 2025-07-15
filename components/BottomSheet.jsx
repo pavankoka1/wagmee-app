@@ -53,7 +53,7 @@ const BottomSheet = ({
         <Modal
             transparent
             visible={isVisible}
-            animationType="slide"
+            animationType="none"
             onRequestClose={onClose}
         >
             <TouchableWithoutFeedback onPress={handleOverlayClick}>

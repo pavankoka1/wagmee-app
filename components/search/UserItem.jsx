@@ -82,11 +82,18 @@ function UserItem({ item }) {
                     activeOpacity={0.7}
                     className="flex flex-row items-center mb-[2px]"
                 >
-                    <Text className="font-manrope-bold text-14 text-white">
-                        {item.nickname}
-                    </Text>
+                    <View style={{ flexGrow: 1, maxWidth: "160" }}>
+                        <Text
+                            className="font-manrope-bold text-14 text-white"
+                            numberOfLines={1} // Keep this for truncation to one line
+                            ellipsizeMode="tail"
+                            style={{ flexShrink: 1 }} // Added flexShrink
+                        >
+                            {item.userName}
+                        </Text>
+                    </View>
                     {item.isVerifiedUser && (
-                        <View className="mt-1 ml-[2px]">
+                        <View className="mt-1">
                             <VerifiedIcon />
                         </View>
                     )}
@@ -95,6 +102,7 @@ function UserItem({ item }) {
                     Portfolio - {formatNumber(item.userPortfolioValue)}
                 </Text>
             </View>
+
             <TouchableOpacity
                 onPress={handleClick}
                 activeOpacity={0.7}

@@ -9,12 +9,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HEADERS_KEYS } from "@/network/constants";
 import * as SecureStore from "expo-secure-store";
 import replacePlaceholders from "@/utils/replacePlaceholders";
+import clearAppStorage from "@/utils/clearAppStorage";
 
 export default function Redirect() {
     const { code, refresh } = useLocalSearchParams();
     const router = useRouter();
 
     useEffect(() => {
+        // Clear all app storage when entering this page
+        clearAppStorage();
         handleAuthentication();
     }, [code, refresh]);
 
@@ -66,6 +69,9 @@ export default function Redirect() {
 
     async function handleAuthentication() {
         const token = await SecureStore.getItemAsync(HEADERS_KEYS.TOKEN);
+        const refreshToken = await SecureStore.getItemAsync(
+            HEADERS_KEYS.REFRESH_TOKEN
+        );
 
         if (code) {
             network
@@ -75,7 +81,7 @@ export default function Redirect() {
                 })
                 .then(onAuthSuccess)
                 .catch(onAuthFailure);
-        } else if (token) {
+        } else if (token || refreshToken) {
             checkIfUserIsValid();
         } else {
             onAuthFailure();

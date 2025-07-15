@@ -7,7 +7,7 @@ import generateQueryParams from "@/utils/generateQueryParams";
 import { ToastAndroid } from "react-native";
 import { HEADERS_KEYS } from "@/network/constants";
 
-const useUserStore = create((set, get) => ({
+const initialState = {
     openSettingsBottomSheet: false,
     activeProfileUserId: null,
     hasMorePosts: true,
@@ -19,6 +19,10 @@ const useUserStore = create((set, get) => ({
     postIds: [],
     postOffset: 0,
     details: {},
+};
+
+const useUserStore = create((set, get) => ({
+    ...initialState,
     setSettingsBottomSheet: (toggle) =>
         set({ openSettingsBottomSheet: toggle }),
     setProfileBottomSheet: (userId = null) =>
@@ -100,6 +104,7 @@ const useUserStore = create((set, get) => ({
             hasMorePosts: true,
         });
     },
+    reset: () => set(initialState),
 }));
 
 export default useUserStore;

@@ -52,7 +52,12 @@ const LoginContent = ({ onLoginPress, code, codeVerifier }) => {
             </View>
             <Text className="font-manrope tracking-wide text-12 text-white mt-6 text-center">
                 By Proceeding, I agree TradeTribe’s{" "}
-                <Text className="text-primary-main underline">
+                <Text
+                    className="text-primary-main underline"
+                    onPress={() => {
+                        Linking.openURL("https://wagmee.in/privacy.html");
+                    }}
+                >
                     T&C, Privacy Policy
                 </Text>
             </Text>

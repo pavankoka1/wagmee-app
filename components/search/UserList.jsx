@@ -1,10 +1,10 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import useUserStore from "@/hooks/useUserStore";
-import { ActivityIndicator } from "react-native-paper";
-import UserItem from "./UserItem";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import useUserSearchStore from "@/hooks/useUserSearchStore";
+import UserItem from "./UserItem";
+import UserListSkeleton from "@/components/search/UserListSkeleton";
 
 function UserList({ query }) {
     const { following, details } = useUserStore();
@@ -36,34 +36,14 @@ function UserList({ query }) {
         }
     }, [users, query]);
 
-    // 1. While typing (debouncing): show previous results
+    // 1. While typing (debouncing): show skeleton
     if (debouncing) {
-        return (
-            <View className="flex-1 py-6">
-                <FlatList
-                    data={lastNonEmptyRef.current.users.filter(
-                        (user) => user.id !== details.id
-                    )}
-                    renderItem={({ item }) => (
-                        <UserItem
-                            item={item}
-                            following={following}
-                            details={details}
-                        />
-                    )}
-                    keyExtractor={(item) => "user-list-key-" + item.id}
-                />
-            </View>
-        );
+        return <UserListSkeleton />;
     }
 
-    // 2. After debounce, while fetching: show only loader
+    // 2. After debounce, while fetching: show only skeleton
     if (loading) {
-        return (
-            <View className="flex-1 justify-center items-center">
-                <ActivityIndicator size={24} />
-            </View>
-        );
+        return <UserListSkeleton />;
     }
 
     // 3. After fetch: show results or zero state

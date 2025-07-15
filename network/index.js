@@ -1,8 +1,8 @@
 import generateRandomString from "@/utils/generateRandomString";
 import axios from "axios";
-import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { ToastAndroid } from "react-native";
+import { router } from "expo-router";
 
 const axiosInstance = axios.create({
     baseURL: process.env.EXPO_PUBLIC_API_DOMAIN,
@@ -17,6 +17,9 @@ axiosInstance.interceptors.request.use(
         const token = await SecureStore.getItemAsync("token");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+            // if (config.url.includes("/small-case/user/1/holdings")) {
+            //     config.headers.Authorization = "localo";
+            // }
         }
         return config;
     },
@@ -29,12 +32,14 @@ axiosInstance.interceptors.response.use(
     (response) => {
         return response.data;
     },
-    (error) => {
+    async (error) => {
         if (error.response) {
+            console.log(error.response);
             switch (error.response.status) {
                 case 401:
-                    const router = useRouter();
-                    router.replace("/redirect?refresh=true");
+                    console.log("Unauthorized: Clearing token and redirecting");
+                    // Clear the token
+                    await SecureStore.deleteItemAsync("token");
                     ToastAndroid.showWithGravityAndOffset(
                         "Unauthorized: Please log in again.",
                         ToastAndroid.LONG,
@@ -42,6 +47,8 @@ axiosInstance.interceptors.response.use(
                         25,
                         50
                     );
+                    // Redirect to login page
+                    router.replace("/redirect?refresh=true");
                     break;
                 case 403:
                     ToastAndroid.showWithGravityAndOffset(
@@ -51,6 +58,8 @@ axiosInstance.interceptors.response.use(
                         25,
                         50
                     );
+                    // Redirect to login page for 403 as well
+                    router.replace("/redirect?refresh=true");
                     break;
                 case 404:
                     ToastAndroid.showWithGravityAndOffset(

@@ -24,7 +24,7 @@ const FeedPost = memo(
         const userId = SecureStore.getItem(HEADERS_KEYS.USER_ID);
         const { feeds, removeLike, addLike } = useFeedStore();
         const {
-            followers,
+            following,
             details,
             setProfileBottomSheet,
             activeProfileUserId,
@@ -99,7 +99,7 @@ const FeedPost = memo(
                         authorDetails={authorDetails}
                         postDetails={postDetails}
                         userId={userId}
-                        followers={followers}
+                        following={following}
                         details={details}
                         setProfileBottomSheet={setProfileBottomSheet}
                         activeProfileUserId={activeProfileUserId}

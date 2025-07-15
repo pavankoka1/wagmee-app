@@ -20,6 +20,10 @@ const API_PATHS = {
     getSmallcaseTransactionId: "/api/v1/small-case/transaction_id",
     getHoldings: "/api/v1/small-case/user/{0}/holdings",
     getTrendingPosts: "/api/v1/posts/trending",
+    deletePost: "/api/v1/posts/post/{postId}",
+    editPost: "/api/v1/posts/post",
+    getFollowersList: "/api/v1/followers/user/{0}/followers",
+    getFollowingList: "/api/v1/followers/user/{0}/following",
 };
 
 export default API_PATHS;

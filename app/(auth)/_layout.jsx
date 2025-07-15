@@ -15,6 +15,7 @@ import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 import UserProfileBottomSheet from "@/components/profile/UserProfileBottomSheet";
+import FollowBottomSheet from "@/components/profile/FollowBottomSheet";
 
 export default function Layout() {
     const { setUserDetails, setFollowing, setFollowers, details } =
@@ -187,6 +188,7 @@ export default function Layout() {
                 </Tabs>
                 <CommentsBottomSheet userId={details.id} />
                 <UserProfileBottomSheet />
+                <FollowBottomSheet />
             </View>
         </SafeAreaProvider>
     );

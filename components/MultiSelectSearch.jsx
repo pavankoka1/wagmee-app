@@ -59,7 +59,7 @@ const MultiSelectSearch = ({
                         },
                     ])}
                 >
-                    @{item.nickname}
+                    @{item.userName}
                 </Text>
                 {/* {isSelected && <TickIcon color="#b4ef04" />} */}
             </TouchableOpacity>

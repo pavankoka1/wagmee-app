@@ -25,6 +25,8 @@ import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
 import * as WebBrowser from "expo-web-browser";
 import generateQueryParams from "@/utils/generateQueryParams";
+import RNRestart from "react-native-restart";
+import clearAppStorage from "@/utils/clearAppStorage";
 
 function SettingsBottomSheet({ isOpen, onClose }) {
     const router = useRouter();
@@ -89,14 +91,6 @@ function SettingsBottomSheet({ isOpen, onClose }) {
 
     const handleSignOut = async () => {
         try {
-            // Clear all stored tokens first
-            await SecureStore.deleteItemAsync(HEADERS_KEYS.TOKEN);
-            await SecureStore.deleteItemAsync(HEADERS_KEYS.REFRESH_TOKEN);
-            await SecureStore.deleteItemAsync(HEADERS_KEYS.USER_ID);
-            await SecureStore.deleteItemAsync(
-                HEADERS_KEYS.SMALLCASE_AUTH_TOKEN
-            );
-
             // Construct the logout URL with proper parameters
             const logoutUrl = generateQueryParams(
                 "https://dev-ejfqnjn20ph3kzag.us.auth0.com/v2/logout",
@@ -108,12 +102,21 @@ function SettingsBottomSheet({ isOpen, onClose }) {
 
             // Open the browser for logout
             await WebBrowser.openBrowserAsync(logoutUrl);
+            await clearAppStorage();
+            await SecureStore.deleteItemAsync(HEADERS_KEYS.TOKEN);
+            await SecureStore.deleteItemAsync(HEADERS_KEYS.REFRESH_TOKEN);
+            RNRestart.Restart();
 
             await onClose();
         } catch (error) {
             console.error("Sign out error:", error);
-            // Even if there's an error, try to reload the app
-            await Updates.reloadAsync();
+            ToastAndroid.showWithGravityAndOffset(
+                "Could not sign out completely.",
+                ToastAndroid.LONG,
+                ToastAndroid.TOP,
+                25,
+                50
+            );
         }
     };
 
@@ -138,23 +141,14 @@ function SettingsBottomSheet({ isOpen, onClose }) {
                                     details.id
                                 )
                             );
-
-                            // Clear all stored tokens
                             await SecureStore.deleteItemAsync(
                                 HEADERS_KEYS.TOKEN
                             );
                             await SecureStore.deleteItemAsync(
                                 HEADERS_KEYS.REFRESH_TOKEN
                             );
-                            await SecureStore.deleteItemAsync(
-                                HEADERS_KEYS.USER_ID
-                            );
-                            await SecureStore.deleteItemAsync(
-                                HEADERS_KEYS.SMALLCASE_AUTH_TOKEN
-                            );
-
-                            // Navigate to login screen
-                            router.replace("/");
+                            await clearAppStorage();
+                            RNRestart.Restart();
                         } catch (error) {
                             ToastAndroid.showWithGravityAndOffset(
                                 "Error deleting account",
