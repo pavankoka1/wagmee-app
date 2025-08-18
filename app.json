@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "Wagmee",
+        "name": "Wagmee Club",
         "slug": "trade-tribe-app",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -28,7 +28,7 @@
                 "foregroundImage": "./assets/images/login/logo.png",
                 "backgroundColor": "#161616"
             },
-            "package": "com.pavankoka1.tradetribe",
+            "package": "com.wagmee.app",
             "intentFilters": [
                 {
                     "action": "VIEW",

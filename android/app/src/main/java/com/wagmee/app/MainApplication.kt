@@ -1,4 +1,4 @@
-package com.pavankoka1.tradetribe
+package com.wagmee.app
 
 import android.app.Application
 import android.content.res.Configuration

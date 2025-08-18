@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'Wagmee'
+rootProject.name = 'Wagmee Club'
 
 dependencyResolutionManagement {
   versionCatalogs {

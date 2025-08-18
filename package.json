@@ -12,7 +12,9 @@
         "test": "jest --watchAll",
         "lint": "expo lint",
         "build-android": "ENVFILE=.env eas build -p android --profile preview",
-        "build-local": "expo prebuild && eas build --local"
+        "build-local": "(cd android && ./gradlew assembleWagmeeDebug)",
+        "build-local-release": "(cd android && ./gradlew assembleWagmeeRelease)",
+        "bump-build-release": "node scripts/bumpVersionAndBuild.js"
     },
     "jest": {
         "preset": "jest-expo"
