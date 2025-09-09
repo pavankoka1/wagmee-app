@@ -6,7 +6,7 @@
         "build-css": "sass styles/index.scss styles/index.css --watch",
         "start": "expo start --dev-client -c",
         "reset-project": "node ./scripts/reset-project.js",
-        "android": "expo prebuild && ENVFILE=.env expo run:android",
+        "android": "expo prebuild && ENVFILE=.env expo run:android --variant wagmeeDebug",
         "ios": "ENVFILE=.env expo run:ios",
         "web": "expo start --web",
         "test": "jest --watchAll",
