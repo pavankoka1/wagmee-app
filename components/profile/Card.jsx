@@ -1,11 +1,11 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import React, { useState, useEffect } from "react";
+import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 import useUserStore from "@/hooks/useUserStore";
-import { Button } from "react-native-paper";
+import VerifiedIcon from "@/icons/VerifiedIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import replacePlaceholders from "@/utils/replacePlaceholders";
-import useBottomSheetStore from "@/hooks/useBottomSheetStore";
+import React, { useEffect, useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 const Card = ({ userId }) => {
     const {
@@ -136,9 +136,14 @@ const Card = ({ userId }) => {
                     </Text>
                 </View> */}
                 <View className="flex flex-col gap-2 h-fit flex-1">
-                    <Text className="font-manrope-bold text-18 text-white leading-[24px]">
-                        {renderDetails?.userName || "Unknown User"}
-                    </Text>
+                    <View className="flex flex-row items-center">
+                        <Text className="font-manrope-bold text-18 text-white leading-[24px]">
+                            {renderDetails?.userName || "Unknown User"}
+                        </Text>
+                        {renderDetails?.isVerifiedUser ? (
+                            <VerifiedIcon className="ml-1 my-auto mt-4" />
+                        ) : null}
+                    </View>
                     <View className="flex flex-row gap-16">
                         <View className="flex flex-col gap-1 items-center h-fit w-fit">
                             <Text className="font-manrope-bold text-primary-main">
