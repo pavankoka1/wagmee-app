@@ -12,8 +12,8 @@
         "test": "jest --watchAll",
         "lint": "expo lint",
         "build-android": "ENVFILE=.env eas build -p android --profile preview",
-        "build-local": "(cd android && ./gradlew assembleWagmeeDebug)",
-        "build-local-release": "(cd android && ./gradlew assembleWagmeeRelease)",
+        "build-local": "(cd android && ./gradlew assembleDebug)",
+        "build-local-release": "(cd android && ./gradlew assembleRelease)",
         "bump-build-release": "node scripts/bumpVersionAndBuild.js"
     },
     "jest": {
@@ -95,14 +95,14 @@
         "@babel/core": "^7.25.2",
         "@react-native-community/cli": "latest",
         "@types/jest": "^29.5.12",
-        "@types/react": "~18.3.12",
+        "@types/react": "~19.0.10",
         "@types/react-test-renderer": "^18.3.0",
         "jest": "~29.7.0",
-        "jest-expo": "^52.0.2",
+        "jest-expo": "~53.0.10",
         "react-native-css-transformer": "^2.0.0",
         "react-test-renderer": "18.3.1",
         "sass": "^1.83.1",
-        "typescript": "^5.7.2"
+        "typescript": "~5.8.3"
     },
     "private": true
 }

@@ -39,7 +39,10 @@
                     ],
                     "category": ["BROWSABLE", "DEFAULT"]
                 }
-            ]
+            ],
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "minSdkVersion": 24
         },
         "description": "We don't just build apps, we build trust!",
         "web": {
