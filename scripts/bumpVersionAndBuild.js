@@ -46,6 +46,7 @@ if (fs.existsSync(aabPathRelease)) {
 
 // Build new .aab for release
 console.log("Building new release .aab (bundleRelease)...");
+console.log("Using release keystore for signing...");
 try {
     execSync("./gradlew bundleRelease", {
         stdio: "inherit",
@@ -55,6 +56,9 @@ try {
     console.log("Build complete!");
     if (fs.existsSync(aabPathRelease)) {
         console.log(`AAB generated at: ${aabPathRelease}`);
+        console.log(
+            "✅ Release AAB signed with release keystore (ready for Google Play Store)"
+        );
     }
 } catch (e) {
     console.error("Build failed:", e);

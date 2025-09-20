@@ -7,7 +7,7 @@ module.exports = (config) => {
                 ...config.ios?.infoPlist,
                 CFBundleURLTypes: [
                     {
-                        CFBundleURLSchemes: ["myapp"],
+                        CFBundleURLSchemes: ["tradetribe"],
                     },
                 ],
             },

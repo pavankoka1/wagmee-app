@@ -1,20 +1,25 @@
-import { View, Text, TouchableOpacity, ToastAndroid } from "react-native";
-import React, { useState } from "react";
-import CloseIcon from "@/icons/CloseIcon";
-import { router } from "expo-router";
-import { ActivityIndicator, Button } from "react-native-paper";
-import { TextInput } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
-import ImageIcon from "@/icons/ImageIcon";
 import ImageUploader from "@/components/ImageUploader";
 import MultiSelectSearch from "@/components/MultiSelectSearch";
-import PersonIcon from "@/icons/PersonIcon";
 import useGetUsers from "@/hooks/useGetUsers";
-import clsx from "clsx";
-import * as SecureStore from "expo-secure-store";
-import { HEADERS_KEYS } from "@/network/constants";
+import CloseIcon from "@/icons/CloseIcon";
+import ImageIcon from "@/icons/ImageIcon";
+import PersonIcon from "@/icons/PersonIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
+import { HEADERS_KEYS } from "@/network/constants";
+import { useNavigation } from "@react-navigation/native";
+import clsx from "clsx";
+import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import React, { useState } from "react";
+import {
+    SafeAreaView,
+    Text,
+    ToastAndroid,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { ActivityIndicator, Button, TextInput } from "react-native-paper";
 
 const Create = () => {
     const navigation = useNavigation();
@@ -60,7 +65,7 @@ const Create = () => {
     }
 
     return (
-        <View className="flex-1 px-4 bg-[#161616] py-5 gap-4">
+        <SafeAreaView className="flex-1 px-4 bg-[#161616] py-5 gap-4">
             <View className="flex flex-row items-center h-10">
                 <TouchableOpacity
                     className="items-center justify-center"
@@ -140,7 +145,7 @@ const Create = () => {
                     </Text>
                 </View>
             </MultiSelectSearch>
-        </View>
+        </SafeAreaView>
     );
 };
 

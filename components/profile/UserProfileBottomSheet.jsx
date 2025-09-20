@@ -1,18 +1,18 @@
-import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Portal } from "react-native-paper";
-import useUserStore from "@/hooks/useUserStore";
+import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 import useFeedStore from "@/hooks/useFeedStore";
-import Card from "./Card";
+import useUserStore from "@/hooks/useUserStore";
 import CloseIcon from "@/icons/CloseIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
+import { HEADERS_KEYS } from "@/network/constants";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 import * as SecureStore from "expo-secure-store";
-import { HEADERS_KEYS } from "@/network/constants";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Portal } from "react-native-paper";
+import Card from "./Card";
 import UserProfilePortfolio from "./UserProfilePortfolio";
 import UserProfilePosts from "./UserProfilePosts";
-import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 
 const UserProfileBottomSheet = () => {
     const { activeProfileUserId, setProfileBottomSheet, details } =
@@ -132,12 +132,12 @@ const UserProfileBottomSheet = () => {
                     {/* Custom Tabs */}
                     <View className="flex-1 mt-4">
                         {/* Tab Headers */}
-                        <View className="flex-row px-4 mb-4">
+                        <View className="flex-row px-4 mb-4 border-b border-[#1F2023]">
                             <TouchableOpacity
                                 className={`flex-1 py-4 ${
                                     activeTab === "portfolio"
                                         ? "border-b-2 border-[#b4ef02]"
-                                        : ""
+                                        : "border-b border-[#333333]"
                                 }`}
                                 onPress={() => setActiveTab("portfolio")}
                             >
@@ -145,7 +145,7 @@ const UserProfileBottomSheet = () => {
                                     className={`font-manrope-bold tracking-wide text-center ${
                                         activeTab === "portfolio"
                                             ? "text-[#b4ef02]"
-                                            : "text-white"
+                                            : "text-[#666666]"
                                     }`}
                                 >
                                     Portfolio
@@ -155,7 +155,7 @@ const UserProfileBottomSheet = () => {
                                 className={`flex-1 py-4 ${
                                     activeTab === "posts"
                                         ? "border-b-2 border-[#b4ef02]"
-                                        : ""
+                                        : "border-b border-[#333333]"
                                 }`}
                                 onPress={() => setActiveTab("posts")}
                             >
@@ -163,7 +163,7 @@ const UserProfileBottomSheet = () => {
                                     className={`font-manrope-bold tracking-wide text-center ${
                                         activeTab === "posts"
                                             ? "text-[#b4ef02]"
-                                            : "text-white"
+                                            : "text-[#666666]"
                                     }`}
                                 >
                                     Posts

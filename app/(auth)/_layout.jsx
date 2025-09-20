@@ -1,21 +1,21 @@
-import { Tabs } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { View, TouchableOpacity, Platform } from "react-native";
-import HomeIcon from "@/icons/HomeIcon";
-import SearchIcon from "@/icons/SearchIcon";
+import CommentsBottomSheet from "@/components/home/CommentsBottomSheet";
+import FollowBottomSheet from "@/components/profile/FollowBottomSheet";
+import UserProfileBottomSheet from "@/components/profile/UserProfileBottomSheet";
+import useUserStore from "@/hooks/useUserStore";
 import AddIcon from "@/icons/AddIcon";
 import BellIcon from "@/icons/BellIcon";
+import HomeIcon from "@/icons/HomeIcon";
 import PersonIcon from "@/icons/PersonIcon";
-import CommentsBottomSheet from "@/components/home/CommentsBottomSheet";
-import useUserStore from "@/hooks/useUserStore";
-import { useEffect } from "react";
-import * as SecureStore from "expo-secure-store";
+import SearchIcon from "@/icons/SearchIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
 import replacePlaceholders from "@/utils/replacePlaceholders";
-import UserProfileBottomSheet from "@/components/profile/UserProfileBottomSheet";
-import FollowBottomSheet from "@/components/profile/FollowBottomSheet";
+import { router, Tabs } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useEffect } from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Layout() {
     const { setUserDetails, setFollowing, setFollowers, details } =

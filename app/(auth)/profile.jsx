@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native";
 
 import Portfolio from "@/components/profile/Portfolio";
 import Posts from "@/components/profile/Posts";
@@ -16,10 +17,18 @@ const Profile = () => {
     const [activeTab, setActiveTab] = useState(tabs[0].key);
 
     if (activeTab === "portfolio") {
-        return <Portfolio handleTabChange={() => setActiveTab("posts")} />;
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#161616" }}>
+                <Portfolio handleTabChange={() => setActiveTab("posts")} />
+            </SafeAreaView>
+        );
     }
 
-    return <Posts handleTabChange={() => setActiveTab("portfolio")} />;
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#161616" }}>
+            <Posts handleTabChange={() => setActiveTab("portfolio")} />
+        </SafeAreaView>
+    );
 };
 
 export default Profile;

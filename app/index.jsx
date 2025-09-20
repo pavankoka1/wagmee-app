@@ -1,16 +1,14 @@
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import * as AuthSession from "expo-auth-session";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
-import { Alert, Platform, Text, TouchableOpacity, Linking } from "react-native";
-import AsyncStorage, {
-    useAsyncStorage,
-} from "@react-native-async-storage/async-storage";
+import { Alert, Linking, Platform } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 // import * as WebBrowser from "expo-web-browser";
 import LoginScreen from "@/components/auth/Login";
-import { generateRandomBytes } from "expo-random";
-import * as Crypto from "expo-crypto"; // Import expo-crypto
 import { HEADERS_KEYS } from "@/network/constants";
+import * as Crypto from "expo-crypto"; // Import expo-crypto
+import { generateRandomBytes } from "expo-random";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
@@ -100,9 +98,25 @@ export default function App() {
 
     useEffect(() => {
         const handleDeepLink = (url) => {
-            const parsedUrl = new URL(url);
-            const params = Object.fromEntries(parsedUrl.searchParams);
-            setCode(params.code);
+            console.log("Deep link received:", url);
+            try {
+                const parsedUrl = new URL(url);
+                const params = Object.fromEntries(parsedUrl.searchParams);
+                console.log("Extracted code:", params.code);
+                setCode(params.code);
+            } catch (error) {
+                console.error("Error parsing deep link URL:", error);
+                // Handle URLs that aren't valid URLs (like custom schemes)
+                if (url.includes("code=")) {
+                    const urlParts = url.split("?");
+                    if (urlParts.length > 1) {
+                        const params = new URLSearchParams(urlParts[1]);
+                        const code = params.get("code");
+                        console.log("Extracted code from custom URL:", code);
+                        setCode(code);
+                    }
+                }
+            }
         };
 
         const handleInitialUrl = async () => {
@@ -122,6 +136,46 @@ export default function App() {
             subscription.remove();
         };
     }, []);
+
+    useEffect(() => {
+        if (code && codeVerifier) {
+            console.log("Processing code from deep link:", code);
+            const getToken = async () => {
+                try {
+                    const codeRes = await AuthSession.exchangeCodeAsync(
+                        {
+                            code,
+                            redirectUri,
+                            clientId: auth0ClientId,
+                            extraParams: {
+                                code_verifier: codeVerifier,
+                            },
+                        },
+                        { tokenEndpoint }
+                    );
+
+                    const tokenConfig = codeRes?.getRequestConfig();
+                    const jwtToken = tokenConfig.accessToken;
+
+                    setToken(JSON.stringify(tokenConfig));
+                    const decoded = jwtDecode(jwtToken);
+                    setUser({ jwtToken, decoded });
+
+                    console.log(
+                        "Token exchange successful, redirecting to redirect page"
+                    );
+                    router.replace("/redirect?code=" + code);
+                } catch (error) {
+                    console.error("Error exchanging code:", error);
+                    Alert.alert(
+                        "Authentication Error",
+                        "Failed to exchange authorization code"
+                    );
+                }
+            };
+            getToken();
+        }
+    }, [code, codeVerifier]);
 
     useEffect(() => {
         const initializeAuth = async () => {

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { View, Dimensions } from "react-native";
-import { TabBar, TabView, SceneMap } from "react-native-tab-view";
-import TrendingScreen from "@/components/home/TrendingScreen";
 import ForYouScreen from "@/components/home/ForYouScreen";
+import TrendingScreen from "@/components/home/TrendingScreen";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import React, { useState } from "react";
+import { Dimensions, SafeAreaView } from "react-native";
+import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 
 const { width } = Dimensions.get("window");
 
@@ -24,7 +24,7 @@ const Home = () => {
     });
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#161616" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#161616" }}>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
@@ -47,7 +47,7 @@ const Home = () => {
                 )}
                 swipeEnabled={false}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 

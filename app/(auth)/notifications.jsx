@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated } from "react-native";
+import { Animated, SafeAreaView, Text } from "react-native";
 
 const Notifications = () => {
     const opacity = useRef(new Animated.Value(0)).current;
@@ -14,7 +14,7 @@ const Notifications = () => {
     }, [opacity]);
 
     return (
-        <View className="flex-1 bg-[#161616] items-center justify-center">
+        <SafeAreaView className="flex-1 bg-[#161616] items-center justify-center">
             <Animated.View style={{ opacity }} className="text-center">
                 {/* Align text to center */}
                 <Text className="text-white text-4xl font-bold text-center">
@@ -30,7 +30,7 @@ const Notifications = () => {
                     Don’t miss out on our news!
                 </Text>
             </Animated.View>
-        </View>
+        </SafeAreaView>
     );
 };
 

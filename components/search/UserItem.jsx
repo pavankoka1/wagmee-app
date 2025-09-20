@@ -1,13 +1,13 @@
-import { View, Text, Image, TouchableOpacity, Keyboard } from "react-native";
-import React, { useState } from "react";
-import { ActivityIndicator } from "react-native-paper";
-import VerifiedIcon from "@/icons/VerifiedIcon";
-import clsx from "clsx";
-import replacePlaceholders from "@/utils/replacePlaceholders";
 import useUserStore from "@/hooks/useUserStore";
+import VerifiedIcon from "@/icons/VerifiedIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { formatNumber } from "@/utils/formatNumber";
+import replacePlaceholders from "@/utils/replacePlaceholders";
+import clsx from "clsx";
+import React, { useState } from "react";
+import { Image, Keyboard, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 
 function UserItem({ item }) {
     const {
@@ -84,7 +84,7 @@ function UserItem({ item }) {
                 >
                     <View style={{ flexGrow: 1, maxWidth: "160" }}>
                         <Text
-                            className="font-manrope-bold text-14 text-white"
+                            className="font-manrope-bold text-14 text-white w-fit"
                             numberOfLines={1} // Keep this for truncation to one line
                             ellipsizeMode="tail"
                             style={{ flexShrink: 1 }} // Added flexShrink
