@@ -38,6 +38,9 @@ console.log(
     `Updated versionCode to ${newVersionCode}, versionName to ${newVersionName}`
 );
 
+// Note: AD_ID permission is now handled by manifest merger rules in AndroidManifest.xml
+// The tools:node="remove" attribute ensures it's removed during manifest merging
+
 // Delete old .aab if exists
 if (fs.existsSync(aabPathRelease)) {
     fs.unlinkSync(aabPathRelease);

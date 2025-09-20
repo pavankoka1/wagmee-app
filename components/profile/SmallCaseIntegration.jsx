@@ -27,6 +27,10 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             setDebugInfo("Configuring SmallCase SDK...");
             console.log("Configuring SmallCase SDK...");
 
+            // Configure SmallCase SDK for both platforms (fixed iOS BOOL* bug)
+            console.log(
+                "Configuring SmallCase with gateway: wagmee, environment: PROD"
+            );
             await SmallcaseGateway.setConfigEnvironment({
                 isLeprechaun: false,
                 isAmoEnabled: true,
@@ -34,6 +38,7 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
                 environmentName: SmallcaseGateway.ENV.PROD,
                 brokerList: [],
             });
+            console.log("SmallCase configuration completed successfully");
 
             setDebugInfo(
                 "SDK configured successfully, initializing session..."
@@ -42,23 +47,66 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             await initGatewaySession();
         } catch (err) {
             console.error("Error configuring SDK:", err);
-            setError(`Failed to configure SDK: ${err.message || err}`);
+            const errorMsg = `Failed to configure SDK: ${err.message || err}`;
+            setError(errorMsg);
             setDebugInfo(`SDK Configuration Error: ${err.message || err}`);
             setLoading(false);
-            Alert.alert(
-                "SDK Error",
-                `Failed to configure SDK: ${err.message || err}`
-            );
+            Alert.alert("SDK Error", errorMsg);
         }
     };
 
     const initGatewaySession = useCallback(async () => {
-        const jwtToken = getJwtToken();
         try {
             setDebugInfo("Initializing gateway session with JWT token...");
             console.log("Initializing gateway session with JWT token...");
 
+            // Validate that user is logged in before proceeding
+            const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
+            if (!userId) {
+                throw new Error(
+                    "User authentication required. Please log in to use SmallCase integration."
+                );
+            }
+
+            const jwtToken = await getJwtToken();
+            console.log("JWT token generated successfully for user:", userId);
+
+            // Log JWT payload for debugging (without the signature)
+            try {
+                const jwtParts = jwtToken.split(".");
+                if (jwtParts.length >= 2) {
+                    const payload = JSON.parse(atob(jwtParts[1]));
+                    console.log("JWT payload:", {
+                        userId: payload.userId,
+                        email: payload.email ? "present" : "missing",
+                        name: payload.name ? "present" : "missing",
+                        iat: payload.iat,
+                        exp: payload.exp,
+                    });
+
+                    // Check if user data is missing and provide guidance
+                    if (!payload.email || !payload.name) {
+                        console.warn(
+                            "SmallCase JWT missing user data. User needs to re-authenticate."
+                        );
+                        throw new Error(
+                            "SmallCase requires complete user information. Please log out and log back in to refresh your session, then try again."
+                        );
+                    }
+                }
+            } catch (decodeError) {
+                if (decodeError.message.includes("re-authenticate")) {
+                    throw decodeError; // Re-throw our custom error
+                }
+                console.warn(
+                    "Could not decode JWT for debugging:",
+                    decodeError
+                );
+            }
+
+            console.log("Calling SmallcaseGateway.init() with JWT token...");
             await SmallcaseGateway.init(jwtToken);
+            console.log("SmallcaseGateway.init() completed successfully");
             setIsInitialized(true);
 
             setDebugInfo(
@@ -71,6 +119,12 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             const res = await network.get(API_PATHS.getSmallcaseTransactionId);
             console.log("Transaction ID received:", res.transactionId);
 
+            if (!res.transactionId) {
+                throw new Error(
+                    "Failed to get transaction ID from backend. Please check SmallCase API integration."
+                );
+            }
+
             setDebugInfo(
                 `Transaction ID received: ${res.transactionId}, starting transaction...`
             );
@@ -79,12 +133,43 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             console.error("Error initializing gateway session:", err);
             const errorMessage =
                 err.userInfo?.message || err.message || "Unknown error";
-            setError(`Failed to initialize gateway session: ${errorMessage}`);
+
+            let finalErrorMessage;
+            if (errorMessage.includes("User authentication required")) {
+                finalErrorMessage =
+                    "Please log in to your account before using SmallCase integration.";
+            } else if (
+                errorMessage.includes(
+                    "Failed to generate SmallCase authentication token"
+                )
+            ) {
+                finalErrorMessage =
+                    "SmallCase authentication failed. Please contact support if the issue persists.";
+            } else if (
+                errorMessage.includes("re-authenticate") ||
+                errorMessage.includes("complete user information")
+            ) {
+                finalErrorMessage =
+                    "SmallCase requires complete user profile information. Please log out and log back in to refresh your session, then try SmallCase integration again.";
+            } else if (errorMessage.includes("SmallCase private key")) {
+                finalErrorMessage =
+                    "SmallCase configuration error: Private key not configured. Please set EXPO_PUBLIC_SMALLCASE_PRIVATEKEY environment variable with your SmallCase secret key.";
+            } else if (
+                errorMessage.toLowerCase().includes("error during init")
+            ) {
+                finalErrorMessage =
+                    "SmallCase authentication failed. Possible causes:\n" +
+                    "• Invalid SmallCase private key\n" +
+                    "• Gateway 'wagmee' not registered with SmallCase\n" +
+                    "• JWT token rejected by SmallCase backend\n\n" +
+                    "Please verify your SmallCase credentials and gateway registration.";
+            } else {
+                finalErrorMessage = `Failed to initialize gateway session: ${errorMessage}`;
+            }
+
+            setError(finalErrorMessage);
             setDebugInfo(`Gateway Session Error: ${errorMessage}`);
-            Alert.alert(
-                "Gateway Error",
-                `Failed to initialize gateway session: ${errorMessage}`
-            );
+            Alert.alert("Gateway Error", finalErrorMessage);
         } finally {
             setLoading(false);
         }
@@ -175,13 +260,13 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
                     await configureSdk();
                 } else {
                     setDebugInfo(
-                        "Existing token found, skipping configuration..."
+                        "Existing token found, proceeding with gateway initialization..."
                     );
                     console.log(
-                        "Existing SmallCase token found, skipping configuration"
+                        "Existing SmallCase token found, proceeding with initialization"
                     );
-                    setLoading(false);
-                    setIsInitialized(true);
+                    // Even with existing token, we need to initialize gateway and start transaction
+                    await configureSdk();
                 }
             } catch (err) {
                 console.error("Error checking auth token:", err);

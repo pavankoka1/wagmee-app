@@ -1,15 +1,13 @@
 // app/redirect.jsx
-import { useEffect } from "react";
-import { View, Text, Button, Alert } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
 import Loader from "@/components/Loader";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HEADERS_KEYS } from "@/network/constants";
-import * as SecureStore from "expo-secure-store";
-import replacePlaceholders from "@/utils/replacePlaceholders";
 import clearAppStorage from "@/utils/clearAppStorage";
+import replacePlaceholders from "@/utils/replacePlaceholders";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useEffect } from "react";
 
 export default function Redirect() {
     const { code, refresh } = useLocalSearchParams();
@@ -60,6 +58,21 @@ export default function Redirect() {
             refreshToken
         );
         await SecureStore.setItemAsync(HEADERS_KEYS.USER_ID, userId);
+
+        // Store additional user data needed for SmallCase JWT
+        if (res.email) {
+            await SecureStore.setItemAsync("user_email", res.email);
+        }
+        if (res.name) {
+            await SecureStore.setItemAsync("user_name", res.name);
+        }
+
+        console.log("User authentication data stored:", {
+            userId,
+            email: res.email,
+            name: res.name,
+        });
+
         if (res.showOnboardingFlow) {
             router.replace("/onboarding");
         } else {
