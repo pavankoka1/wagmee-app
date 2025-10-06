@@ -1,13 +1,13 @@
-import React, { memo, useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import VerifiedIcon from "@/icons/VerifiedIcon";
-import ThreeDotsIcon from "@/icons/ThreeDotsIcon";
-import moment from "moment";
-import { formatNumber } from "@/utils/formatNumber";
-import { ActivityIndicator } from "react-native-paper";
 import useUserStore from "@/hooks/useUserStore";
+import ThreeDotsIcon from "@/icons/ThreeDotsIcon";
+import VerifiedIcon from "@/icons/VerifiedIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
+import { formatNumber } from "@/utils/formatNumber";
+import moment from "moment";
+import React, { memo, useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 
 /**
  * Renders the post header with user details, follow button, portfolio, and timestamp.
@@ -51,8 +51,6 @@ const PostHeader = memo(
                     setLoading(false);
                 });
         };
-
-        console.log(authorDetails);
 
         return (
             <View className="flex flex-row items-center mr-2 mb-4">

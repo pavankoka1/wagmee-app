@@ -153,27 +153,48 @@ function StocksList({ onClose }) {
                         animatedToggleStyle,
                     ]}
                 />
-                <View className="flex-row justify-between items-center flex-1 px-3">
-                    <Text
-                        className={clsx(
-                            "text-xs font-medium",
-                            viewMode === "overall"
-                                ? "text-[#161616]"
-                                : "text-[#b1b1b1]"
-                        )}
+                <View
+                    className="flex-row items-center flex-1 px-2"
+                    style={{ height: 32 }}
+                >
+                    <View
+                        className="flex-1 items-center justify-center pr-2"
+                        style={{ height: 32 }}
                     >
-                        Overall
-                    </Text>
-                    <Text
-                        className={clsx(
-                            "text-xs font-medium",
-                            viewMode === "today"
-                                ? "text-[#161616]"
-                                : "text-[#b1b1b1]"
-                        )}
+                        <Text
+                            className={clsx(
+                                "text-xs font-medium",
+                                viewMode === "overall"
+                                    ? "text-[#161616]"
+                                    : "text-[#b1b1b1]"
+                            )}
+                            style={{
+                                lineHeight: 32,
+                                textAlignVertical: "center",
+                            }}
+                        >
+                            Overall
+                        </Text>
+                    </View>
+                    <View
+                        className="flex-1 items-center justify-center pl-2"
+                        style={{ height: 32 }}
                     >
-                        Today
-                    </Text>
+                        <Text
+                            className={clsx(
+                                "text-xs font-medium",
+                                viewMode === "today"
+                                    ? "text-[#161616]"
+                                    : "text-[#b1b1b1]"
+                            )}
+                            style={{
+                                lineHeight: 32,
+                                textAlignVertical: "center",
+                            }}
+                        >
+                            Today
+                        </Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         </View>
@@ -183,7 +204,6 @@ function StocksList({ onClose }) {
         if (isLoading) {
             return (
                 <View className="relative">
-                    {renderToggleButton()}
                     <View className="bg-[#1F2023] p-4 mx-4 mt-16 rounded-lg shadow-md">
                         <View className="flex-row justify-between">
                             <View>

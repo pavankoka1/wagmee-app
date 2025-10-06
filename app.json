@@ -13,7 +13,11 @@
         "ios": {
             "bundleIdentifier": "com.trade.tribe",
             "buildNumber": "1.0.0",
-            "supportsTablet": true
+            "supportsTablet": true,
+            "usesNonExemptEncryption": false,
+            "infoPlist": {
+                "ITSAppUsesNonExemptEncryption": false
+            }
         },
         "androidStatusBar": {
             "backgroundColor": "#161616",

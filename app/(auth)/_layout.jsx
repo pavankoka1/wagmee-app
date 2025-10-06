@@ -63,10 +63,9 @@ export default function Layout() {
                             backgroundColor: "#161616",
                             borderTopWidth: 2,
                             borderTopColor: "#1F2023",
-                            height: 80,
                             paddingHorizontal: 8, // Matches px-2 (8px)
                             paddingTop: 8, // 8px top padding
-                            paddingBottom: 8, // 8px bottom padding
+                            paddingBottom: Platform.OS === "ios" ? 8 : 8, // Safe area bottom for iOS
                         },
                         tabBarActiveTintColor: "#b4ef02",
                         tabBarInactiveTintColor: "#ffffff",
@@ -77,66 +76,75 @@ export default function Layout() {
                     tabBar={({ state, descriptors, navigation }) => (
                         <View
                             style={{
-                                flexDirection: "row",
                                 backgroundColor: "#161616",
                                 borderTopWidth: 2,
                                 borderTopColor: "#1F2023",
-                                height: 60,
-                                paddingHorizontal: 8,
-                                paddingTop: 10,
-                                paddingBottom: 8,
+                                paddingBottom: Platform.OS === "ios" ? 16 : 0,
                             }}
                         >
-                            {state.routes.map((route, index) => {
-                                const { options } = descriptors[route.key];
-                                const isFocused = state.index === index;
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    height: 60,
+                                    paddingHorizontal: 8,
+                                    paddingTop: 10,
+                                    paddingBottom: 8,
+                                }}
+                            >
+                                {state.routes.map((route, index) => {
+                                    const { options } = descriptors[route.key];
+                                    const isFocused = state.index === index;
 
-                                const onPress = () => {
-                                    const event = navigation.emit({
-                                        type: "tabPress",
-                                        target: route.key,
-                                        canPreventDefault: true,
-                                    });
+                                    const onPress = () => {
+                                        const event = navigation.emit({
+                                            type: "tabPress",
+                                            target: route.key,
+                                            canPreventDefault: true,
+                                        });
 
-                                    if (!isFocused && !event.defaultPrevented) {
-                                        navigation.navigate(route.name);
-                                    }
-                                };
+                                        if (
+                                            !isFocused &&
+                                            !event.defaultPrevented
+                                        ) {
+                                            navigation.navigate(route.name);
+                                        }
+                                    };
 
-                                return (
-                                    <TouchableOpacity
-                                        key={route.key}
-                                        accessibilityRole="button"
-                                        accessibilityState={{
-                                            selected: isFocused,
-                                        }}
-                                        onPress={onPress}
-                                        style={{
-                                            flex: 1,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            // Constrain touchable area to a 40x40 square around the icon
-                                            width: 40,
-                                            height: 40,
-                                        }}
-                                        // Android ripple effect
-                                        {...(Platform.OS === "android" &&
-                                            {
-                                                // rippleColor: "#b4ef02",
-                                                // android_ripple: {
-                                                //     borderless: false,
-                                                //     radius: 20, // Smaller ripple radius
-                                                // },
+                                    return (
+                                        <TouchableOpacity
+                                            key={route.key}
+                                            accessibilityRole="button"
+                                            accessibilityState={{
+                                                selected: isFocused,
+                                            }}
+                                            onPress={onPress}
+                                            style={{
+                                                flex: 1,
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                // Constrain touchable area to a 40x40 square around the icon
+                                                width: 40,
+                                                height: 40,
+                                            }}
+                                            // Android ripple effect
+                                            {...(Platform.OS === "android" &&
+                                                {
+                                                    // rippleColor: "#b4ef02",
+                                                    // android_ripple: {
+                                                    //     borderless: false,
+                                                    //     radius: 20, // Smaller ripple radius
+                                                    // },
+                                                })}
+                                        >
+                                            {options.tabBarIcon({
+                                                color: isFocused
+                                                    ? "#b4ef02"
+                                                    : "#ffffff",
                                             })}
-                                    >
-                                        {options.tabBarIcon({
-                                            color: isFocused
-                                                ? "#b4ef02"
-                                                : "#ffffff",
-                                        })}
-                                    </TouchableOpacity>
-                                );
-                            })}
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
                         </View>
                     )}
                 >

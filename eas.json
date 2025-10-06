@@ -10,6 +10,9 @@
             "android": {
                 "buildType": "apk",
                 "gradleCommand": ":app:assembleDebug"
+            },
+            "ios": {
+                "buildConfiguration": "Debug"
             }
         },
         "preview": {
@@ -17,12 +20,18 @@
             "android": {
                 "buildType": "apk",
                 "gradleCommand": ":app:assembleRelease"
+            },
+            "ios": {
+                "buildConfiguration": "Release"
             }
         },
         "production": {
             "android": {
                 "buildType": "app-bundle",
                 "gradleCommand": ":app:bundleRelease"
+            },
+            "ios": {
+                "buildConfiguration": "Release"
             },
             "autoIncrement": true
         }

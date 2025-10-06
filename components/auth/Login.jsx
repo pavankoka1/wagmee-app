@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, Image, Dimensions } from "react-native";
+import React from "react";
+import { Dimensions, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LoginContent from "./LoginContent";
 
@@ -7,7 +7,7 @@ import ARROW from "@/assets/images/login/arrow.png";
 
 const screenWidth = Dimensions.get("window").width;
 
-const LoginScreen = ({ onLoginPress, code, codeVerifier }) => {
+const LoginScreen = () => {
     return (
         <SafeAreaView className="relative flex-1 w-full bg-[#161616] !py-12 !px-4">
             <Image
@@ -19,11 +19,7 @@ const LoginScreen = ({ onLoginPress, code, codeVerifier }) => {
                     height: (261 / 335) * (screenWidth - 32),
                 }}
             />
-            <LoginContent
-                onLoginPress={onLoginPress}
-                code={code}
-                codeVerifier={codeVerifier}
-            />
+            <LoginContent />
         </SafeAreaView>
     );
 };

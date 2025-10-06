@@ -13,6 +13,7 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
+    Platform,
     SafeAreaView,
     Text,
     ToastAndroid,
@@ -65,7 +66,13 @@ const Create = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 px-4 bg-[#161616] py-5 gap-4">
+        <SafeAreaView
+            className="flex-1 bg-[#161616] py-5 gap-4"
+            style={{
+                paddingLeft: Platform.OS === "ios" ? 20 : 16,
+                paddingRight: Platform.OS === "ios" ? 20 : 16,
+            }}
+        >
             <View className="flex flex-row items-center h-10">
                 <TouchableOpacity
                     className="items-center justify-center"

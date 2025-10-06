@@ -1,12 +1,12 @@
-import { create } from "zustand";
-import { subscribeWithSelector } from "zustand/middleware";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
-import * as SecureStore from "expo-secure-store";
 import { HEADERS_KEYS } from "@/network/constants";
 import generateQueryParams from "@/utils/generateQueryParams";
-import { produce } from "immer";
 import replacePlaceholders from "@/utils/replacePlaceholders";
+import * as SecureStore from "expo-secure-store";
+import { produce } from "immer";
+import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 const useFeedStore = create(
     subscribeWithSelector((set, get) => ({
@@ -371,6 +371,38 @@ const useFeedStore = create(
                     state.postOffset = 0;
                     state.hasMorePosts = true;
                     state.error = null;
+                })
+            );
+        },
+
+        updateCommentCount: (postId, increment = true) => {
+            set(
+                produce((state) => {
+                    if (state.feeds[postId]) {
+                        if (state.feeds[postId].postDetails) {
+                            if (increment) {
+                                state.feeds[
+                                    postId
+                                ].postDetails.commentsCount += 1;
+                            } else {
+                                state.feeds[postId].postDetails.commentsCount =
+                                    Math.max(
+                                        0,
+                                        state.feeds[postId].postDetails
+                                            .commentsCount - 1
+                                    );
+                            }
+                        } else {
+                            if (increment) {
+                                state.feeds[postId].commentsCount += 1;
+                            } else {
+                                state.feeds[postId].commentsCount = Math.max(
+                                    0,
+                                    state.feeds[postId].commentsCount - 1
+                                );
+                            }
+                        }
+                    }
                 })
             );
         },

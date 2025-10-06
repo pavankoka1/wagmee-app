@@ -1,8 +1,9 @@
+import clearAppStorage from "@/utils/clearAppStorage";
 import generateRandomString from "@/utils/generateRandomString";
 import axios from "axios";
+import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { ToastAndroid } from "react-native";
-import { router } from "expo-router";
 
 const axiosInstance = axios.create({
     baseURL: process.env.EXPO_PUBLIC_API_DOMAIN,
@@ -38,10 +39,10 @@ axiosInstance.interceptors.response.use(
             switch (error.response.status) {
                 case 401:
                     console.log("Unauthorized: Clearing token and redirecting");
-                    // Clear the token
-                    await SecureStore.deleteItemAsync("token");
+                    // Clear all app storage and tokens
+                    await clearAppStorage();
                     ToastAndroid.showWithGravityAndOffset(
-                        "Unauthorized: Please log in again.",
+                        "Session expired: Please log in again.",
                         ToastAndroid.LONG,
                         ToastAndroid.TOP,
                         25,

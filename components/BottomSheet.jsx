@@ -1,16 +1,17 @@
+import CloseIcon from "@/icons/CloseIcon"; // Adjust the import path as necessary
+import clsx from "clsx";
+import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import {
-    View,
-    Modal,
-    TouchableWithoutFeedback,
     Animated,
-    Pressable,
+    Easing,
+    Modal,
+    Platform,
     TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
-import PropTypes from "prop-types";
-import CloseIcon from "@/icons/CloseIcon"; // Adjust the import path as necessary
-import { Easing } from "react-native"; // Import Easing
-import clsx from "clsx";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const BottomSheet = ({
     isOpen,
@@ -23,6 +24,7 @@ const BottomSheet = ({
 }) => {
     const [isVisible, setIsVisible] = useState(isOpen);
     const [translateY] = useState(new Animated.Value(300)); // Start off-screen
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         if (isOpen) {
@@ -69,9 +71,15 @@ const BottomSheet = ({
                         <TouchableOpacity
                             onPress={onClose}
                             className={clsx(
-                                "absolute top-4 right-4 p-4 z-[999999]",
+                                "absolute right-4 p-2 z-[999999]",
                                 closeClassName
                             )}
+                            style={{
+                                top:
+                                    Platform.OS === "ios"
+                                        ? insets.top + 20
+                                        : 40,
+                            }}
                         >
                             <CloseIcon />
                         </TouchableOpacity>

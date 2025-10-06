@@ -1,7 +1,7 @@
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { create } from "zustand";
-import useUserStore from "./useUserStore";
+import useFeedStore from "./useFeedStore";
 
 const useActivityStore = create((set, get) => ({
     isPostingComment: false,
@@ -36,6 +36,10 @@ const useActivityStore = create((set, get) => ({
                             isPostingComment: false,
                         };
                     });
+                    // Update comment count in feed store
+                    useFeedStore
+                        .getState()
+                        .updateCommentCount(activeCommentPostId, true);
                     resolve(res); // Resolve the promise with the response
                 })
                 .catch((error) => {

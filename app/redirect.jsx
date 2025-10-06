@@ -10,14 +10,46 @@ import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
 
 export default function Redirect() {
-    const { code, refresh } = useLocalSearchParams();
+    const { code, refresh, logout } = useLocalSearchParams();
     const router = useRouter();
 
     useEffect(() => {
-        // Clear all app storage when entering this page
-        clearAppStorage();
-        handleAuthentication();
-    }, [code, refresh]);
+        console.log("🔄 Redirect page loaded with params:", {
+            code,
+            refresh,
+            logout,
+        });
+
+        // If this is a logout return, clear storage and redirect to login
+        if (logout === "true") {
+            console.log(
+                "🚪 Logout return detected, clearing storage and redirecting to login"
+            );
+            clearAppStorage().then(() => {
+                console.log(
+                    "✅ Storage cleared after logout, redirecting to login"
+                );
+                router.replace("/");
+            });
+            return;
+        }
+
+        // Only clear storage if we have an authorization code (new login)
+        if (code) {
+            console.log(
+                "🔑 Authorization code found, clearing storage for fresh login"
+            );
+            clearAppStorage().then(() => {
+                // Add a small delay to ensure storage is cleared before checking authentication
+                setTimeout(() => {
+                    handleAuthentication();
+                }, 100);
+            });
+        } else {
+            // For existing tokens, just check authentication without clearing storage
+            handleAuthentication();
+        }
+    }, [code, refresh, logout]);
 
     async function checkIfUserIsValid() {
         const refreshToken = await SecureStore.getItemAsync(
@@ -41,9 +73,7 @@ export default function Redirect() {
 
     async function onAuthFailure(err) {
         // console.error(err);
-        await SecureStore.deleteItemAsync(HEADERS_KEYS.TOKEN);
-        await SecureStore.deleteItemAsync(HEADERS_KEYS.REFRESH_TOKEN);
-        await SecureStore.deleteItemAsync(HEADERS_KEYS.USER_ID);
+        await clearAppStorage();
         router.replace("/");
     }
 
@@ -86,7 +116,15 @@ export default function Redirect() {
             HEADERS_KEYS.REFRESH_TOKEN
         );
 
+        console.log(
+            "🔍 Authentication check - Token exists:",
+            !!token,
+            "Refresh token exists:",
+            !!refreshToken
+        );
+
         if (code) {
+            console.log("🔑 Authorization code found, getting JWT token...");
             network
                 .post(API_PATHS.getJwtToken, {
                     authorizationCode: code,
@@ -95,8 +133,10 @@ export default function Redirect() {
                 .then(onAuthSuccess)
                 .catch(onAuthFailure);
         } else if (token || refreshToken) {
+            console.log("🔄 Existing tokens found, checking validity...");
             checkIfUserIsValid();
         } else {
+            console.log("❌ No tokens found, redirecting to login...");
             onAuthFailure();
         }
     }

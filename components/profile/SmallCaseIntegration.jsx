@@ -189,11 +189,34 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             );
 
             console.log("Transaction response:", txnResponse);
+            console.log(
+                "Transaction response data type:",
+                typeof txnResponse.data
+            );
+            console.log("Transaction response data:", txnResponse.data);
             setDebugInfo("Transaction triggered, processing response...");
 
-            const smallcaseAuthToken = JSON.parse(
-                txnResponse.data
-            ).smallcaseAuthToken;
+            // Check if txnResponse.data is already an object or needs parsing
+            let responseData;
+            if (typeof txnResponse.data === "string") {
+                try {
+                    responseData = JSON.parse(txnResponse.data);
+                } catch (parseError) {
+                    throw new Error(
+                        `Failed to parse transaction response: ${parseError.message}`
+                    );
+                }
+            } else {
+                responseData = txnResponse.data;
+            }
+
+            if (!responseData || !responseData.smallcaseAuthToken) {
+                throw new Error(
+                    "Invalid transaction response: missing smallcaseAuthToken"
+                );
+            }
+
+            const smallcaseAuthToken = responseData.smallcaseAuthToken;
 
             console.log("SmallCase auth token received:", smallcaseAuthToken);
             setDebugInfo("Auth token received, fetching user ID...");
