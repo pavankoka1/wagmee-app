@@ -30,8 +30,8 @@ allprojects {
     google()
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
-
-    // Smallcase repositories
+    
+    // Smallcase Gateway repositories
     maven {
       url "https://artifactory.smallcase.com/artifactory/SCGateway"
       credentials {
@@ -39,15 +39,9 @@ allprojects {
         password "reactNativeUser123"
       }
     }
+    
     maven {
       url "https://artifactory.smallcase.com/artifactory/SCGateway-internal"
-      credentials {
-        username "react_native_user"
-        password "reactNativeUser123"
-      }
-    }
-    maven {
-      url "https://artifactory.smallcase.com/artifactory/gradle-dev-local"
       credentials {
         username "react_native_user"
         password "reactNativeUser123"

@@ -23,10 +23,6 @@
             "backgroundColor": "#161616",
             "barStyle": "light-content"
         },
-        "androidNavigationBar": {
-            "backgroundColor": "#161616",
-            "visible": "immersive"
-        },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/login/logo.png",
@@ -53,7 +49,8 @@
             ],
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "minSdkVersion": 24
+            "minSdkVersion": 24,
+            "edgeToEdgeEnabled": false
         },
         "description": "We don't just build apps, we build trust!",
         "web": {
