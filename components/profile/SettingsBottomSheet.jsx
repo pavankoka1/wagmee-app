@@ -102,7 +102,7 @@ function SettingsBottomSheet({ isOpen, onClose }) {
 
             // Construct the logout URL with proper parameters
             const logoutUrl = generateQueryParams(
-                "https://dev-ejfqnjn20ph3kzag.us.auth0.com/v2/logout",
+                "https://auth0.wagmee.in/v2/logout",
                 {
                     client_id: process.env.EXPO_PUBLIC_CLERK_AUTH0_CLIENT_ID,
                     returnTo: "tradetribe://redirect?logout=true",

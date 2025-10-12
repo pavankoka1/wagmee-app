@@ -7,7 +7,7 @@ const LoginContent = () => {
     const openAuthUrl = () => {
         // Use direct URL with account selection prompt
         const url =
-            "https://dev-ejfqnjn20ph3kzag.us.auth0.com/authorize?response_type=code&client_id=sQhMHMtJ2ja30w3nMiKA4yTyN2m8CkbR&redirect_uri=tradetribe://redirect&scope=openid profile email&prompt=select_account&max_age=0";
+            "https://auth0.wagmee.in/authorize?response_type=code&client_id=sQhMHMtJ2ja30w3nMiKA4yTyN2m8CkbR&redirect_uri=tradetribe://redirect&scope=openid profile email&prompt=select_account&max_age=0";
 
         Linking.openURL(url).catch((err) => {
             Alert.alert("Error", "Failed to open URL: " + err.message);
