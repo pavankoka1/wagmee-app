@@ -1,5 +1,6 @@
 // app/redirect.jsx
 import Loader from "@/components/Loader";
+import EulaAcceptanceModal from "@/components/auth/EulaAcceptanceModal";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
@@ -7,11 +8,15 @@ import clearAppStorage from "@/utils/clearAppStorage";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const EULA_ACCEPTED_KEY = "eula_accepted";
 
 export default function Redirect() {
     const { code, refresh, logout } = useLocalSearchParams();
     const router = useRouter();
+    const [showEulaModal, setShowEulaModal] = useState(false);
+    const [pendingUserData, setPendingUserData] = useState(null);
 
     useEffect(() => {
         console.log("🔄 Redirect page loaded with params:", {
@@ -103,9 +108,43 @@ export default function Redirect() {
             name: res.name,
         });
 
-        if (res.showOnboardingFlow) {
-            router.replace("/onboarding");
+        // Check if user has accepted EULA
+        const eulaAccepted = await SecureStore.getItemAsync(EULA_ACCEPTED_KEY);
+
+        if (!eulaAccepted || eulaAccepted !== "true") {
+            // Show EULA modal for first-time users
+            console.log("🔒 EULA not accepted, showing EULA modal");
+            setPendingUserData(res);
+            setShowEulaModal(true);
         } else {
+            // User has already accepted EULA, proceed normally
+            if (res.showOnboardingFlow) {
+                router.replace("/onboarding");
+            } else {
+                router.replace("/(auth)/home");
+            }
+        }
+    }
+
+    async function handleEulaAcceptance() {
+        try {
+            // Store EULA acceptance
+            await SecureStore.setItemAsync(EULA_ACCEPTED_KEY, "true");
+            console.log("✅ EULA accepted and stored");
+
+            // Close modal
+            setShowEulaModal(false);
+
+            // Continue with the flow
+            if (pendingUserData?.showOnboardingFlow) {
+                router.replace("/onboarding");
+            } else {
+                router.replace("/(auth)/home");
+            }
+        } catch (error) {
+            console.error("Error storing EULA acceptance:", error);
+            // Still allow user to proceed
+            setShowEulaModal(false);
             router.replace("/(auth)/home");
         }
     }
@@ -141,5 +180,13 @@ export default function Redirect() {
         }
     }
 
-    return <Loader />;
+    return (
+        <>
+            <Loader />
+            <EulaAcceptanceModal
+                isVisible={showEulaModal}
+                onAccept={handleEulaAcceptance}
+            />
+        </>
+    );
 }

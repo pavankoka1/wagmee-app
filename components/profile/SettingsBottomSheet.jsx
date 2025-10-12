@@ -350,8 +350,51 @@ function SettingsBottomSheet({ isOpen, onClose }) {
                                 )}
                             </TouchableOpacity>
 
+                            {/* Policy Links */}
+                            <View className="w-full mt-8 mb-4">
+                                <Text className="font-manrope-bold text-12 text-white mb-3">
+                                    Legal & Policies
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        WebBrowser.openBrowserAsync(
+                                            "https://wagmee.in/terms.html"
+                                        );
+                                    }}
+                                    className="py-3 border-b border-[#2f2f2f]"
+                                >
+                                    <Text className="font-manrope-medium text-14 text-[#B1B1B1]">
+                                        Terms of Service
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        WebBrowser.openBrowserAsync(
+                                            "https://wagmee.in/privacy.html"
+                                        );
+                                    }}
+                                    className="py-3 border-b border-[#2f2f2f]"
+                                >
+                                    <Text className="font-manrope-medium text-14 text-[#B1B1B1]">
+                                        Privacy Policy
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        WebBrowser.openBrowserAsync(
+                                            "https://wagmee.in/saftey-policy.html"
+                                        );
+                                    }}
+                                    className="py-3"
+                                >
+                                    <Text className="font-manrope-medium text-14 text-[#B1B1B1]">
+                                        Child Safety Policy
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
                             {/* Sign Out and Delete Account Buttons */}
-                            <View className="w-full mt-10 space-y-4 gap-4">
+                            <View className="w-full mt-4 space-y-4 gap-4">
                                 <TouchableOpacity
                                     onPress={handleSignOut}
                                     className="w-full bg-[#1F1F1F] h-12 rounded-2xl flex justify-center items-center"

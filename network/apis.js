@@ -24,6 +24,12 @@ const API_PATHS = {
     editPost: "/api/v1/posts/post",
     getFollowersList: "/api/v1/followers/user/{0}/followers",
     getFollowingList: "/api/v1/followers/user/{0}/following",
+    // Content moderation endpoints
+    reportPost: "/api/v1/moderation/report/post",
+    reportUser: "/api/v1/moderation/report/user",
+    blockUser: "/api/v1/moderation/block",
+    unblockUser: "/api/v1/moderation/block/{0}/{1}",
+    getBlockedUsers: "/api/v1/moderation/blocked/{0}",
 };
 
 export default API_PATHS;

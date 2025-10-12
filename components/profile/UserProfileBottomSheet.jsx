@@ -2,6 +2,7 @@ import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 import useFeedStore from "@/hooks/useFeedStore";
 import useUserStore from "@/hooks/useUserStore";
 import CloseIcon from "@/icons/CloseIcon";
+import ThreeDotsIcon from "@/icons/ThreeDotsIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
@@ -11,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { Portal } from "react-native-paper";
 import Card from "./Card";
+import UserOptionsBottomSheet from "./UserOptionsBottomSheet";
 import UserProfilePortfolio from "./UserProfilePortfolio";
 import UserProfilePosts from "./UserProfilePosts";
 
@@ -35,6 +37,7 @@ const UserProfileBottomSheet = () => {
     const [userDetails, setUserDetails] = useState(null);
     const [isFetchingUser, setIsFetchingUser] = useState(false);
     const [activeTab, setActiveTab] = useState("portfolio");
+    const [showUserOptions, setShowUserOptions] = useState(false);
 
     // Reset all states when bottom sheet is closed
     useEffect(() => {
@@ -113,8 +116,16 @@ const UserProfileBottomSheet = () => {
         <Portal>
             <SafeAreaView className="flex-1 bg-[#161616]">
                 <View className="flex-1 pt-2 pb-8 flex flex-col">
-                    {/* Close Button */}
-                    <View className="ml-auto">
+                    {/* Close Button and Options */}
+                    <View className="flex-row justify-between items-center px-2">
+                        <View className="w-12" />
+                        <TouchableOpacity
+                            onPress={() => setShowUserOptions(true)}
+                        >
+                            <View className="p-4">
+                                <ThreeDotsIcon />
+                            </View>
+                        </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => {
                                 setProfileBottomSheet(null);
@@ -175,6 +186,20 @@ const UserProfileBottomSheet = () => {
                         <View className="flex-1">{renderContent()}</View>
                     </View>
                 </View>
+
+                {/* User Options Bottom Sheet */}
+                {userDetails && (
+                    <UserOptionsBottomSheet
+                        isOpen={showUserOptions}
+                        onClose={() => setShowUserOptions(false)}
+                        userDetails={userDetails}
+                        currentUserId={details.id}
+                        onBlockUser={(blockedUserId) => {
+                            setProfileBottomSheet(null);
+                            console.log("User blocked:", blockedUserId);
+                        }}
+                    />
+                )}
             </SafeAreaView>
         </Portal>
     );
