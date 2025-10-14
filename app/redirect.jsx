@@ -1,6 +1,5 @@
 // app/redirect.jsx
 import Loader from "@/components/Loader";
-import EulaAcceptanceModal from "@/components/auth/EulaAcceptanceModal";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
@@ -8,15 +7,11 @@ import clearAppStorage from "@/utils/clearAppStorage";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useEffect, useState } from "react";
-
-const EULA_ACCEPTED_KEY = "eula_accepted";
+import { useEffect } from "react";
 
 export default function Redirect() {
     const { code, refresh, logout } = useLocalSearchParams();
     const router = useRouter();
-    const [showEulaModal, setShowEulaModal] = useState(false);
-    const [pendingUserData, setPendingUserData] = useState(null);
 
     useEffect(() => {
         console.log("🔄 Redirect page loaded with params:", {
@@ -30,6 +25,7 @@ export default function Redirect() {
             console.log(
                 "🚪 Logout return detected, clearing storage and redirecting to login"
             );
+            // Note: Don't clear "is_from_logout" flag here - it should persist for next login
             clearAppStorage().then(() => {
                 console.log(
                     "✅ Storage cleared after logout, redirecting to login"
@@ -61,6 +57,13 @@ export default function Redirect() {
             HEADERS_KEYS.REFRESH_TOKEN
         );
         const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
+
+        console.log(
+            "🔍 Token persistence check - refreshToken:",
+            !!refreshToken,
+            "userId:",
+            !!userId
+        );
 
         if (refresh && refreshToken) {
             await SecureStore.deleteItemAsync(HEADERS_KEYS.TOKEN);
@@ -108,43 +111,17 @@ export default function Redirect() {
             name: res.name,
         });
 
-        // Check if user has accepted EULA
-        const eulaAccepted = await SecureStore.getItemAsync(EULA_ACCEPTED_KEY);
+        // Use API response as source of truth for signup vs login
+        // showOnboardingFlow indicates new user signup
+        const isNewSignup = res.showOnboardingFlow;
 
-        if (!eulaAccepted || eulaAccepted !== "true") {
-            // Show EULA modal for first-time users
-            console.log("🔒 EULA not accepted, showing EULA modal");
-            setPendingUserData(res);
-            setShowEulaModal(true);
+        if (isNewSignup) {
+            // New signup - proceed to onboarding (consent will be shown there)
+            console.log("🔒 New signup detected, proceeding to onboarding");
+            router.replace("/onboarding");
         } else {
-            // User has already accepted EULA, proceed normally
-            if (res.showOnboardingFlow) {
-                router.replace("/onboarding");
-            } else {
-                router.replace("/(auth)/home");
-            }
-        }
-    }
-
-    async function handleEulaAcceptance() {
-        try {
-            // Store EULA acceptance
-            await SecureStore.setItemAsync(EULA_ACCEPTED_KEY, "true");
-            console.log("✅ EULA accepted and stored");
-
-            // Close modal
-            setShowEulaModal(false);
-
-            // Continue with the flow
-            if (pendingUserData?.showOnboardingFlow) {
-                router.replace("/onboarding");
-            } else {
-                router.replace("/(auth)/home");
-            }
-        } catch (error) {
-            console.error("Error storing EULA acceptance:", error);
-            // Still allow user to proceed
-            setShowEulaModal(false);
+            // Existing user login - proceed directly to app
+            console.log("🔄 Existing user login, proceeding to app");
             router.replace("/(auth)/home");
         }
     }
@@ -160,6 +137,16 @@ export default function Redirect() {
             !!token,
             "Refresh token exists:",
             !!refreshToken
+        );
+
+        // Additional persistence logging
+        console.log(
+            "📱 App refresh state - code:",
+            !!code,
+            "refresh:",
+            !!refresh,
+            "logout:",
+            !!logout
         );
 
         if (code) {
@@ -180,13 +167,5 @@ export default function Redirect() {
         }
     }
 
-    return (
-        <>
-            <Loader />
-            <EulaAcceptanceModal
-                isVisible={showEulaModal}
-                onAccept={handleEulaAcceptance}
-            />
-        </>
-    );
+    return <Loader />;
 }

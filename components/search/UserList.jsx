@@ -1,10 +1,10 @@
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import UserListSkeleton from "@/components/search/UserListSkeleton";
+import useUserSearchStore from "@/hooks/useUserSearchStore";
 import useUserStore from "@/hooks/useUserStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import useUserSearchStore from "@/hooks/useUserSearchStore";
+import React, { useEffect, useRef, useState } from "react";
+import { FlatList, Text, View } from "react-native";
 import UserItem from "./UserItem";
-import UserListSkeleton from "@/components/search/UserListSkeleton";
 
 function UserList({ query }) {
     const { following, details } = useUserStore();
@@ -107,10 +107,20 @@ function UserList({ query }) {
         );
     }
 
+    // Limit display to 5 users when showing initial top traders (empty query)
+    const displayUsers = users.filter((user) => user.id !== details.id);
+    const limitedUsers = displayUsers;
+
     return (
         <View className="flex-1 py-6">
+            {/* Show "Top Traders" label when displaying initial results */}
+            {!query && users.length > 0 && (
+                <Text className="text-white/90 font-manrope-bold text-16 mb-4 px-4">
+                    Top Traders
+                </Text>
+            )}
             <FlatList
-                data={users.filter((user) => user.id !== details.id)}
+                data={limitedUsers}
                 renderItem={({ item }) => (
                     <UserItem
                         item={item}

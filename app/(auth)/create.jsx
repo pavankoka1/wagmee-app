@@ -8,7 +8,6 @@ import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
 import { useNavigation } from "@react-navigation/native";
-import clsx from "clsx";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
@@ -67,91 +66,122 @@ const Create = () => {
 
     return (
         <SafeAreaView
-            className="flex-1 bg-[#161616] py-5 gap-4"
-            style={{
-                paddingLeft: Platform.OS === "ios" ? 20 : 16,
-                paddingRight: Platform.OS === "ios" ? 20 : 16,
-            }}
+            className="flex-1 bg-[#161616]"
+            edges={["top", "left", "right"]}
         >
-            <View className="flex flex-row items-center h-10">
-                <TouchableOpacity
-                    className="items-center justify-center"
-                    onPress={() => router.replace("/(auth)/home")}
-                >
-                    <CloseIcon />
-                </TouchableOpacity>
-                <Text className="font-manrope-bold text-16 text-white tracking-wide ml-6 leading-[20px] mr-auto text-center">
-                    Create New post
-                </Text>
-
-                {loading ? (
-                    <ActivityIndicator size={16} className="ml-auto mr-10" />
-                ) : (
-                    <Button className="ml-auto mr-3" onPress={handleSubmit}>
-                        Post Now
-                    </Button>
-                )}
-            </View>
-            <View className="flex flex-row ml-[2px] mb-6">
-                <View className="h-6 bg-primary-main w-[2px] mt-4" />
-                <TextInput
-                    mode="flat"
-                    placeholder="Post your views, data or charts..."
-                    placeholderTextColor="#b1b1b1"
-                    textColor="#fff"
-                    fontSize={20}
-                    underlineStyle={
-                        {
-                            // display: "none",
-                        }
-                    }
-                    multiline={true}
-                    numberOfLines={8}
-                    height={160}
-                    style={{
-                        flex: 1,
-                        backgroundColor: "transparent",
-                        borderBottomWidth: 0,
-                        border: "none",
-                        color: "#fff",
-                        fontFamily: "Manrope",
-                        fontSize: 14,
-                    }}
-                    value={text}
-                    onChangeText={setText} // Use onChangeText for TextInput
-                />
-            </View>
-            <ImageUploader images={images} setImages={setImages}>
-                <View className="flex flex-row items-center gap-2">
-                    <ImageIcon />
-                    <Text className="font-manrope text-12 text-[#b1b1b1] leading-1">
-                        Add up to 4 Images
-                    </Text>
-                </View>
-            </ImageUploader>
-            <MultiSelectSearch
-                loading={userListLoading}
-                data={users}
-                selectedItems={tags}
-                setSelectedItems={setTags}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                placeholder="Use @ to mention a user"
-            >
-                <View className="flex flex-row items-center gap-2">
-                    <PersonIcon color="#b1b1b1" size={18} />
-                    <Text
-                        className={clsx("font-manrope text-12 leading-1", {
-                            "text-[#b1b1b1]": !tags.length,
-                            "text-white": !!tags.length,
-                        })}
+            <View className="flex-1 px-4 py-6 gap-2">
+                {/* Header */}
+                <View className="flex flex-row items-center h-12">
+                    <TouchableOpacity
+                        className="items-center justify-center w-10 h-10"
+                        onPress={() => router.replace("/(auth)/home")}
                     >
-                        {tags.length
-                            ? tags.map((tag) => "@" + tag.nickname).join(", ")
-                            : "Use @ to mention a user"}
+                        <CloseIcon />
+                    </TouchableOpacity>
+                    <Text className="font-manrope-bold text-18 text-white">
+                        Create New Post
                     </Text>
+                    <View className="ml-auto">
+                        {loading ? (
+                            <ActivityIndicator size={20} color="#B4EF02" />
+                        ) : (
+                            <Button
+                                mode="contained"
+                                onPress={handleSubmit}
+                                buttonColor="#B4EF02"
+                                textColor="#000"
+                                labelStyle={{
+                                    fontFamily: "Manrope-Bold",
+                                    fontSize: 14,
+                                }}
+                                style={{ borderRadius: 20 }}
+                            >
+                                Post Now
+                            </Button>
+                        )}
+                    </View>
                 </View>
-            </MultiSelectSearch>
+
+                {/* Text Input Section */}
+                <View className="flex flex-row mb-2">
+                    <View
+                        className="h-6 bg-primary-main w-[2px] mr-3"
+                        style={{
+                            marginTop: Platform.OS === "ios" ? 30 : 4,
+                        }}
+                    />
+                    <TextInput
+                        mode="flat"
+                        placeholder="Post your views, data or charts..."
+                        placeholderTextColor="#b1b1b1"
+                        textColor="#fff"
+                        underlineStyle={{ display: "none" }}
+                        multiline={true}
+                        numberOfLines={8}
+                        style={{
+                            flex: 1,
+                            backgroundColor: "transparent",
+                            borderBottomWidth: 0,
+                            color: "#fff",
+                            fontFamily: "Manrope",
+                            fontSize: 16,
+                            lineHeight: 24,
+                            paddingVertical: Platform.OS === "ios" ? 4 : 2,
+                            paddingHorizontal: 0,
+                            minHeight: 120,
+                        }}
+                        value={text}
+                        onChangeText={setText}
+                    />
+                </View>
+
+                {/* Image Upload Section */}
+                <View className="mb-2">
+                    <ImageUploader images={images} setImages={setImages}>
+                        <View className="flex flex-row items-center gap-3 py-3">
+                            <ImageIcon />
+                            <Text className="font-manrope text-14 text-[#b1b1b1]">
+                                Add up to 4 Images
+                            </Text>
+                        </View>
+                    </ImageUploader>
+                </View>
+
+                {/* User Tags Section */}
+                <View className="mb-4">
+                    <MultiSelectSearch
+                        loading={userListLoading}
+                        data={users}
+                        selectedItems={tags}
+                        setSelectedItems={setTags}
+                        searchText={searchText}
+                        setSearchText={setSearchText}
+                        placeholder="Use @ to mention a user"
+                    >
+                        <View className="flex flex-row items-center gap-3 py-3">
+                            <PersonIcon color="#b1b1b1" size={18} />
+                            <View className="flex-1">
+                                {tags.length > 0 ? (
+                                    <View className="flex flex-row flex-wrap gap-2">
+                                        {tags.map((tag, index) => (
+                                            <Text
+                                                key={tag.id}
+                                                className="font-manrope text-12 text-white bg-[#2a2a2a] px-3 py-1 rounded-full"
+                                            >
+                                                @{tag.nickname}
+                                            </Text>
+                                        ))}
+                                    </View>
+                                ) : (
+                                    <Text className="font-manrope text-14 text-white opacity-70">
+                                        Use @ to mention a user
+                                    </Text>
+                                )}
+                            </View>
+                        </View>
+                    </MultiSelectSearch>
+                </View>
+            </View>
         </SafeAreaView>
     );
 };

@@ -146,7 +146,12 @@ const UserOptionsBottomSheet = ({
     if (!isOpen) return null;
 
     return (
-        <BottomSheet isOpen={isOpen} onClose={handleClose} paddingNeeded={true}>
+        <BottomSheet
+            isOpen={isOpen}
+            onClose={handleClose}
+            paddingNeeded={true}
+            closeClassName="top-4"
+        >
             <View className="py-4">
                 {!showReportForm ? (
                     <>

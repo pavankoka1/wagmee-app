@@ -117,24 +117,38 @@ const UserProfileBottomSheet = () => {
             <SafeAreaView className="flex-1 bg-[#161616]">
                 <View className="flex-1 pt-2 pb-8 flex flex-col">
                     {/* Close Button and Options */}
-                    <View className="flex-row justify-between items-center px-2">
+                    <View className="flex-row items-center justify-between px-2">
                         <View className="w-12" />
-                        <TouchableOpacity
-                            onPress={() => setShowUserOptions(true)}
-                        >
-                            <View className="p-4">
-                                <ThreeDotsIcon />
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => {
-                                setProfileBottomSheet(null);
-                            }}
-                        >
-                            <View className="p-4">
-                                <CloseIcon />
-                            </View>
-                        </TouchableOpacity>
+                        <View className="flex-row items-center">
+                            <TouchableOpacity
+                                onPress={() => setShowUserOptions(true)}
+                                hitSlop={{
+                                    top: 8,
+                                    bottom: 8,
+                                    left: 8,
+                                    right: 8,
+                                }}
+                            >
+                                <View className="p-4">
+                                    <ThreeDotsIcon />
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setProfileBottomSheet(null);
+                                }}
+                                hitSlop={{
+                                    top: 8,
+                                    bottom: 8,
+                                    left: 8,
+                                    right: 8,
+                                }}
+                            >
+                                <View className="p-4">
+                                    <CloseIcon />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     {/* User Details Card */}

@@ -81,7 +81,7 @@ const PostHeader = memo(
                                     setProfileBottomSheet(authorDetails.id)
                                 }
                             >
-                                <Text className="font-manrope-bold text-14 text-white h-[25px]">
+                                <Text className="font-manrope-bold text-14 text-white">
                                     {authorDetails?.userName || "Unknown User"}
                                 </Text>
                             </TouchableOpacity>
@@ -98,6 +98,7 @@ const PostHeader = memo(
                                         onPress={handleFollow}
                                         disabled={loading}
                                         activeOpacity={0.7}
+                                        className="flex-row items-center"
                                     >
                                         {loading ? (
                                             <ActivityIndicator size={14} />

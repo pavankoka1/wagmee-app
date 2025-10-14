@@ -30,15 +30,30 @@ export default async function clearAppStorage() {
         await SecureStore.deleteItemAsync(HEADERS_KEYS.SMALLCASE_AUTH_TOKEN);
         await SecureStore.deleteItemAsync("user_email");
         await SecureStore.deleteItemAsync("user_name");
-        console.log("✅ SecureStore cleared successfully");
+        // Clear EULA acceptance to ensure consent is shown for new signups
+        await SecureStore.deleteItemAsync("eula_accepted");
+        // Note: Don't clear "is_from_logout" flag - it needs to persist for next login
+        console.log(
+            "✅ SecureStore cleared successfully (preserving logout flag)"
+        );
     } catch (error) {
         console.error("❌ Error clearing SecureStore:", error);
     }
 
-    // Clear AsyncStorage as well
+    // Clear AsyncStorage as well (but preserve logout flag)
     console.log("💾 Clearing AsyncStorage...");
     try {
+        // Get the logout flag before clearing AsyncStorage
+        const logoutFlag = await SecureStore.getItemAsync("is_from_logout");
+
         await AsyncStorage.clear();
+
+        // Restore the logout flag if it existed
+        if (logoutFlag === "true") {
+            await SecureStore.setItemAsync("is_from_logout", "true");
+            console.log("🔄 Restored logout flag after AsyncStorage clear");
+        }
+
         console.log("✅ AsyncStorage cleared successfully");
     } catch (error) {
         console.error("❌ Error clearing AsyncStorage:", error);

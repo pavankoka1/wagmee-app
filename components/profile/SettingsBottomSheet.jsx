@@ -9,6 +9,7 @@ import replacePlaceholders from "@/utils/replacePlaceholders";
 import Feather from "@expo/vector-icons/Feather";
 import clsx from "clsx";
 import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
 import {
@@ -96,6 +97,14 @@ function SettingsBottomSheet({ isOpen, onClose }) {
             // Close the settings sheet first
             await onClose();
 
+            // Set flag to indicate this is a logout, so next login will force fresh login
+            await SecureStore.setItemAsync("is_from_logout", "true");
+            console.log("🏷️ Set logout flag for next login");
+
+            // Verify the flag was set
+            const flagCheck = await SecureStore.getItemAsync("is_from_logout");
+            console.log("✅ Logout flag verification:", flagCheck);
+
             // Clear all app storage and tokens first to ensure clean state
             console.log("🧹 Clearing app storage...");
             await clearAppStorage();
@@ -106,9 +115,7 @@ function SettingsBottomSheet({ isOpen, onClose }) {
                 {
                     client_id: process.env.EXPO_PUBLIC_CLERK_AUTH0_CLIENT_ID,
                     returnTo: "tradetribe://redirect?logout=true",
-                    // Add parameters to ensure complete logout
-                    federated: "true", // Logout from all federated connections
-                    logout_hint: "prompt=login", // Force re-authentication on next login
+                    federated: "true", // Logout from all federated connections (Google, Facebook)
                 }
             );
 
@@ -195,7 +202,7 @@ function SettingsBottomSheet({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
-    if (!Object.keys(details) || !activeImage || !activeImage.uri) {
+    if (!Object.keys(details) || !activeImage) {
         return (
             <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="small" />
@@ -254,14 +261,41 @@ function SettingsBottomSheet({ isOpen, onClose }) {
                                 height={120}
                                 width={120}
                             >
-                                <Image
-                                    className="rounded-full"
-                                    source={{
-                                        uri: activeImage.uri,
-                                    }}
-                                    height={120}
-                                    width={120}
-                                />
+                                {activeImage.uri ? (
+                                    <Image
+                                        className="rounded-full"
+                                        source={{ uri: activeImage.uri }}
+                                        height={120}
+                                        width={120}
+                                        onError={() => {
+                                            // Fallback to no URI to trigger letter avatar below
+                                            setImages([
+                                                {
+                                                    publicUrl: null,
+                                                    uploading: false,
+                                                    uri: null,
+                                                },
+                                            ]);
+                                        }}
+                                    />
+                                ) : (
+                                    <View
+                                        className="rounded-full bg-[#1F1F1F] border border-[#2a2a2a] flex items-center justify-center"
+                                        height={120}
+                                        width={120}
+                                    >
+                                        <Text className="text-white font-manrope-bold text-32">
+                                            {(
+                                                details?.userName ||
+                                                details?.email ||
+                                                "U"
+                                            )
+                                                .trim()
+                                                .charAt(0)
+                                                .toUpperCase()}
+                                        </Text>
+                                    </View>
+                                )}
                                 {!activeImage.uploading && (
                                     <ImageUploader
                                         selectionLimit={1}

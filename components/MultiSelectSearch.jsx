@@ -1,9 +1,15 @@
-import React from "react";
-import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
-import BottomSheet from "./BottomSheet"; // Adjust the import path as necessary
-import { ActivityIndicator, TextInput } from "react-native-paper";
 import clsx from "clsx";
-import TickIcon from "@/icons/TickIcon";
+import React from "react";
+import {
+    FlatList,
+    Image,
+    Platform,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { ActivityIndicator, TextInput } from "react-native-paper";
+import BottomSheet from "./BottomSheet"; // Adjust the import path as necessary
 
 const MultiSelectSearch = ({
     loading,
@@ -29,9 +35,10 @@ const MultiSelectSearch = ({
             .includes(item.id);
         return (
             <TouchableOpacity
-                className={clsx([
-                    "py-2 flex-row gap-3 items-center border-b w-full flex border-[#1F2023]",
-                ])}
+                className="py-4 px-4 flex-row gap-4 items-center border-b border-[#2a2a2a] w-full"
+                style={{
+                    minHeight: Platform.OS === "ios" ? 64 : 56,
+                }}
                 onPress={() => {
                     setSelectedItems((prev) => {
                         if (prev.map((prev) => prev.id).includes(item.id)) {
@@ -67,7 +74,7 @@ const MultiSelectSearch = ({
     };
 
     return (
-        <View className="flex-1">
+        <>
             <TouchableOpacity
                 className="flex flex-row items-center"
                 onPress={() => setIsBottomSheetOpen(true)}
@@ -79,47 +86,72 @@ const MultiSelectSearch = ({
                 isOpen={isBottomSheetOpen}
                 onClose={() => setIsBottomSheetOpen(false)}
                 closeOnOverlayClick={true}
+                paddingNeeded={false}
                 className="flex-1"
             >
-                <View className="flex-1 mt-6 gap-4">
-                    <View className="flex flex-row items-center ml-[2px]">
-                        <View className="h-6 bg-primary-main w-[2px]" />
-                        <TextInput
-                            mode="flat"
-                            placeholder={placeholder}
-                            placeholderTextColor="#b1b1b1"
-                            textColor="#fff"
-                            fontSize={20}
-                            underlineStyle={{
-                                display: "none",
-                            }}
-                            style={{
-                                flex: 1,
-                                backgroundColor: "transparent",
-                                borderBottomWidth: 0,
-                                border: "none",
-                                color: "#fff",
-                                fontFamily: "Manrope",
-                                fontSize: 14,
-                            }}
-                            value={searchText}
-                            onChangeText={setSearchText}
-                        />
-                    </View>
-                    {loading ? (
-                        <View className="flex-1 flex justify-center items-center">
-                            <ActivityIndicator size="small" />
+                <View className="bg-[#161616] flex-1 pt-12">
+                    {/* Search Input */}
+                    <View className="px-4 pb-4">
+                        <View className="flex flex-row items-center">
+                            <View
+                                className="h-6 bg-primary-main w-[2px] mr-3"
+                                style={{
+                                    marginTop: Platform.OS === "ios" ? 6 : 4,
+                                }}
+                            />
+                            <TextInput
+                                mode="flat"
+                                placeholder={placeholder}
+                                placeholderTextColor="#b1b1b1"
+                                textColor="#fff"
+                                underlineStyle={{ display: "none" }}
+                                style={{
+                                    flex: 1,
+                                    backgroundColor: "transparent",
+                                    borderBottomWidth: 0,
+                                    color: "#fff",
+                                    fontFamily: "Manrope",
+                                    fontSize: 16,
+                                    lineHeight: 24,
+                                    paddingVertical:
+                                        Platform.OS === "ios" ? 4 : 2,
+                                    paddingHorizontal: 0,
+                                    minHeight: 40,
+                                }}
+                                value={searchText}
+                                onChangeText={setSearchText}
+                            />
                         </View>
-                    ) : (
-                        <FlatList
-                            data={data}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.id}
-                        />
-                    )}
+                    </View>
+
+                    {/* User List */}
+                    <View className="flex-1 px-4">
+                        {loading ? (
+                            <View className="flex-1 flex justify-center items-center">
+                                <ActivityIndicator
+                                    size="small"
+                                    color="#B4EF02"
+                                />
+                            </View>
+                        ) : data && data.length > 0 ? (
+                            <FlatList
+                                data={data}
+                                renderItem={renderItem}
+                                keyExtractor={(item) => item.id}
+                                showsVerticalScrollIndicator={false}
+                                contentContainerStyle={{ paddingBottom: 20 }}
+                            />
+                        ) : (
+                            <View className="flex-1 flex justify-center items-center py-8">
+                                <Text className="font-manrope text-14 text-[#b1b1b1] text-center">
+                                    No users found
+                                </Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
             </BottomSheet>
-        </View>
+        </>
     );
 };
 

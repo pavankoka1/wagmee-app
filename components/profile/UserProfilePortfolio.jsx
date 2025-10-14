@@ -370,26 +370,70 @@ const UserProfilePortfolio = ({ userId }) => {
 
     if (error) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
-                    Portfolio not connected
-                </Text>
-                <Text className="text-white font-manrope text-14">
-                    This user hasn't connected their portfolio yet.
-                </Text>
+            <View className="flex-1 justify-center items-center px-6">
+                <View className="w-full bg-gradient-to-br from-[#1F1F1F] to-[#2A2B2E] rounded-3xl p-8 border border-[#3A3B3E] shadow-lg">
+                    <View className="items-center mb-6">
+                        <Text className="text-6xl mb-4">📈</Text>
+                        <Text className="text-white font-manrope-bold text-20 mb-3">
+                            Portfolio Not Connected
+                        </Text>
+                        <Text className="text-[#B1B1B1] font-manrope text-14 leading-6 text-center mb-6">
+                            This trader hasn't connected their portfolio yet.
+                            Follow them to get notified when they share their
+                            holdings and insights! 🚀
+                        </Text>
+                    </View>
+                    <View className="bg-[#2A2B2E] rounded-2xl p-4 border border-[#3A3B3E]">
+                        <View className="flex-row items-center mb-3">
+                            <Text className="text-2xl mr-3">💡</Text>
+                            <Text className="text-white font-manrope-bold text-14">
+                                Why follow them?
+                            </Text>
+                        </View>
+                        <View className="space-y-2">
+                            <View className="flex-row items-center">
+                                <Text className="text-primary-main mr-2">
+                                    •
+                                </Text>
+                                <Text className="text-[#B1B1B1] font-manrope text-13">
+                                    Get notified when they connect portfolio
+                                </Text>
+                            </View>
+                            <View className="flex-row items-center">
+                                <Text className="text-primary-main mr-2">
+                                    •
+                                </Text>
+                                <Text className="text-[#B1B1B1] font-manrope text-13">
+                                    See their trading insights & strategies
+                                </Text>
+                            </View>
+                            <View className="flex-row items-center">
+                                <Text className="text-primary-main mr-2">
+                                    •
+                                </Text>
+                                <Text className="text-[#B1B1B1] font-manrope text-13">
+                                    Learn from their investment decisions
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
             </View>
         );
     }
 
     if (!data?.securities?.length && !isLoading) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text className="text-[#B1B1B1] font-manrope-bold text-16 mb-1">
-                    No holdings yet!
-                </Text>
-                <Text className="text-white font-manrope text-14">
-                    This user hasn't added any holdings to their portfolio.
-                </Text>
+            <View className="flex-1 justify-center items-center px-6">
+                <View className="w-full bg-[#1F1F1F] rounded-2xl p-5 border border-[#2A2B2E]">
+                    <Text className="text-white font-manrope-bold text-16 mb-2">
+                        No holdings yet
+                    </Text>
+                    <Text className="text-[#B1B1B1] font-manrope text-13 leading-5">
+                        This trader hasn’t added any holdings to their
+                        portfolio. Check back later for updates.
+                    </Text>
+                </View>
             </View>
         );
     }

@@ -109,13 +109,12 @@ function UserItem({ item }) {
                 className="ml-auto"
                 disabled={loading}
             >
-                <Text
+                <View
                     className={clsx(
-                        "ml-auto font-manrope-bold text-12 py-3 px-5 rounded-xl w-28 text-center flex-row items-center justify-center",
+                        "ml-auto font-manrope-bold text-12 py-3 px-5 rounded-xl w-28 flex items-center justify-center",
                         {
-                            "bg-primary-main text-[#292929]": !isFollowing,
-                            "text-[#B1B1B1] border border-[#444] font-manrope-medium":
-                                isFollowing,
+                            "bg-primary-main": !isFollowing,
+                            "border border-[#444]": isFollowing,
                             "opacity-70": loading,
                         }
                     )}
@@ -125,12 +124,18 @@ function UserItem({ item }) {
                             size={16}
                             color={isFollowing ? "#B1B1B1" : "#292929"}
                         />
-                    ) : isFollowing ? (
-                        "Unfollow"
                     ) : (
-                        "Follow"
+                        <Text
+                            className={clsx("font-manrope-bold text-12", {
+                                "text-[#292929]": !isFollowing,
+                                "text-[#B1B1B1] font-manrope-medium":
+                                    isFollowing,
+                            })}
+                        >
+                            {isFollowing ? "Unfollow" : "Follow"}
+                        </Text>
                     )}
-                </Text>
+                </View>
             </TouchableOpacity>
         </View>
     );
