@@ -65,28 +65,71 @@ const SmallcaseIntegration = ({ onSuccess, onClose }) => {
             );
             console.log("Transaction response received:", txnResponse);
 
-            const smallcaseAuthToken = JSON.parse(
-                txnResponse.data
-            ).smallcaseAuthToken;
+            // Check if the transaction was successful
+            if (!txnResponse.success) {
+                throw new Error("Smallcase transaction failed");
+            }
+
+            // Handle different data formats between iOS and Android
+            let smallcaseAuthToken;
+            if (typeof txnResponse.data === "string") {
+                // Android returns data as JSON string
+                const parsedData = JSON.parse(txnResponse.data);
+                smallcaseAuthToken = parsedData.smallcaseAuthToken;
+            } else {
+                // iOS returns data as object
+                smallcaseAuthToken = txnResponse.data.smallcaseAuthToken;
+            }
             console.log("Auth token extracted:", smallcaseAuthToken);
+
+            // Store the auth token for future use (only if we have a valid token)
+            if (smallcaseAuthToken) {
+                await SecureStore.setItemAsync(
+                    HEADERS_KEYS.SMALLCASE_AUTH_TOKEN,
+                    smallcaseAuthToken
+                );
+                console.log("Auth token stored successfully");
+            } else {
+                console.log("No auth token to store");
+            }
 
             const userId = await SecureStore.getItemAsync(HEADERS_KEYS.USER_ID);
             console.log("User ID:", userId);
 
-            const holdingsPath = generateQueryParams(
-                replacePlaceholders(API_PATHS.getHoldings, userId),
-                {
-                    gatewayAuthToken: smallcaseAuthToken,
-                }
-            );
-            console.log("Holdings path:", holdingsPath);
+            // Try to fetch holdings, but don't fail the entire flow if it fails
+            try {
+                const holdingsPath = generateQueryParams(
+                    replacePlaceholders(API_PATHS.getHoldings, userId),
+                    {
+                        gatewayAuthToken: smallcaseAuthToken,
+                    }
+                );
+                console.log("Holdings path:", holdingsPath);
+                console.log("Auth token being sent:", smallcaseAuthToken);
 
-            await network.get(holdingsPath);
-            console.log("Holdings fetched successfully");
+                const holdingsResponse = await network.get(holdingsPath);
+                console.log("Holdings fetched successfully:", holdingsResponse);
+            } catch (holdingsError) {
+                console.log("Holdings API error:", holdingsError);
+                console.log(
+                    "Holdings API error response:",
+                    holdingsError.response?.data
+                );
+                console.log(
+                    "Holdings API error status:",
+                    holdingsError.response?.status
+                );
+                console.log("Continuing despite holdings fetch failure...");
+                // The Smallcase integration was successful, so we should still call onSuccess
+            }
 
+            // Always call onSuccess since the Smallcase transaction was successful
+            console.log("Smallcase integration completed successfully");
             onSuccess();
         } catch (err) {
-            console.log("Transaction error:", err.userInfo);
+            console.log("Transaction error:", err);
+            console.log("Error details:", err.userInfo || err.message || err);
+            setError("Failed to complete Smallcase integration");
             onClose();
         }
     }, []);
