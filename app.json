@@ -12,11 +12,12 @@
         "assetBundlePatterns": ["**/*"],
         "ios": {
             "bundleIdentifier": "com.trade.tribe",
-            "buildNumber": "1.0.0",
+            "buildNumber": "1.0.3",
             "supportsTablet": true,
             "usesNonExemptEncryption": false,
             "infoPlist": {
-                "ITSAppUsesNonExemptEncryption": false
+                "ITSAppUsesNonExemptEncryption": false,
+                "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to allow you to select and share images within the app."
             }
         },
         "androidStatusBar": {
