@@ -25,7 +25,6 @@ export default function Redirect() {
             console.log(
                 "🚪 Logout return detected, clearing storage and redirecting to login"
             );
-            // Note: Don't clear "is_from_logout" flag here - it should persist for next login
             clearAppStorage().then(() => {
                 console.log(
                     "✅ Storage cleared after logout, redirecting to login"
@@ -35,21 +34,8 @@ export default function Redirect() {
             return;
         }
 
-        // Only clear storage if we have an authorization code (new login)
-        if (code) {
-            console.log(
-                "🔑 Authorization code found, clearing storage for fresh login"
-            );
-            clearAppStorage().then(() => {
-                // Add a small delay to ensure storage is cleared before checking authentication
-                setTimeout(() => {
-                    handleAuthentication();
-                }, 100);
-            });
-        } else {
-            // For existing tokens, just check authentication without clearing storage
-            handleAuthentication();
-        }
+        // Handle authentication directly - don't clear storage for OAuth code
+        handleAuthentication();
     }, [code, refresh, logout]);
 
     async function checkIfUserIsValid() {
@@ -80,9 +66,9 @@ export default function Redirect() {
     }
 
     async function onAuthFailure(err) {
-        // console.error(err);
-        await clearAppStorage();
-        router.replace("/");
+        clearAppStorage().then(() => {
+            router.replace("/");
+        });
     }
 
     async function onAuthSuccess(res) {
@@ -111,17 +97,9 @@ export default function Redirect() {
             name: res.name,
         });
 
-        // Use API response as source of truth for signup vs login
-        // showOnboardingFlow indicates new user signup
-        const isNewSignup = res.showOnboardingFlow;
-
-        if (isNewSignup) {
-            // New signup - proceed to onboarding (consent will be shown there)
-            console.log("🔒 New signup detected, proceeding to onboarding");
+        if (res.showOnboardingFlow) {
             router.replace("/onboarding");
         } else {
-            // Existing user login - proceed directly to app
-            console.log("🔄 Existing user login, proceeding to app");
             router.replace("/(auth)/home");
         }
     }
@@ -137,16 +115,6 @@ export default function Redirect() {
             !!token,
             "Refresh token exists:",
             !!refreshToken
-        );
-
-        // Additional persistence logging
-        console.log(
-            "📱 App refresh state - code:",
-            !!code,
-            "refresh:",
-            !!refresh,
-            "logout:",
-            !!logout
         );
 
         if (code) {
