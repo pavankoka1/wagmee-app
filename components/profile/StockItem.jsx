@@ -237,6 +237,7 @@ export const StockItem = ({ item, viewMode }) => {
                 isOpen={isFullModalOpen}
                 onClose={() => setIsFullModalOpen(false)}
                 symbol={item.bseTicker}
+                stockName={item.name}
             />
         </View>
     );

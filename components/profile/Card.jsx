@@ -158,7 +158,10 @@ const Card = ({ userId }) => {
                             onPress={handleFollowingPress}
                         >
                             <Text className="font-manrope-bold text-primary-main">
-                                {following.length}
+                                {userId 
+                                    ? (renderDetails?.followingCount || renderDetails?.following?.length || 0)
+                                    : following.length
+                                }
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Following
@@ -169,7 +172,10 @@ const Card = ({ userId }) => {
                             onPress={handleFollowersPress}
                         >
                             <Text className="font-manrope-bold text-primary-main">
-                                {followers.length}
+                                {userId 
+                                    ? (renderDetails?.followerCount || renderDetails?.followers?.length || 0)
+                                    : followers.length
+                                }
                             </Text>
                             <Text className="font-manrope-medium text-12 text-white leading-1">
                                 Followers

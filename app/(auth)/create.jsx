@@ -49,6 +49,11 @@ const Create = () => {
                 taggedUserIdList: tags.map((tag) => tag.id),
             })
             .then((res) => {
+                // Clear all form data after successful post creation
+                setText("");
+                setTags([]);
+                setImages([]);
+                setSearchText("");
                 setLoading(false);
                 router.replace("/(auth)/home");
             })

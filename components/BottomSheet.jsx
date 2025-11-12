@@ -57,6 +57,7 @@ const BottomSheet = ({
             visible={isVisible}
             animationType="none"
             onRequestClose={onClose}
+            presentationStyle="overFullScreen"
         >
             <TouchableWithoutFeedback onPress={handleOverlayClick}>
                 <View className="flex-1 justify-end bg-[#161616] bg-opacity-50">

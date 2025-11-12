@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import {
     Alert,
     Image,
-    Linking,
     Platform,
     SafeAreaView,
     ScrollView,
@@ -120,21 +119,25 @@ function SettingsBottomSheet({ isOpen, onClose }) {
             );
 
             console.log("🌐 Opening logout URL:", logoutUrl);
-            // Open the browser for logout with options to ensure redirect back to app
-            try {
-                await WebBrowser.openBrowserAsync(logoutUrl, {
-                    showTitle: false,
-                    enableBarCollapsing: false,
+
+            // Use authentication session so it closes automatically on redirect
+            const logoutResult = await WebBrowser.openAuthSessionAsync(
+                logoutUrl,
+                "tradetribe://redirect?logout=true",
+                {
                     showInRecents: false,
-                });
-                console.log("🔙 Returned from logout URL");
-            } catch (error) {
-                console.log("❌ WebBrowser failed, trying Linking:", error);
-                // Fallback to Linking if WebBrowser fails
-                await Linking.openURL(logoutUrl);
+                    prefersEphemeralSession: true,
+                }
+            );
+            console.log("🔙 Logout session finished:", logoutResult);
+
+            if (logoutResult.type === "cancel" || logoutResult.type === "dismiss") {
+                console.log(
+                    "⚠️ Logout session was dismissed before redirecting back to the app."
+                );
             }
 
-            // Navigate to login screen
+            // Navigate to login screen regardless of session result
             console.log("🔄 Navigating to login screen...");
             router.replace("/");
         } catch (error) {

@@ -2,7 +2,7 @@
     "expo": {
         "name": "Wagmee Club",
         "slug": "trade-tribe-app",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "orientation": "portrait",
         "icon": "./assets/images/login/logo.png",
         "backgroundColor": "#161616",
@@ -12,7 +12,7 @@
         "assetBundlePatterns": ["**/*"],
         "ios": {
             "bundleIdentifier": "com.trade.tribe",
-            "buildNumber": "1.0.3",
+            "buildNumber": "2",
             "supportsTablet": true,
             "usesNonExemptEncryption": false,
             "infoPlist": {

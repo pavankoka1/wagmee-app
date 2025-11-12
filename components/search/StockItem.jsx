@@ -1,13 +1,6 @@
-import {
-    View,
-    Text,
-    TouchableNativeFeedback,
-    Pressable,
-    TouchableOpacity,
-} from "react-native";
-import React, { useState } from "react";
 import VerifiedIcon from "@/icons/VerifiedIcon";
-import LetterIcon from "./LetterIcon"; // Import the LetterIcon component
+import React, { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import StockDetailsBottomSheet from "./StockDetailsBottomSheet";
 
 const colorCombinations = [
@@ -61,6 +54,7 @@ function StockItem({ stock }) {
                 isOpen={openStockDetailsSheet}
                 onClose={() => setOpenStockDetailsSheet(false)}
                 symbol={stock.symbol}
+                stockName={stock.instrument_name}
             />
         </View>
     );
