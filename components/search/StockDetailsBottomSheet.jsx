@@ -16,6 +16,9 @@ const TIMEFRAMES = [
     { label: "3M", days: 90, key: "3M" },
     { label: "6M", days: 180, key: "6M" },
     { label: "1Y", days: 365, key: "1Y" },
+    { label: "3Y", days: 365 * 3, key: "3Y" },
+    { label: "5Y", days: 365 * 5, key: "5Y" },
+    { label: "ALL", days: null, key: "ALL" },
 ];
 
 const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
@@ -45,10 +48,8 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
             let filteredData;
 
             if (timeframe === "1D") {
-                // For 1D, show last 5-10 data points (recent trading days)
-                filteredData = data.slice(-10);
-            } else {
-                // Filter data for selected timeframe
+                filteredData = data.slice(-Math.min(10, data.length));
+            } else if (timeframeConfig.days) {
                 const now = new Date();
                 const cutoffDate = new Date(
                     now.getTime() - timeframeConfig.days * 24 * 60 * 60 * 1000
@@ -58,15 +59,19 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
                     const itemDate = new Date(item.time);
                     return itemDate >= cutoffDate;
                 });
+            } else {
+                filteredData = data;
+            }
+
+            if (!filteredData || filteredData.length === 0) {
+                filteredData = data;
             }
 
             setChartData(filteredData);
 
-            // Update chart HTML
             const html = getChartHTML(symbol, filteredData);
             setChartHTML(html);
 
-            // Update WebView chart
             setTimeout(() => {
                 if (webViewRef.current) {
                     webViewRef.current.postMessage(
@@ -87,7 +92,7 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
             setLoading(true);
             // Fetch 1 year of data for calculations
             Promise.all([
-                fetchStockChartData(symbol, "NSE", 365),
+                fetchStockChartData(symbol, "NSE", 365 * 5),
                 fetchCurrentStockPrice(symbol, "NSE"),
             ])
                 .then(([data, price]) => {
@@ -290,18 +295,24 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
                     </ScrollView>
 
                     {/* Timeframe Selector */}
-                    <View className="flex-row px-4 pb-3 gap-2">
-                        {TIMEFRAMES.map((timeframe) => (
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className="px-4 pb-3"
+                        contentContainerStyle={{ paddingRight: 16 }}
+                    >
+                        {TIMEFRAMES.map((timeframe, index) => (
                             <TouchableOpacity
                                 key={timeframe.key}
                                 onPress={() =>
                                     handleTimeframeChange(timeframe.key)
                                 }
                                 className={clsx(
-                                    "px-4 py-2 rounded-full",
+                                    "px-4 py-2 rounded-full mr-2",
                                     selectedTimeframe === timeframe.key
                                         ? "bg-[#b4ef02]"
-                                        : "bg-[#1F1F1F]"
+                                        : "bg-[#1F1F1F]",
+                                    index === TIMEFRAMES.length - 1 && "mr-0"
                                 )}
                             >
                                 <Text
@@ -316,7 +327,7 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
                                 </Text>
                             </TouchableOpacity>
                         ))}
-                    </View>
+                    </ScrollView>
                 </View>
 
                 {/* Chart Container */}
