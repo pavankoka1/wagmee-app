@@ -1,25 +1,29 @@
-import React, {
-    useEffect,
-    useState,
-    useMemo,
-    useCallback,
-    useRef,
-} from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    ScrollView,
-    TextInput,
-} from "react-native";
-import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 import UserItem from "@/components/search/UserItem";
+import UserListSkeleton from "@/components/search/UserListSkeleton";
+import useBottomSheetStore from "@/hooks/useBottomSheetStore";
 import CloseIcon from "@/icons/CloseIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import replacePlaceholders from "@/utils/replacePlaceholders";
-import UserListSkeleton from "@/components/search/UserListSkeleton";
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import {
+    SafeAreaView,
+    useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 // Memoized TextInput to prevent unnecessary re-renders
 const SearchInput = React.memo(({ value, onChangeText, inputRef }) => (
@@ -49,6 +53,7 @@ const FollowBottomSheet = () => {
     const [listData, setListData] = useState([]);
     const [search, setSearch] = useState("");
     const inputRef = useRef(null);
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         if (isFollowSheetOpen && followSheetUserId) {
@@ -101,14 +106,22 @@ const FollowBottomSheet = () => {
             style={StyleSheet.absoluteFill}
             className="bg-black/50 justify-end z-[9999999]"
         >
-            <View className="bg-[#1F1F1F] rounded-t-2xl" style={{ flex: 1 }}>
-                <View className="p-4 flex-row justify-between items-center">
+            <SafeAreaView
+                edges={["bottom"]}
+                className="bg-[#1F1F1F] rounded-t-2xl"
+                style={{ flex: 1 }}
+            >
+                <View
+                    className="px-4 pb-4 flex-row justify-between items-center"
+                    style={{ paddingTop: insets.top + 16 }}
+                >
                     <Text className="font-manrope-bold text-18 text-white text-center flex-1">
                         {followSheetTitle}
                     </Text>
                     <TouchableOpacity
                         onPress={closeFollowSheet}
-                        className="absolute top-4 right-4 z-10 p-2"
+                        className="absolute right-4 z-10 p-2"
+                        style={{ top: insets.top + 16 }}
                     >
                         <CloseIcon />
                     </TouchableOpacity>
@@ -144,7 +157,7 @@ const FollowBottomSheet = () => {
                         </ScrollView>
                     )}
                 </View>
-            </View>
+            </SafeAreaView>
         </View>
     );
 };
