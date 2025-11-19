@@ -1,4 +1,3 @@
-import clearAppStorage from "@/utils/clearAppStorage";
 import generateRandomString from "@/utils/generateRandomString";
 import axios from "axios";
 import { router } from "expo-router";
@@ -38,9 +37,6 @@ axiosInstance.interceptors.response.use(
             console.log(error.response);
             switch (error.response.status) {
                 case 401:
-                    console.log("Unauthorized: Clearing token and redirecting");
-                    // Clear all app storage and tokens
-                    await clearAppStorage();
                     ToastAndroid.showWithGravityAndOffset(
                         "Session expired: Please log in again.",
                         ToastAndroid.LONG,

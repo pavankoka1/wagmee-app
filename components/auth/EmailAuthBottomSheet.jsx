@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import {
     Animated,
     Easing,
+    KeyboardAvoidingView,
     Modal,
+    Platform,
     TouchableWithoutFeedback,
     View,
 } from "react-native";
@@ -58,18 +60,23 @@ const EmailAuthBottomSheet = ({
                 <TouchableWithoutFeedback onPress={handleOverlayClick}>
                     <View className="flex-1" />
                 </TouchableWithoutFeedback>
-                <Animated.View
-                    style={[
-                        { transform: [{ translateY }] },
-                        { paddingTop: 5, paddingBottom: 5 },
-                    ]}
-                    className={clsx(
-                        "bg-[#161616] w-full rounded-t-3xl shadow-2xl",
-                        className
-                    )}
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
                 >
-                    {children}
-                </Animated.View>
+                    <Animated.View
+                        style={[
+                            { transform: [{ translateY }] },
+                            { paddingTop: 5, paddingBottom: 5 },
+                        ]}
+                        className={clsx(
+                            "bg-[#161616] w-full rounded-t-3xl shadow-2xl",
+                            className
+                        )}
+                    >
+                        {children}
+                    </Animated.View>
+                </KeyboardAvoidingView>
             </View>
         </Modal>
     );

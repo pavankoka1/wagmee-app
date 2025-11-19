@@ -1,8 +1,11 @@
-import React, { memo } from "react";
-import { View, Image, TouchableOpacity, Dimensions } from "react-native";
-import { Portal } from "react-native-paper";
 import CloseIcon from "@/icons/CloseIcon";
-
+import React, { memo } from "react";
+import { Dimensions, Image, Platform, TouchableOpacity } from "react-native";
+import { Portal } from "react-native-paper";
+import {
+    SafeAreaView,
+    useSafeAreaInsets,
+} from "react-native-safe-area-context";
 /**
  * Renders a full-screen image viewer in a portal.
  * @param {Object} props
@@ -10,11 +13,13 @@ import CloseIcon from "@/icons/CloseIcon";
  * @param {Function} props.onClose - Callback to close the viewer
  */
 const ImageViewer = memo(({ imageUrl, onClose }) => {
+    const insets = useSafeAreaInsets();
+
     if (!imageUrl) return null;
 
     return (
         <Portal>
-            <View
+            <SafeAreaView
                 className="flex-1 bg-black bg-opacity-90 justify-center items-center"
                 style={{
                     position: "absolute",
@@ -25,7 +30,10 @@ const ImageViewer = memo(({ imageUrl, onClose }) => {
                 }}
             >
                 <TouchableOpacity
-                    className="absolute top-4 right-4 z-10"
+                    className="absolute right-4 z-10"
+                    style={{
+                        top: Platform.OS === "ios" ? insets.top + 16 : 16,
+                    }}
                     onPress={onClose}
                 >
                     <CloseIcon fill="#fff" />
@@ -38,7 +46,7 @@ const ImageViewer = memo(({ imageUrl, onClose }) => {
                         resizeMode: "contain",
                     }}
                 />
-            </View>
+            </SafeAreaView>
         </Portal>
     );
 });

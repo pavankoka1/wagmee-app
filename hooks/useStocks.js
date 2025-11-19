@@ -1,7 +1,5 @@
-import network from "@/network"; // Assuming this is used for network requests
-import API_PATHS from "@/network/apis"; // Assuming this is used for API paths
 import generateQueryParams from "@/utils/generateQueryParams"; // Utility to generate query params
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Debounce function
 const debounce = (func, delay) => {
@@ -40,7 +38,11 @@ function useStocks(searchText) {
             const data = await response.json();
             setStocks(
                 data.data
-                    .filter((stock) => stock.country.toLowerCase() === "india") // Filter for stocks in India
+                    .filter(
+                        (stock) =>
+                            stock.instrument_name &&
+                            stock.country.toLowerCase() === "india"
+                    ) // Filter for stocks in India
                     .reduce((acc, stock) => {
                         if (!acc.some((s) => s.symbol === stock.symbol)) {
                             // Check if the symbol is already in the accumulator
