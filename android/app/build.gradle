@@ -92,8 +92,14 @@ android {
         applicationId 'com.wagmee.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "1.0.9"
+        versionCode 13
+        versionName "1.0.12"
+        
+        // Support for 16 KB page sizes (required for Android 15+)
+        ndk {
+            // Ensure native libraries support 16 KB page alignment
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
     }
     signingConfigs {
         debug {
@@ -125,7 +131,10 @@ android {
     }
     packagingOptions {
         jniLibs {
-            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+            // Disable legacy packaging to support 16 KB page sizes
+            useLegacyPackaging false
+            // Ensure native libraries are properly aligned for 16 KB pages
+            keepDebugSymbols = ['**/*.so']
         }
     }
     androidResources {

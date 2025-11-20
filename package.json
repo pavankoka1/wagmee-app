@@ -15,6 +15,7 @@
         "build-local": "(cd android && ./gradlew assembleDebug)",
         "build-local-release": "(cd android && ./gradlew assembleRelease)",
         "bump-build-release": "node scripts/bumpVersionAndBuild.js",
+        "bump-ios-version": "node scripts/bumpIOSVersion.js",
         "postinstall": "node scripts/patch-nativewind.js"
     },
     "jest": {
