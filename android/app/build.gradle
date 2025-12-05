@@ -92,8 +92,8 @@ android {
         applicationId 'com.wagmee.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 23
-        versionName "1.0.22"
+        versionCode 24
+        versionName "1.0.23"
         
         // Support for 16 KB page sizes (required for Android 15+)
         ndk {
@@ -133,6 +133,8 @@ android {
         jniLibs {
             // Disable legacy packaging to support 16 KB page sizes
             useLegacyPackaging false
+            // Disable native library extraction for 16 KB page size support
+            extractNativeLibs false
             // Ensure native libraries are properly aligned for 16 KB pages
             keepDebugSymbols = ['**/*.so']
         }
