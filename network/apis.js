@@ -30,6 +30,21 @@ const API_PATHS = {
     blockUser: "/api/v1/moderation/block",
     unblockUser: "/api/v1/moderation/block/{0}/{1}",
     getBlockedUsers: "/api/v1/moderation/blocked/{0}",
+
+    // Stock ownership
+    getStockOwners: "/api/v1/stocks/{0}/owners",
+    getStockOwnerCount: "/api/v1/stocks/{0}/owners/count",
+
+    // Leaderboard
+    getLeaderboard: "/api/v1/leaderboard/{0}",
+    getUserRank: "/api/v1/leaderboard/{0}/user/{1}",
+
+    // Portfolio Copilot (AI Summary)
+    analyzePortfolio: "/api/v1/portfolio-copilot/user/{0}/analyze",
+    getDailyPortfolioSummary:
+        "/api/v1/portfolio-copilot/user/{0}/daily-summary",
+    generatePortfolioSummary:
+        "/api/v1/portfolio-copilot/user/{0}/generate-summary",
 };
 
 export default API_PATHS;

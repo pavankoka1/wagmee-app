@@ -1,12 +1,16 @@
 import BottomSheet from "@/components/BottomSheet";
+import StockOwnersBottomSheet from "@/components/stocks/StockOwnersBottomSheet";
 import CloseIcon from "@/icons/CloseIcon";
+import network from "@/network";
+import API_PATHS from "@/network/apis";
 import calculateStockProfits from "@/utils/calculateStockProfits";
 import fetchCurrentStockPrice from "@/utils/fetchCurrentStockPrice";
 import fetchStockChartData from "@/utils/fetchStockChartData";
 import getChartHTML from "@/utils/getChartHTML";
+import replacePlaceholders from "@/utils/replacePlaceholders";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
@@ -36,6 +40,12 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
     const [selectedTimeframe, setSelectedTimeframe] = useState("1Y");
     const webViewRef = useRef(null);
     const insets = useSafeAreaInsets();
+
+    const [owners, setOwners] = useState([]);
+    const [ownerCount, setOwnerCount] = useState(null);
+    const [ownersLoading, setOwnersLoading] = useState(false);
+    const [ownersError, setOwnersError] = useState(null);
+    const [isOwnersSheetOpen, setIsOwnersSheetOpen] = useState(false);
 
     // Update chart data when timeframe changes
     const updateChartData = React.useCallback(
@@ -125,6 +135,60 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
             setLoading(true);
         }
     }, [isOpen, symbol, selectedTimeframe, updateChartData]);
+
+    // Fetch stock owners and count
+    useEffect(() => {
+        if (!isOpen || !symbol) {
+            setOwners([]);
+            setOwnerCount(null);
+            setOwnersError(null);
+            return;
+        }
+
+        const fetchOwnership = async () => {
+            try {
+                setOwnersLoading(true);
+                setOwnersError(null);
+
+                const [ownersRes, countRes] = await Promise.all([
+                    network.get(
+                        replacePlaceholders(API_PATHS.getStockOwners, symbol)
+                    ),
+                    network.get(
+                        replacePlaceholders(
+                            API_PATHS.getStockOwnerCount,
+                            symbol
+                        )
+                    ),
+                ]);
+
+                const mappedOwners =
+                    Array.isArray(ownersRes) && ownersRes.length
+                        ? ownersRes.map((item) => ({
+                              id: item.userId,
+                              userName: item.userName,
+                              userAvatarUrl:
+                                  item.userAvatarUrl || item.profilePictureUrl,
+                              isVerifiedUser: item.isVerifiedUser,
+                          }))
+                        : [];
+
+                setOwners(mappedOwners);
+                setOwnerCount(
+                    typeof countRes?.ownerCount === "number"
+                        ? countRes.ownerCount
+                        : mappedOwners.length
+                );
+            } catch (error) {
+                console.error("Error fetching stock ownership:", error);
+                setOwnersError("Unable to load owners");
+            } finally {
+                setOwnersLoading(false);
+            }
+        };
+
+        fetchOwnership();
+    }, [isOpen, symbol]);
 
     // Handle timeframe change
     const handleTimeframeChange = (timeframe) => {
@@ -243,6 +307,108 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
                             </View>
                         </View>
                     )}
+
+                    {/* Stock Ownership Preview */}
+                    <View className="px-4 pb-3">
+                        <TouchableOpacity
+                            disabled={ownersLoading || owners.length === 0}
+                            onPress={() => {
+                                if (owners.length > 0) {
+                                    setIsOwnersSheetOpen(true);
+                                }
+                            }}
+                            className={clsx(
+                                "flex-row items-center justify-between rounded-xl px-3 py-2 w-full",
+                                owners.length > 0
+                                    ? "bg-[#1F1F1F]"
+                                    : "bg-[#1F1F1F]/60"
+                            )}
+                        >
+                            <View
+                                className="flex-row items-center flex-1"
+                                style={{ flexShrink: 1 }}
+                            >
+                                <Text
+                                    className="font-manrope-medium text-12 text-[#B1B1B1] mr-2"
+                                    numberOfLines={1}
+                                >
+                                    {ownersLoading
+                                        ? "Loading owners..."
+                                        : ownerCount && ownerCount > 0
+                                        ? `${ownerCount} users own this stock`
+                                        : "No owners yet on Wagmee"}
+                                </Text>
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={{ gap: -8 }}
+                                    style={{ maxWidth: 180 }}
+                                >
+                                    {owners.slice(0, 6).map((owner, index) => (
+                                        <View
+                                            key={owner.id}
+                                            style={{
+                                                marginLeft:
+                                                    index === 0 ? 0 : -12,
+                                            }}
+                                        >
+                                            {owner.userAvatarUrl ? (
+                                                <Image
+                                                    source={{
+                                                        uri: owner.userAvatarUrl,
+                                                    }}
+                                                    style={{
+                                                        width: 28,
+                                                        height: 28,
+                                                        borderRadius: 999,
+                                                        borderWidth: 1,
+                                                        borderColor: "#161616",
+                                                        zIndex: 1000 - index,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <View
+                                                    style={{
+                                                        width: 28,
+                                                        height: 28,
+                                                        borderRadius: 999,
+                                                        backgroundColor:
+                                                            "#2A2A2A",
+                                                        alignItems: "center",
+                                                        justifyContent:
+                                                            "center",
+                                                        borderWidth: 1,
+                                                        borderColor: "#161616",
+                                                        zIndex: 1000 - index,
+                                                    }}
+                                                >
+                                                    <Text className="font-manrope-bold text-12 text-white">
+                                                        {owner.userName
+                                                            ?.charAt(0)
+                                                            ?.toUpperCase() ||
+                                                            "U"}
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </View>
+                                    ))}
+                                </ScrollView>
+                            </View>
+                            {owners.length > 0 && (
+                                <Text
+                                    className="font-manrope-bold text-10 text-[#b4ef02] ml-2"
+                                    style={{ flexShrink: 0 }}
+                                >
+                                    View all
+                                </Text>
+                            )}
+                        </TouchableOpacity>
+                        {ownersError && (
+                            <Text className="font-manrope text-10 text-[#F87171] mt-1">
+                                {ownersError}
+                            </Text>
+                        )}
+                    </View>
 
                     {/* Profit/Loss Cards */}
                     <ScrollView
@@ -377,6 +543,11 @@ const StockDetailsBottomSheet = ({ isOpen, onClose, symbol, stockName }) => {
                     ) : null}
                 </View>
             </View>
+            <StockOwnersBottomSheet
+                visible={isOwnersSheetOpen}
+                onClose={() => setIsOwnersSheetOpen(false)}
+                ticker={symbol}
+            />
         </BottomSheet>
     );
 };

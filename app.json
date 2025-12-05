@@ -2,17 +2,19 @@
     "expo": {
         "name": "Wagmee Club",
         "slug": "trade-tribe-app",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "orientation": "portrait",
         "icon": "./assets/images/login/logo.png",
         "backgroundColor": "#161616",
         "scheme": "tradetribe",
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
-        "assetBundlePatterns": ["**/*"],
+        "assetBundlePatterns": [
+            "**/*"
+        ],
         "ios": {
             "bundleIdentifier": "com.trade.tribe",
-            "buildNumber": "3",
+            "buildNumber": "4",
             "supportsTablet": true,
             "usesNonExemptEncryption": false,
             "infoPlist": {
@@ -45,7 +47,10 @@
                             "scheme": "tradetribe"
                         }
                     ],
-                    "category": ["BROWSABLE", "DEFAULT"]
+                    "category": [
+                        "BROWSABLE",
+                        "DEFAULT"
+                    ]
                 }
             ],
             "compileSdkVersion": 35,
@@ -70,7 +75,9 @@
                     "backgroundColor": "#161616"
                 }
             ],
-            ["./plugins/withCustomScheme.js"],
+            [
+                "./plugins/withCustomScheme.js"
+            ],
             "expo-web-browser"
         ],
         "experiments": {

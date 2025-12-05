@@ -3,17 +3,17 @@ import FollowBottomSheet from "@/components/profile/FollowBottomSheet";
 import UserProfileBottomSheet from "@/components/profile/UserProfileBottomSheet";
 import useUserStore from "@/hooks/useUserStore";
 import AddIcon from "@/icons/AddIcon";
-import BellIcon from "@/icons/BellIcon";
 import HomeIcon from "@/icons/HomeIcon";
 import PersonIcon from "@/icons/PersonIcon";
 import SearchIcon from "@/icons/SearchIcon";
+import TrophyIcon from "@/icons/TrophyIcon";
 import network from "@/network";
 import API_PATHS from "@/network/apis";
 import { HEADERS_KEYS } from "@/network/constants";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 import { router, Tabs } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -179,7 +179,7 @@ export default function Layout() {
                         name="notifications"
                         options={{
                             tabBarIcon: ({ color }) => (
-                                <BellIcon color={color} size={26} />
+                                <TrophyIcon color={color} size={26} />
                             ),
                             tabBarLabel: "",
                         }}

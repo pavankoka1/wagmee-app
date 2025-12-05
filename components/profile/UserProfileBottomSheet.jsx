@@ -9,8 +9,7 @@ import { HEADERS_KEYS } from "@/network/constants";
 import replacePlaceholders from "@/utils/replacePlaceholders";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
-import { Portal } from "react-native-paper";
+import { Modal, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import Card from "./Card";
 import UserOptionsBottomSheet from "./UserOptionsBottomSheet";
 import UserProfilePortfolio from "./UserProfilePortfolio";
@@ -113,7 +112,13 @@ const UserProfileBottomSheet = () => {
     if (!isOpen) return null;
 
     return (
-        <Portal>
+        <Modal
+            transparent={false}
+            visible={isOpen}
+            animationType="slide"
+            onRequestClose={() => setProfileBottomSheet(null)}
+            presentationStyle="overFullScreen"
+        >
             <SafeAreaView className="flex-1 bg-[#161616]">
                 <View className="flex-1 pt-2 pb-8 flex flex-col">
                     {/* Close Button and Options */}
@@ -215,7 +220,7 @@ const UserProfileBottomSheet = () => {
                     />
                 )}
             </SafeAreaView>
-        </Portal>
+        </Modal>
     );
 };
 

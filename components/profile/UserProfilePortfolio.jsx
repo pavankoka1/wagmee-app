@@ -16,6 +16,7 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from "react-native-reanimated";
+import PortfolioCopilotModal from "./PortfolioCopilotModal";
 import StockItem from "./StockItem";
 
 const { width } = Dimensions.get("window");
@@ -26,6 +27,7 @@ const UserProfilePortfolio = ({ userId }) => {
     const [error, setError] = useState(null);
     const [viewMode, setViewMode] = useState("overall"); // "today" or "overall"
     const togglePosition = useSharedValue(0); // 0 for "overall", 1 for "today"
+    const [isCopilotOpen, setIsCopilotOpen] = useState(false);
 
     useEffect(() => {
         const fetchHoldings = async () => {
@@ -67,55 +69,80 @@ const UserProfilePortfolio = ({ userId }) => {
     }));
 
     const renderToggleButton = () => (
-        <View className="absolute top-4 right-4 z-10">
-            <TouchableOpacity
-                onPress={toggleViewMode}
-                className="bg-[#2A2B2E] rounded-full flex-row items-center"
-                style={{ width: width * 0.25, height: 32 }}
-            >
-                <Animated.View
-                    className="absolute bg-[#b4ef02] rounded-full"
-                    style={[
-                        {
-                            width: width * 0.115,
-                            height: 26,
-                            left: 2,
-                        },
-                        animatedToggleStyle,
-                    ]}
-                />
-                <View className="flex-row justify-between items-center flex-1 px-3">
-                    <Text
-                        className={clsx(
-                            "text-xs font-medium",
-                            viewMode === "overall"
-                                ? "text-[#161616]"
-                                : "text-[#b1b1b1]"
-                        )}
-                    >
-                        Overall
-                    </Text>
-                    <Text
-                        className={clsx(
-                            "text-xs font-medium",
-                            viewMode === "today"
-                                ? "text-[#161616]"
-                                : "text-[#b1b1b1]"
-                        )}
-                    >
-                        Today
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+            onPress={toggleViewMode}
+            className="bg-[#2A2B2E] rounded-full flex-row items-center"
+            style={{ width: width * 0.25, height: 32 }}
+        >
+            <Animated.View
+                className="absolute bg-[#b4ef02] rounded-full"
+                style={[
+                    {
+                        width: width * 0.115,
+                        height: 26,
+                        left: 2,
+                    },
+                    animatedToggleStyle,
+                ]}
+            />
+            <View className="flex-row justify-between items-center flex-1 px-3">
+                <Text
+                    className={clsx(
+                        "text-xs font-medium",
+                        viewMode === "overall"
+                            ? "text-[#161616]"
+                            : "text-[#b1b1b1]"
+                    )}
+                >
+                    Overall
+                </Text>
+                <Text
+                    className={clsx(
+                        "text-xs font-medium",
+                        viewMode === "today"
+                            ? "text-[#161616]"
+                            : "text-[#b1b1b1]"
+                    )}
+                >
+                    Today
+                </Text>
+            </View>
+        </TouchableOpacity>
     );
 
     const renderHeader = () => {
         if (isLoading) {
             return (
-                <View className="relative">
-                    {renderToggleButton()}
-                    <View className="bg-[#1F2023] p-4 mx-4 mt-16 rounded-lg shadow-md">
+                <View className="px-4 pt-4">
+                    {/* AI Summary Button */}
+                    <View className="mb-3 flex-row justify-end">
+                        <TouchableOpacity
+                            disabled
+                            className="flex-row items-center px-4 py-2.5 rounded-xl border border-[#2A2A2A] opacity-50"
+                            style={{
+                                backgroundColor: "#1F1F1F",
+                            }}
+                        >
+                            <View className="bg-[#b4ef02]/20 rounded-full p-1.5 mr-2">
+                                <Text className="text-[#b4ef02] text-xs">
+                                    ✨
+                                </Text>
+                            </View>
+                            <View>
+                                <Text className="font-manrope-bold text-12 text-white">
+                                    AI Summary
+                                </Text>
+                                <Text className="font-manrope-medium text-10 text-[#B1B1B1]">
+                                    Portfolio Copilot
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    {/* Toggle Button */}
+                    <View className="mb-3 flex-row justify-end">
+                        {renderToggleButton()}
+                    </View>
+                    <View className="bg-[#1F2023] p-4 rounded-lg shadow-md">
                         <View className="flex-row justify-between">
                             <View>
                                 <Text className="text-[#b1b1b1] text-xs tracking-wide">
@@ -154,9 +181,39 @@ const UserProfilePortfolio = ({ userId }) => {
         const totalChangePercentage = (totalChange / totalInvested) * 100;
 
         return (
-            <View className="relative">
-                {renderToggleButton()}
-                <View className="bg-[#1F2023] p-4 mx-4 mt-16 rounded-lg shadow-md">
+            <View className="px-4 pt-2">
+                {/* AI Summary Button */}
+                <View className="mb-4 flex-row justify-end">
+                    <TouchableOpacity
+                        onPress={() => setIsCopilotOpen(true)}
+                        className="flex-row items-center px-4 py-2.5 rounded-xl border border-[#2A2A2A]"
+                        style={{
+                            backgroundColor: "#1F1F1F",
+                            shadowColor: "#b4ef02",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 4,
+                            elevation: 3,
+                        }}
+                    >
+                        <View className="bg-[#b4ef02]/20 rounded-full p-1.5 mr-2">
+                            <Text className="text-[#b4ef02] text-xs">✨</Text>
+                        </View>
+                        <View>
+                            <Text className="font-manrope-bold text-12 text-white">
+                                AI Summary
+                            </Text>
+                            <Text className="font-manrope-medium text-10 text-[#B1B1B1]">
+                                Portfolio Copilot
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                {/* Toggle Button */}
+                <View className="mb-3 flex-row justify-end">
+                    {renderToggleButton()}
+                </View>
+                <View className="bg-[#1F2023] p-4 rounded-lg shadow-md">
                     <View className="flex-row justify-between">
                         <View>
                             <Text className="text-[#b1b1b1] text-xs tracking-wide">
@@ -181,6 +238,7 @@ const UserProfilePortfolio = ({ userId }) => {
                             </Text>
                         </View>
                     </View>
+
                     <View className="border-t border-[#2A2B2E] mt-3 pt-3">
                         <View className="flex-row justify-between items-center">
                             <Text className="text-[#b1b1b1] text-xs tracking-wide">
@@ -443,15 +501,22 @@ const UserProfilePortfolio = ({ userId }) => {
     );
 
     return (
-        <FlatList
-            data={isLoading ? [] : data.securities}
-            keyExtractor={(item) => item.isin}
-            ListHeaderComponent={renderHeader}
-            ListEmptyComponent={renderListContent()}
-            renderItem={renderStockItem}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
-        />
+        <>
+            <FlatList
+                data={isLoading ? [] : data.securities}
+                keyExtractor={(item) => item.isin}
+                ListHeaderComponent={renderHeader}
+                ListEmptyComponent={renderListContent()}
+                renderItem={renderStockItem}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 20 }}
+            />
+            <PortfolioCopilotModal
+                visible={isCopilotOpen}
+                onClose={() => setIsCopilotOpen(false)}
+                userId={userId}
+            />
+        </>
     );
 };
 

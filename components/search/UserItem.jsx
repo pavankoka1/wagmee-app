@@ -57,24 +57,35 @@ function UserItem({ item }) {
         setProfileBottomSheet(item.id);
     };
 
+    const handleAvatarClick = () => {
+        Keyboard.dismiss();
+        setProfileBottomSheet(item.id);
+    };
+
     const isFollowing = following.includes(item.id);
+    const isCurrentUser = details?.id && String(details.id) === String(item.id);
 
     return (
         <View className="border-b border-[#1F2023] py-4 flex flex-row items-center">
-            {item.userAvatarUrl ? (
-                <Image
-                    source={{ uri: item.userAvatarUrl }}
-                    width={40}
-                    height={40}
-                    className="rounded-full mr-3"
-                />
-            ) : (
-                <View className="w-10 h-10 rounded-full bg-[#2A2A2A] flex items-center justify-center mr-3">
-                    <Text className="font-manrope-bold text-16 text-white">
-                        {(item.nickname || "U")[0].toUpperCase()}
-                    </Text>
-                </View>
-            )}
+            <TouchableOpacity
+                onPress={handleAvatarClick}
+                activeOpacity={0.7}
+            >
+                {item.userAvatarUrl ? (
+                    <Image
+                        source={{ uri: item.userAvatarUrl }}
+                        width={40}
+                        height={40}
+                        className="rounded-full mr-3"
+                    />
+                ) : (
+                    <View className="w-10 h-10 rounded-full bg-[#2A2A2A] flex items-center justify-center mr-3">
+                        <Text className="font-manrope-bold text-16 text-white">
+                            {(item.nickname || item.userName || "U")[0].toUpperCase()}
+                        </Text>
+                    </View>
+                )}
+            </TouchableOpacity>
 
             <View className="flex flex-col">
                 <TouchableOpacity
@@ -103,40 +114,42 @@ function UserItem({ item }) {
                 </Text>
             </View>
 
-            <TouchableOpacity
-                onPress={handleClick}
-                activeOpacity={0.7}
-                className="ml-auto"
-                disabled={loading}
-            >
-                <View
-                    className={clsx(
-                        "ml-auto font-manrope-bold text-12 py-3 px-5 rounded-xl w-28 flex items-center justify-center",
-                        {
-                            "bg-primary-main": !isFollowing,
-                            "border border-[#444]": isFollowing,
-                            "opacity-70": loading,
-                        }
-                    )}
+            {!isCurrentUser && (
+                <TouchableOpacity
+                    onPress={handleClick}
+                    activeOpacity={0.7}
+                    className="ml-auto"
+                    disabled={loading}
                 >
-                    {loading ? (
-                        <ActivityIndicator
-                            size={16}
-                            color={isFollowing ? "#B1B1B1" : "#292929"}
-                        />
-                    ) : (
-                        <Text
-                            className={clsx("font-manrope-bold text-12", {
-                                "text-[#292929]": !isFollowing,
-                                "text-[#B1B1B1] font-manrope-medium":
-                                    isFollowing,
-                            })}
-                        >
-                            {isFollowing ? "Unfollow" : "Follow"}
-                        </Text>
-                    )}
-                </View>
-            </TouchableOpacity>
+                    <View
+                        className={clsx(
+                            "ml-auto font-manrope-bold text-12 py-3 px-5 rounded-xl w-28 flex items-center justify-center",
+                            {
+                                "bg-primary-main": !isFollowing,
+                                "border border-[#444]": isFollowing,
+                                "opacity-70": loading,
+                            }
+                        )}
+                    >
+                        {loading ? (
+                            <ActivityIndicator
+                                size={16}
+                                color={isFollowing ? "#B1B1B1" : "#292929"}
+                            />
+                        ) : (
+                            <Text
+                                className={clsx("font-manrope-bold text-12", {
+                                    "text-[#292929]": !isFollowing,
+                                    "text-[#B1B1B1] font-manrope-medium":
+                                        isFollowing,
+                                })}
+                            >
+                                {isFollowing ? "Unfollow" : "Follow"}
+                            </Text>
+                        )}
+                    </View>
+                </TouchableOpacity>
+            )}
         </View>
     );
 }

@@ -321,9 +321,16 @@ const SmallStockDetailsBottomSheet = ({
                                     );
                                     onViewChart();
                                 }}
-                                className="bg-[#22c55e] rounded-lg py-2 px-4 items-center"
+                                className="bg-[#22c55e] rounded-xl py-3 px-4 items-center w-full mt-2"
+                                style={{
+                                    shadowColor: "#22c55e",
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: 0.3,
+                                    shadowRadius: 4,
+                                    elevation: 3,
+                                }}
                             >
-                                <Text className="text-white text-sm font-semibold">
+                                <Text className="text-white text-sm font-manrope-bold">
                                     View Chart
                                 </Text>
                             </TouchableOpacity>
